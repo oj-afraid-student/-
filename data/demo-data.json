@@ -1,0 +1,2066 @@
+{
+  "version": "0.1",
+  "date": "2026-10-22",
+  "timezone": "Asia/Shanghai",
+  "provenance": "All names, responses, class data and learning events are synthetic demonstration data.",
+  "generation_mode": "preset_demo_no_live_ai",
+  "confirmed_inputs": [
+    "text",
+    "question_image"
+  ],
+  "image_assets": [
+    {
+      "id": "IMG-PHY-M01",
+      "status": "not_created",
+      "description": "物块向右滑动、水平向右拉力、粗糙水平面；文字区域给出质量、初速度、摩擦因数与撤力时刻。"
+    },
+    {
+      "id": "IMG-GEO-M01",
+      "status": "not_created",
+      "description": "带标准顶点标记的正方体 ABCD—A₁B₁C₁D₁。"
+    }
+  ],
+  "story_pages": {
+    "US-M01": [
+      "P02",
+      "P03"
+    ],
+    "US-M02": [
+      "P03"
+    ],
+    "US-M03": [
+      "P04"
+    ],
+    "US-M04": [
+      "P05"
+    ],
+    "US-M05": [
+      "P04",
+      "P05"
+    ],
+    "US-M06": [
+      "P01",
+      "P04",
+      "P05"
+    ],
+    "US-A01": [
+      "P06"
+    ],
+    "US-A02": [
+      "P06",
+      "P09"
+    ],
+    "US-A03": [
+      "P06",
+      "P04",
+      "P07"
+    ],
+    "US-Q01": [
+      "P07"
+    ],
+    "US-Q02": [
+      "P08"
+    ],
+    "US-Q03": [
+      "P09",
+      "P06"
+    ],
+    "US-T01": [
+      "P10",
+      "P03",
+      "P04",
+      "P05"
+    ],
+    "US-T02": [
+      "P11"
+    ],
+    "US-T03": [
+      "P10",
+      "P07"
+    ]
+  },
+  "users": [
+    {
+      "id": "S01",
+      "name": "林同学",
+      "role": "student"
+    },
+    {
+      "id": "S02",
+      "name": "周同学",
+      "role": "student"
+    },
+    {
+      "id": "S03",
+      "name": "许同学",
+      "role": "student"
+    },
+    {
+      "id": "S04",
+      "name": "沈同学",
+      "role": "student"
+    },
+    {
+      "id": "TC01",
+      "name": "陈老师",
+      "role": "teacher"
+    }
+  ],
+  "class": {
+    "id": "C01",
+    "name": "示范班",
+    "teacher_id": "TC01",
+    "student_ids": [
+      "S01",
+      "S02",
+      "S03",
+      "S04"
+    ]
+  },
+  "knowledge_points": [
+    {
+      "id": "K01",
+      "name": "水平面滑动摩擦力",
+      "subject": "physics"
+    },
+    {
+      "id": "K02",
+      "name": "合力与方向",
+      "subject": "physics"
+    },
+    {
+      "id": "K03",
+      "name": "牛顿第二定律",
+      "subject": "physics"
+    },
+    {
+      "id": "K04",
+      "name": "分阶段运动与状态变化",
+      "subject": "physics"
+    },
+    {
+      "id": "K05",
+      "name": "速度—时间图像与位移",
+      "subject": "physics"
+    },
+    {
+      "id": "G01",
+      "name": "空间对角线",
+      "subject": "mathematics"
+    },
+    {
+      "id": "G02",
+      "name": "直线与平面所成角",
+      "subject": "mathematics"
+    }
+  ],
+  "knowledge_relations": [
+    {
+      "from": "K01",
+      "to": "K02",
+      "type": "associated"
+    },
+    {
+      "from": "K02",
+      "to": "K03",
+      "type": "prerequisite"
+    },
+    {
+      "from": "K03",
+      "to": "K04",
+      "type": "prerequisite"
+    },
+    {
+      "from": "K01",
+      "to": "K04",
+      "type": "associated"
+    },
+    {
+      "from": "K04",
+      "to": "K05",
+      "type": "associated"
+    }
+  ],
+  "mastery_rule": {
+    "window_days": 30,
+    "max_distinct_question_versions": 10,
+    "minimum_evidence": 5,
+    "review_below_percent": 60,
+    "stable_from_percent": 80,
+    "count_primary_knowledge_only": true,
+    "count_hinted_or_exposed_first_attempts": false,
+    "count_corrections": false,
+    "count_retries": false
+  },
+  "models": [
+    {
+      "id": "PHY-M01",
+      "kind": "horizontal_pull_then_release",
+      "title": "粗糙水平面物块受力运动",
+      "params": {
+        "m": 2,
+        "mu": 0.1,
+        "g": 10,
+        "F": 6,
+        "v0": 2,
+        "tau": 3
+      },
+      "expected": {
+        "friction": 2.0,
+        "a_drive": 2.0,
+        "a_brake": -1.0,
+        "v_at_release": 8.0,
+        "x_at_release": 15.0,
+        "braking_time": 8.0,
+        "braking_distance": 32.0,
+        "stop_time": 11.0,
+        "total_displacement": 47.0
+      },
+      "initial_motion": "already_sliding_right",
+      "event_convention": "post_event_state_at_release_and_stop",
+      "at_rest": {
+        "velocity": 0,
+        "acceleration": 0,
+        "horizontal_friction": 0
+      },
+      "supported_domain": "m>0, mu>0, v0>0, tau>0, F>=mu*m*g"
+    },
+    {
+      "id": "PHY-M02",
+      "kind": "horizontal_pull_then_release",
+      "source_model_id": "PHY-M01",
+      "title": "仅增大动摩擦因数",
+      "params": {
+        "m": 2,
+        "mu": 0.2,
+        "g": 10,
+        "F": 6,
+        "v0": 2,
+        "tau": 3
+      },
+      "expected": {
+        "friction": 4.0,
+        "a_drive": 1.0,
+        "a_brake": -2.0,
+        "v_at_release": 5.0,
+        "x_at_release": 10.5,
+        "braking_time": 2.5,
+        "braking_distance": 6.25,
+        "stop_time": 5.5,
+        "total_displacement": 16.75
+      }
+    },
+    {
+      "id": "GEO-M01",
+      "kind": "cube_line_plane",
+      "title": "空间对角线与底面投影",
+      "params": {
+        "edge": 2
+      },
+      "vertices": {
+        "A": [
+          0,
+          0,
+          0
+        ],
+        "B": [
+          2,
+          0,
+          0
+        ],
+        "C": [
+          2,
+          2,
+          0
+        ],
+        "D": [
+          0,
+          2,
+          0
+        ],
+        "A1": [
+          0,
+          0,
+          2
+        ],
+        "B1": [
+          2,
+          0,
+          2
+        ],
+        "C1": [
+          2,
+          2,
+          2
+        ],
+        "D1": [
+          0,
+          2,
+          2
+        ]
+      },
+      "highlight_line": [
+        "A",
+        "C1"
+      ],
+      "projection": [
+        "A",
+        "C"
+      ],
+      "plane": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "expected": {
+        "diagonal": 3.4641016151377544,
+        "projection_length": 2.8284271247461903,
+        "angle_deg": 35.264389682754654
+      },
+      "variant_edge": 3,
+      "knowledge_ids": [
+        "G01",
+        "G02"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "H01",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K01",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块在水平面滑动，m=1 kg、μ=0.10、g=10 m/s²，滑动摩擦力大小是多少？",
+      "answer": 1,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "f=μmg=1 N。",
+      "verification": {
+        "rule": "friction",
+        "params": {
+          "m": 1,
+          "mu": 0.1,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H02",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K01",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块在水平面滑动，m=2 kg、μ=0.20、g=10 m/s²，滑动摩擦力大小是多少？",
+      "answer": 4,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "f=μmg=4 N。",
+      "verification": {
+        "rule": "friction",
+        "params": {
+          "m": 2,
+          "mu": 0.2,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H03",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K01",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块在水平面滑动，m=3 kg、μ=0.10、g=10 m/s²，滑动摩擦力大小是多少？",
+      "answer": 3,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "f=μmg=3 N。",
+      "verification": {
+        "rule": "friction",
+        "params": {
+          "m": 3,
+          "mu": 0.1,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H04",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K01",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块在水平面滑动，m=2 kg、μ=0.15、g=10 m/s²，滑动摩擦力大小是多少？",
+      "answer": 3,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "f=μmg=3 N。",
+      "verification": {
+        "rule": "friction",
+        "params": {
+          "m": 2,
+          "mu": 0.15,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H05",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [],
+      "prompt": "取向右为正。物块受向右拉力 8 N、向左摩擦力 2 N，水平合力是多少？",
+      "answer": 6,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "合力为 8−2=6 N，向右。",
+      "verification": {
+        "rule": "net_force",
+        "params": {
+          "F": 8,
+          "f": 2
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H06",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [],
+      "prompt": "取向右为正。物块受向右拉力 10 N、向左摩擦力 4 N，水平合力是多少？",
+      "answer": 6,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "合力为 10−4=6 N，向右。",
+      "verification": {
+        "rule": "net_force",
+        "params": {
+          "F": 10,
+          "f": 4
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H07",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [],
+      "prompt": "取向右为正。物块受向右拉力 5 N、向左摩擦力 1 N，水平合力是多少？",
+      "answer": 4,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "合力为 5−1=4 N，向右。",
+      "verification": {
+        "rule": "net_force",
+        "params": {
+          "F": 5,
+          "f": 1
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H08",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [],
+      "prompt": "取向右为正。物块受向右拉力 12 N、向左摩擦力 3 N，水平合力是多少？",
+      "answer": 9,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "合力为 12−3=9 N，向右。",
+      "verification": {
+        "rule": "net_force",
+        "params": {
+          "F": 12,
+          "f": 3
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H09",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K03",
+      "secondary_knowledge_ids": [],
+      "prompt": "已知向右合外力 2 N、质量 1 kg，取向右为正，加速度是多少？",
+      "answer": 2.0,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "a=F合/m=2 m/s²。",
+      "verification": {
+        "rule": "acceleration",
+        "params": {
+          "Fnet": 2,
+          "m": 1
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H10",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K03",
+      "secondary_knowledge_ids": [],
+      "prompt": "已知向右合外力 6 N、质量 3 kg，取向右为正，加速度是多少？",
+      "answer": 2.0,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "a=F合/m=2 m/s²。",
+      "verification": {
+        "rule": "acceleration",
+        "params": {
+          "Fnet": 6,
+          "m": 3
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H11",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K03",
+      "secondary_knowledge_ids": [],
+      "prompt": "已知向右合外力 3 N、质量 1 kg，取向右为正，加速度是多少？",
+      "answer": 3.0,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "a=F合/m=3 m/s²。",
+      "verification": {
+        "rule": "acceleration",
+        "params": {
+          "Fnet": 3,
+          "m": 1
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H12",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K03",
+      "secondary_knowledge_ids": [],
+      "prompt": "已知向右合外力 8 N、质量 4 kg，取向右为正，加速度是多少？",
+      "answer": 2.0,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "a=F合/m=2 m/s²。",
+      "verification": {
+        "rule": "acceleration",
+        "params": {
+          "Fnet": 8,
+          "m": 4
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H13",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K04",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块以 2 m/s 向右运动，仅受摩擦力作用，加速度为 −1 m/s²，需要多少时间停止？",
+      "answer": 2,
+      "unit": "s",
+      "absolute_tolerance": 0.01,
+      "explanation": "v=2−t，令 v=0，得 t=2 s。",
+      "verification": {
+        "rule": "stopping_time",
+        "params": {
+          "v0": 2,
+          "a": -1
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H14",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K04",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块已在水平面停止且没有其他水平外力，此时水平摩擦力大小是多少？",
+      "answer": 0,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "没有需要平衡的水平外力，摩擦力为 0。",
+      "verification": {
+        "rule": "rest_no_horizontal_force",
+        "params": {}
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H15",
+      "version": 1,
+      "type": "single_choice",
+      "subject": "physics",
+      "primary_knowledge_id": "K04",
+      "secondary_knowledge_ids": [],
+      "prompt": "同一物块连续运动的两个阶段交界处，位置可以突然跳跃到另一个位置。这句话正确吗？",
+      "answer": "B",
+      "options": {
+        "A": "正确",
+        "B": "错误"
+      },
+      "explanation": "连续运动的分段表达式在交界时刻应保持位置连续。",
+      "verification": {
+        "rule": "manual_semantic_review"
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H16",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K04",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块向右滑动，撤去拉力后仅受摩擦力，μ=0.10、g=10 m/s²；取向右为正，停止前加速度是多少？",
+      "answer": -1,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "a=−μg=−1 m/s²。",
+      "verification": {
+        "rule": "braking_acceleration",
+        "params": {
+          "mu": 0.1,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H17",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K05",
+      "secondary_knowledge_ids": [],
+      "prompt": "v-t 图为连接 (0,2) 与 (3,2) 的线段，时间单位 s、速度单位 m/s，这段时间位移是多少？",
+      "answer": 6.0,
+      "unit": "m",
+      "absolute_tolerance": 0.01,
+      "explanation": "位移等于 v-t 图线与时间轴之间的面积。",
+      "verification": {
+        "rule": "graph_area",
+        "params": {
+          "v_start": 2,
+          "v_end": 2,
+          "dt": 3
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H18",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K05",
+      "secondary_knowledge_ids": [],
+      "prompt": "v-t 图为连接 (0,0) 与 (2,4) 的线段，时间单位 s、速度单位 m/s，这段时间位移是多少？",
+      "answer": 4.0,
+      "unit": "m",
+      "absolute_tolerance": 0.01,
+      "explanation": "位移等于 v-t 图线与时间轴之间的面积。",
+      "verification": {
+        "rule": "graph_area",
+        "params": {
+          "v_start": 0,
+          "v_end": 4,
+          "dt": 2
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H19",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K05",
+      "secondary_knowledge_ids": [],
+      "prompt": "v-t 图为连接 (0,1) 与 (2,5) 的线段，时间单位 s、速度单位 m/s，这段时间位移是多少？",
+      "answer": 6.0,
+      "unit": "m",
+      "absolute_tolerance": 0.01,
+      "explanation": "位移等于 v-t 图线与时间轴之间的面积。",
+      "verification": {
+        "rule": "graph_area",
+        "params": {
+          "v_start": 1,
+          "v_end": 5,
+          "dt": 2
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "H20",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K05",
+      "secondary_knowledge_ids": [],
+      "prompt": "v-t 图为连接 (0,6) 与 (2,4) 的线段，时间单位 s、速度单位 m/s，这段时间位移是多少？",
+      "answer": 10.0,
+      "unit": "m",
+      "absolute_tolerance": 0.01,
+      "explanation": "位移等于 v-t 图线与时间轴之间的面积。",
+      "verification": {
+        "rule": "graph_area",
+        "params": {
+          "v_start": 6,
+          "v_end": 4,
+          "dt": 2
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "D01",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K01",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块在水平面向右滑动，m=2 kg、μ=0.10、g=10 m/s²，滑动摩擦力大小是多少？",
+      "answer": 2,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "N=mg=20 N，f=μN=2 N。",
+      "verification": {
+        "rule": "friction",
+        "params": {
+          "m": 2,
+          "mu": 0.1,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "D02",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [],
+      "prompt": "取向右为正。物块受向右拉力 6 N、向左滑动摩擦力 2 N，水平合力是多少？",
+      "answer": 4,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "合力为 6−2=4 N，向右。",
+      "verification": {
+        "rule": "net_force",
+        "params": {
+          "F": 6,
+          "f": 2
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "D03",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K03",
+      "secondary_knowledge_ids": [],
+      "prompt": "已知物块合外力向右 4 N、质量 2 kg，取向右为正，加速度是多少？",
+      "answer": 2,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "已知的是合力，a=4/2=2 m/s²。",
+      "verification": {
+        "rule": "acceleration",
+        "params": {
+          "Fnet": 4,
+          "m": 2
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "D04",
+      "version": 1,
+      "type": "single_choice",
+      "subject": "physics",
+      "primary_knowledge_id": "K04",
+      "secondary_knowledge_ids": [],
+      "prompt": "向右滑行的物块在粗糙水平面上被撤去拉力，之后如何运动？",
+      "answer": "B",
+      "options": {
+        "A": "撤力瞬间立即停止",
+        "B": "速度不突变，先向右减速，最后静止",
+        "C": "继续匀速向右运动",
+        "D": "立即向左加速"
+      },
+      "explanation": "撤去拉力后仍有摩擦力，物块向右减速直到停止。",
+      "verification": {
+        "rule": "manual_semantic_review"
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "D05",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K05",
+      "secondary_knowledge_ids": [],
+      "prompt": "v-t 图从 (0,2) 线性上升到 (3,8)，时间单位 s、速度单位 m/s，前 3 s 位移是多少？",
+      "answer": 15,
+      "unit": "m",
+      "absolute_tolerance": 0.01,
+      "explanation": "面积为 (2+8)×3/2=15 m，不能用末速度乘总时长。",
+      "verification": {
+        "rule": "graph_area",
+        "params": {
+          "v_start": 2,
+          "v_end": 8,
+          "dt": 3
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "T01",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K01",
+      "secondary_knowledge_ids": [],
+      "prompt": "物块在水平面向右滑动，m=2 kg、μ=0.25、g=10 m/s²，滑动摩擦力大小是多少？",
+      "answer": 5,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "f=μmg=5 N。",
+      "verification": {
+        "rule": "friction",
+        "params": {
+          "m": 2,
+          "mu": 0.25,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "T02",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [
+        "K01"
+      ],
+      "prompt": "物块在水平面向右滑动，m=2 kg、μ=0.10、g=10 m/s²，向右拉力为 8 N；取向右为正，水平合力是多少？",
+      "answer": 6,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "摩擦力 2 N，合力 8−2=6 N。",
+      "verification": {
+        "rule": "pull_minus_friction",
+        "params": {
+          "m": 2,
+          "mu": 0.1,
+          "g": 10,
+          "F": 8
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "T03",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K02",
+      "secondary_knowledge_ids": [
+        "K01"
+      ],
+      "prompt": "物块在水平面向右滑动，m=2 kg、μ=0.20、g=10 m/s²，向右拉力为 10 N；取向右为正，水平合力是多少？",
+      "answer": 6,
+      "unit": "N",
+      "absolute_tolerance": 0.01,
+      "explanation": "摩擦力 4 N，合力 10−4=6 N。",
+      "verification": {
+        "rule": "pull_minus_friction",
+        "params": {
+          "m": 2,
+          "mu": 0.2,
+          "g": 10,
+          "F": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "medium"
+    },
+    {
+      "id": "T04",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K04",
+      "secondary_knowledge_ids": [
+        "K01",
+        "K03"
+      ],
+      "prompt": "物块在水平面向右滑动，m=2 kg、μ=0.15、g=10 m/s²；撤去拉力后、停止前，取向右为正，加速度是多少？",
+      "answer": -1.5,
+      "unit": "m/s²",
+      "absolute_tolerance": 0.01,
+      "explanation": "撤力后仍受摩擦力，a=−μg=−1.5 m/s²。",
+      "verification": {
+        "rule": "braking_acceleration",
+        "params": {
+          "mu": 0.15,
+          "g": 10
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    },
+    {
+      "id": "T05",
+      "version": 1,
+      "type": "numeric",
+      "subject": "physics",
+      "primary_knowledge_id": "K05",
+      "secondary_knowledge_ids": [],
+      "prompt": "v-t 图从 (0,6) 线性下降到 (4,0)，时间单位 s、速度单位 m/s，4 s 内位移是多少？",
+      "answer": 12,
+      "unit": "m",
+      "absolute_tolerance": 0.01,
+      "explanation": "三角形面积为 6×4/2=12 m。",
+      "verification": {
+        "rule": "graph_area",
+        "params": {
+          "v_start": 6,
+          "v_end": 0,
+          "dt": 4
+        }
+      },
+      "source": "synthetic_preset",
+      "approval_status": "reviewed_demo",
+      "difficulty": "basic"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "S01-H01-FIRST",
+      "student_id": "S01",
+      "question_id": "H01",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:00:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 1,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H02-FIRST",
+      "student_id": "S01",
+      "question_id": "H02",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:01:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 4,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H03-FIRST",
+      "student_id": "S01",
+      "question_id": "H03",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:02:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 30,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H04-FIRST",
+      "student_id": "S01",
+      "question_id": "H04",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:03:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 0.3,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H05-FIRST",
+      "student_id": "S01",
+      "question_id": "H05",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:04:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 8,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H06-FIRST",
+      "student_id": "S01",
+      "question_id": "H06",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H07-FIRST",
+      "student_id": "S01",
+      "question_id": "H07",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:06:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H08-FIRST",
+      "student_id": "S01",
+      "question_id": "H08",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:07:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 12,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H09-FIRST",
+      "student_id": "S01",
+      "question_id": "H09",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:08:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H10-FIRST",
+      "student_id": "S01",
+      "question_id": "H10",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:09:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H11-FIRST",
+      "student_id": "S01",
+      "question_id": "H11",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:10:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 3,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H12-FIRST",
+      "student_id": "S01",
+      "question_id": "H12",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:11:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 4,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H13-FIRST",
+      "student_id": "S01",
+      "question_id": "H13",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:12:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H14-FIRST",
+      "student_id": "S01",
+      "question_id": "H14",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:13:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 0,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H15-FIRST",
+      "student_id": "S01",
+      "question_id": "H15",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:14:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": "A",
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H16-FIRST",
+      "student_id": "S01",
+      "question_id": "H16",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:15:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 0,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H17-FIRST",
+      "student_id": "S01",
+      "question_id": "H17",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:16:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H18-FIRST",
+      "student_id": "S01",
+      "question_id": "H18",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:17:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 4,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H19-FIRST",
+      "student_id": "S01",
+      "question_id": "H19",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:18:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 10,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-H20-FIRST",
+      "student_id": "S01",
+      "question_id": "H20",
+      "question_version": 1,
+      "assignment_id": "HISTORY",
+      "submitted_at": "2026-10-01T19:19:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 12,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-D01-FIRST",
+      "student_id": "S01",
+      "question_id": "D01",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 4,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-D02-FIRST",
+      "student_id": "S01",
+      "question_id": "D02",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-D03-FIRST",
+      "student_id": "S01",
+      "question_id": "D03",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-D04-FIRST",
+      "student_id": "S01",
+      "question_id": "D04",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": "A",
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-D05-FIRST",
+      "student_id": "S01",
+      "question_id": "D05",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 24,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S02-D01-FIRST",
+      "student_id": "S02",
+      "question_id": "D01",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S02-D02-FIRST",
+      "student_id": "S02",
+      "question_id": "D02",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S02-D03-FIRST",
+      "student_id": "S02",
+      "question_id": "D03",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S02-D04-FIRST",
+      "student_id": "S02",
+      "question_id": "D04",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": "A",
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S02-D05-FIRST",
+      "student_id": "S02",
+      "question_id": "D05",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 15,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S03-D01-FIRST",
+      "student_id": "S03",
+      "question_id": "D01",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S03-D02-FIRST",
+      "student_id": "S03",
+      "question_id": "D02",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 4,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S03-D03-FIRST",
+      "student_id": "S03",
+      "question_id": "D03",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 2,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S03-D04-FIRST",
+      "student_id": "S03",
+      "question_id": "D04",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": "B",
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S03-D05-FIRST",
+      "student_id": "S03",
+      "question_id": "D05",
+      "question_version": 1,
+      "assignment_id": "A-DIAG",
+      "submitted_at": "2026-10-22T19:05:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 15,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-T01-FIRST",
+      "student_id": "S01",
+      "question_id": "T01",
+      "question_version": 1,
+      "assignment_id": "A-PERSONAL",
+      "submitted_at": "2026-10-22T19:35:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 5,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-T02-FIRST",
+      "student_id": "S01",
+      "question_id": "T02",
+      "question_version": 1,
+      "assignment_id": "A-PERSONAL",
+      "submitted_at": "2026-10-22T19:35:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-T03-FIRST",
+      "student_id": "S01",
+      "question_id": "T03",
+      "question_version": 1,
+      "assignment_id": "A-PERSONAL",
+      "submitted_at": "2026-10-22T19:35:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 6,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-T04-FIRST",
+      "student_id": "S01",
+      "question_id": "T04",
+      "question_version": 1,
+      "assignment_id": "A-PERSONAL",
+      "submitted_at": "2026-10-22T19:35:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 0,
+      "is_correct": false,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-T05-FIRST",
+      "student_id": "S01",
+      "question_id": "T05",
+      "question_version": 1,
+      "assignment_id": "A-PERSONAL",
+      "submitted_at": "2026-10-22T19:35:00+08:00",
+      "event_type": "first_submission",
+      "submitted_answer": 12,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": true,
+      "parent_attempt_id": null
+    },
+    {
+      "id": "S01-T04-CORRECTION",
+      "student_id": "S01",
+      "question_id": "T04",
+      "question_version": 1,
+      "assignment_id": "A-PERSONAL",
+      "submitted_at": "2026-10-22T19:38:00+08:00",
+      "event_type": "correction",
+      "submitted_answer": -1.5,
+      "is_correct": true,
+      "hint_before_first_submission": false,
+      "answer_or_solver_seen_before_first_submission": false,
+      "counts_as_independent_first": false,
+      "parent_attempt_id": "S01-T04-FIRST"
+    }
+  ],
+  "learning_events": [
+    {
+      "id": "E01",
+      "student_id": "S01",
+      "at": "2026-10-22T19:15:00+08:00",
+      "kind": "open_model",
+      "model_id": "PHY-M01",
+      "source_question_id": "D04"
+    },
+    {
+      "id": "E02",
+      "student_id": "S01",
+      "at": "2026-10-22T19:16:00+08:00",
+      "kind": "seek_time",
+      "model_id": "PHY-M01",
+      "time_s": 3
+    },
+    {
+      "id": "E03",
+      "student_id": "S01",
+      "at": "2026-10-22T19:17:00+08:00",
+      "kind": "show_net_force",
+      "model_id": "PHY-M01"
+    },
+    {
+      "id": "E04",
+      "student_id": "S01",
+      "at": "2026-10-22T19:18:00+08:00",
+      "kind": "model_hint",
+      "model_id": "PHY-M01",
+      "step": 1
+    },
+    {
+      "id": "E05",
+      "student_id": "S01",
+      "at": "2026-10-22T19:20:00+08:00",
+      "kind": "compare_variant",
+      "model_id": "PHY-M02"
+    },
+    {
+      "id": "E06",
+      "student_id": "S01",
+      "at": "2026-10-22T19:22:00+08:00",
+      "kind": "save_model",
+      "model_id": "PHY-M02"
+    },
+    {
+      "id": "E07",
+      "student_id": "S01",
+      "at": "2026-10-22T19:37:00+08:00",
+      "kind": "question_hint",
+      "question_id": "T04",
+      "text": "撤去拉力后，摩擦力是否还存在？先画停止前的受力图。"
+    },
+    {
+      "id": "E08",
+      "student_id": "S01",
+      "at": "2026-10-22T19:38:00+08:00",
+      "kind": "correction",
+      "attempt_id": "S01-T04-CORRECTION"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A-DIAG",
+      "title": "受力与运动基础诊断",
+      "question_ids": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05"
+      ],
+      "mode": "independent_test",
+      "class_id": "C01",
+      "teacher_id": "TC01",
+      "status": "published",
+      "review_status": "reviewed_demo",
+      "opens_at": "2026-10-22T18:00:00+08:00",
+      "due_at": "2026-10-22T21:00:00+08:00"
+    },
+    {
+      "id": "A-PERSONAL",
+      "title": "林同学的针对性练习",
+      "student_id": "S01",
+      "question_ids": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05"
+      ],
+      "mode": "guided_practice",
+      "generated_by": "preset_demo",
+      "coverage": {
+        "K01": 1,
+        "K02": 2,
+        "K04": 1,
+        "K05": 1
+      },
+      "rationale": "K02 诊断后 1/5 正确，优先安排 2 题；其余三个薄弱点各 1 题；K03 本轮不重复基础题。"
+    }
+  ],
+  "expected_analysis": {
+    "S01_before_diagnostic": {
+      "K01": {
+        "correct": 2,
+        "eligible": 4,
+        "percent": 50.0,
+        "status": "insufficient_evidence",
+        "evidence_ids": [
+          "S01-H04-FIRST",
+          "S01-H03-FIRST",
+          "S01-H02-FIRST",
+          "S01-H01-FIRST"
+        ]
+      },
+      "K02": {
+        "correct": 1,
+        "eligible": 4,
+        "percent": 25.0,
+        "status": "insufficient_evidence",
+        "evidence_ids": [
+          "S01-H08-FIRST",
+          "S01-H07-FIRST",
+          "S01-H06-FIRST",
+          "S01-H05-FIRST"
+        ]
+      },
+      "K03": {
+        "correct": 3,
+        "eligible": 4,
+        "percent": 75.0,
+        "status": "insufficient_evidence",
+        "evidence_ids": [
+          "S01-H12-FIRST",
+          "S01-H11-FIRST",
+          "S01-H10-FIRST",
+          "S01-H09-FIRST"
+        ]
+      },
+      "K04": {
+        "correct": 2,
+        "eligible": 4,
+        "percent": 50.0,
+        "status": "insufficient_evidence",
+        "evidence_ids": [
+          "S01-H16-FIRST",
+          "S01-H15-FIRST",
+          "S01-H14-FIRST",
+          "S01-H13-FIRST"
+        ]
+      },
+      "K05": {
+        "correct": 2,
+        "eligible": 4,
+        "percent": 50.0,
+        "status": "insufficient_evidence",
+        "evidence_ids": [
+          "S01-H20-FIRST",
+          "S01-H19-FIRST",
+          "S01-H18-FIRST",
+          "S01-H17-FIRST"
+        ]
+      },
+      "G01": {
+        "correct": 0,
+        "eligible": 0,
+        "percent": null,
+        "status": "insufficient_evidence",
+        "evidence_ids": []
+      },
+      "G02": {
+        "correct": 0,
+        "eligible": 0,
+        "percent": null,
+        "status": "insufficient_evidence",
+        "evidence_ids": []
+      }
+    },
+    "S01_after_diagnostic": {
+      "K01": {
+        "correct": 2,
+        "eligible": 5,
+        "percent": 40.0,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-D01-FIRST",
+          "S01-H04-FIRST",
+          "S01-H03-FIRST",
+          "S01-H02-FIRST",
+          "S01-H01-FIRST"
+        ]
+      },
+      "K02": {
+        "correct": 1,
+        "eligible": 5,
+        "percent": 20.0,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-D02-FIRST",
+          "S01-H08-FIRST",
+          "S01-H07-FIRST",
+          "S01-H06-FIRST",
+          "S01-H05-FIRST"
+        ]
+      },
+      "K03": {
+        "correct": 4,
+        "eligible": 5,
+        "percent": 80.0,
+        "status": "recently_stable",
+        "evidence_ids": [
+          "S01-D03-FIRST",
+          "S01-H12-FIRST",
+          "S01-H11-FIRST",
+          "S01-H10-FIRST",
+          "S01-H09-FIRST"
+        ]
+      },
+      "K04": {
+        "correct": 2,
+        "eligible": 5,
+        "percent": 40.0,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-D04-FIRST",
+          "S01-H16-FIRST",
+          "S01-H15-FIRST",
+          "S01-H14-FIRST",
+          "S01-H13-FIRST"
+        ]
+      },
+      "K05": {
+        "correct": 2,
+        "eligible": 5,
+        "percent": 40.0,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-D05-FIRST",
+          "S01-H20-FIRST",
+          "S01-H19-FIRST",
+          "S01-H18-FIRST",
+          "S01-H17-FIRST"
+        ]
+      },
+      "G01": {
+        "correct": 0,
+        "eligible": 0,
+        "percent": null,
+        "status": "insufficient_evidence",
+        "evidence_ids": []
+      },
+      "G02": {
+        "correct": 0,
+        "eligible": 0,
+        "percent": null,
+        "status": "insufficient_evidence",
+        "evidence_ids": []
+      }
+    },
+    "S01_after_practice": {
+      "K01": {
+        "correct": 3,
+        "eligible": 6,
+        "percent": 50.0,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-T01-FIRST",
+          "S01-D01-FIRST",
+          "S01-H04-FIRST",
+          "S01-H03-FIRST",
+          "S01-H02-FIRST",
+          "S01-H01-FIRST"
+        ]
+      },
+      "K02": {
+        "correct": 3,
+        "eligible": 7,
+        "percent": 42.9,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-T03-FIRST",
+          "S01-T02-FIRST",
+          "S01-D02-FIRST",
+          "S01-H08-FIRST",
+          "S01-H07-FIRST",
+          "S01-H06-FIRST",
+          "S01-H05-FIRST"
+        ]
+      },
+      "K03": {
+        "correct": 4,
+        "eligible": 5,
+        "percent": 80.0,
+        "status": "recently_stable",
+        "evidence_ids": [
+          "S01-D03-FIRST",
+          "S01-H12-FIRST",
+          "S01-H11-FIRST",
+          "S01-H10-FIRST",
+          "S01-H09-FIRST"
+        ]
+      },
+      "K04": {
+        "correct": 2,
+        "eligible": 6,
+        "percent": 33.3,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-T04-FIRST",
+          "S01-D04-FIRST",
+          "S01-H16-FIRST",
+          "S01-H15-FIRST",
+          "S01-H14-FIRST",
+          "S01-H13-FIRST"
+        ]
+      },
+      "K05": {
+        "correct": 3,
+        "eligible": 6,
+        "percent": 50.0,
+        "status": "priority_review",
+        "evidence_ids": [
+          "S01-T05-FIRST",
+          "S01-D05-FIRST",
+          "S01-H20-FIRST",
+          "S01-H19-FIRST",
+          "S01-H18-FIRST",
+          "S01-H17-FIRST"
+        ]
+      },
+      "G01": {
+        "correct": 0,
+        "eligible": 0,
+        "percent": null,
+        "status": "insufficient_evidence",
+        "evidence_ids": []
+      },
+      "G02": {
+        "correct": 0,
+        "eligible": 0,
+        "percent": null,
+        "status": "insufficient_evidence",
+        "evidence_ids": []
+      }
+    },
+    "S01_diagnostic": {
+      "independent_first_correct": 1,
+      "independent_first_eligible": 5,
+      "percent": 20.0
+    },
+    "S01_personal_practice": {
+      "independent_first_correct": 4,
+      "independent_first_eligible": 5,
+      "percent": 80.0,
+      "corrected_after_hint": 1
+    },
+    "class_current_diagnostic": {
+      "assignment_id": "A-DIAG",
+      "scope": "current_assignment_first_independent_submissions",
+      "expected_students": 4,
+      "submitted_students": 3,
+      "submission_percent": 75.0,
+      "student_correct_counts": {
+        "S01": 1,
+        "S02": 3,
+        "S03": 5
+      },
+      "unsubmitted_student_ids": [
+        "S04"
+      ],
+      "mean_correct_count": 3.0,
+      "question_count": 5,
+      "mean_percent": 60.0,
+      "by_primary_knowledge": {
+        "K01": {
+          "correct": 2,
+          "eligible": 3,
+          "percent": 66.7
+        },
+        "K02": {
+          "correct": 1,
+          "eligible": 3,
+          "percent": 33.3
+        },
+        "K03": {
+          "correct": 3,
+          "eligible": 3,
+          "percent": 100.0
+        },
+        "K04": {
+          "correct": 1,
+          "eligible": 3,
+          "percent": 33.3
+        },
+        "K05": {
+          "correct": 2,
+          "eligible": 3,
+          "percent": 66.7
+        }
+      }
+    }
+  },
+  "unconfirmed_design_choices": [
+    "physics_full_flow_and_geometry_partial",
+    "specific_supported_model_templates",
+    "30_day_10_question_5_evidence_threshold_rule",
+    "two_quiz_modes",
+    "whole_material_upload_select_one_example"
+  ]
+}

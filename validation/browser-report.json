@@ -1,28 +1,14 @@
 {
   "passed": true,
-  "browser": "Microsoft Edge headless",
-  "viewport": [
-    1440,
-    1024
-  ],
-  "mobile": [
-    390,
-    844
-  ],
+  "date": "2026-10-29",
   "checks": [
-    "home renders standalone",
-    "text parsing, condition confirmation, 2 physics scenarios, stop boundary, playback, invalid domain and saved resume",
-    "geometry rotates, scales and preserves metric angle",
-    "actual 5-question quiz, autosave, persistent submit, mastery update and hint correction without overwrite",
-    "teacher review gate, model publish, immutable question snapshot, class statistics and student role switch",
-    "conflicting conditions, missing conditions and unsupported models",
-    "actual local image upload and editable simulated OCR",
-    "service failure and manual/approved-bank fallback",
-    "pre-answer hints excluded and repeated questions not counted twice",
-    "independent quiz exit guard",
-    "empty state, mobile 390px home and model layout without document overflow",
-    "no browser runtime errors, no remote requests, JSON export"
+    "board text parsing, real local PNG preview, confirmation, sync, uniform continuation, short-board exit, frictionless variant, playback, save/restore",
+    "missing conditions and case-sensitive m/M conflict block generation; unsupported problem preserved",
+    "geometry parsing, hidden reveal, 3D rotation, correct angle and right-angle mark, changed height/point disproves original conclusion, parallel/skew distinction, persisted geometry",
+    "existing knowledge analysis and practice submission still work with unchanged question data",
+    "teacher publish and student reopen model snapshots"
   ],
-  "errors": [],
-  "remoteRequests": []
+  "consoleErrors": [],
+  "externalRequests": [],
+  "source": "fresh private browser context; standalone file"
 }

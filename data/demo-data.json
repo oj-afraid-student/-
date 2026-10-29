@@ -1,5 +1,5 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "date": "2026-10-22",
   "timezone": "Asia/Shanghai",
   "provenance": "All names, responses, class data and learning events are synthetic demonstration data.",
@@ -10,14 +10,14 @@
   ],
   "image_assets": [
     {
-      "id": "IMG-PHY-M01",
-      "status": "not_created",
-      "description": "物块向右滑动、水平向右拉力、粗糙水平面；文字区域给出质量、初速度、摩擦因数与撤力时刻。"
+      "id": "IMG-PHY-B01",
+      "status": "local_preview_supported",
+      "description": "木块从光滑地面上的静止木板左端滑上；板块接触面粗糙。"
     },
     {
-      "id": "IMG-GEO-M01",
-      "status": "not_created",
-      "description": "带标准顶点标记的正方体 ABCD—A₁B₁C₁D₁。"
+      "id": "IMG-GEO-P01",
+      "status": "local_preview_supported",
+      "description": "直三棱柱ABC—A₁B₁C₁，M、N为对应棱上的中点。"
     }
   ],
   "story_pages": {
@@ -145,12 +145,12 @@
     },
     {
       "id": "G01",
-      "name": "空间对角线",
+      "name": "空间直线的位置关系",
       "subject": "mathematics"
     },
     {
       "id": "G02",
-      "name": "直线与平面所成角",
+      "name": "辅助截面与垂直关系",
       "subject": "mathematics"
     }
   ],
@@ -194,6 +194,77 @@
   },
   "models": [
     {
+      "id": "PHY-B01",
+      "kind": "block_on_moving_plank",
+      "title": "板块共速与滑出条件",
+      "params": {
+        "m": 1,
+        "M": 3,
+        "L": 4,
+        "v0": 4,
+        "mu": 0.2,
+        "g": 10
+      },
+      "problem_text": "光滑水平地面上有一块初始静止的长木板，木板质量 M=3 kg，板长 L=4 m。质量 m=1 kg 的木块可视为质点，从木板左端以初速度 v₀=4 m/s 水平向右滑上。木块与木板间的动摩擦因数 μ=0.20，取 g=10 m/s²。求两者的加速度、达到共速所需时间与相对位移，并判断木块能否留在板上；再把板长改为 2 m 比较结果。",
+      "assumptions": [
+        "frictionless_ground",
+        "stationary_initial_plank",
+        "point_mass_block_at_left_edge",
+        "no_horizontal_external_force"
+      ],
+      "expected": {
+        "friction": 2,
+        "a_block": -2,
+        "a_board": 0.6666666666666666,
+        "sync_time": 1.5,
+        "common_velocity": 1,
+        "relative_displacement": 3,
+        "x_block_at_sync": 3.75,
+        "x_board_at_sync": 0.75,
+        "energy_loss": 6,
+        "stays": true
+      }
+    },
+    {
+      "id": "PHY-B02",
+      "kind": "block_on_moving_plank",
+      "title": "仅缩短板长至2m",
+      "source_model_id": "PHY-B01",
+      "params": {
+        "m": 1,
+        "M": 3,
+        "L": 2,
+        "v0": 4,
+        "mu": 0.2,
+        "g": 10
+      },
+      "expected": {
+        "stays": false,
+        "end_event": "right_edge_reached_no_post_exit_simulation"
+      }
+    },
+    {
+      "id": "GEO-P01",
+      "kind": "isosceles_right_triangular_prism",
+      "title": "三棱柱对应分点与隐藏截面",
+      "params": {
+        "side": 5,
+        "base": 6,
+        "height": 4,
+        "ratio": 0.5
+      },
+      "problem_text": "在直三棱柱 ABC—A₁B₁C₁ 中，底面为等腰三角形，AB=AC=5，BC=6，侧棱长为 4。M、N 分别是 BC、B₁C₁ 的中点。连接 AN、A₁M、AM、MN，判断 AN 与 A₁M 的位置及夹角关系，并判断 AA₁ 与 MN、AB 与 MN 的位置关系。",
+      "expected": {
+        "AM": 4,
+        "AN": 5.656854249492381,
+        "cross_section": "square",
+        "angle_AN_A1M_deg": 90,
+        "relation_AA1_MN": "parallel",
+        "relation_AB_MN": "skew"
+      },
+      "proof": "AM=√(5²−3²)=4=AA₁；AMNA₁为正方形，故AN⊥A₁M。"
+    },
+    {
       "id": "PHY-M01",
       "kind": "horizontal_pull_then_release",
       "title": "粗糙水平面物块受力运动",
@@ -223,7 +294,8 @@
         "acceleration": 0,
         "horizontal_friction": 0
       },
-      "supported_domain": "m>0, mu>0, v0>0, tau>0, F>=mu*m*g"
+      "supported_domain": "m>0, mu>0, v0>0, tau>0, F>=mu*m*g",
+      "display_status": "legacy_reference_for_existing_quiz"
     },
     {
       "id": "PHY-M02",
@@ -248,7 +320,8 @@
         "braking_distance": 6.25,
         "stop_time": 5.5,
         "total_displacement": 16.75
-      }
+      },
+      "display_status": "legacy_reference_for_existing_quiz"
     },
     {
       "id": "GEO-M01",
@@ -322,7 +395,8 @@
       "knowledge_ids": [
         "G01",
         "G02"
-      ]
+      ],
+      "display_status": "legacy_reference_for_existing_quiz"
     }
   ],
   "questions": [
@@ -2062,5 +2136,7 @@
     "30_day_10_question_5_evidence_threshold_rule",
     "two_quiz_modes",
     "whole_material_upload_select_one_example"
-  ]
+  ],
+  "model_revision_date": "2026-10-29",
+  "model_revision_note": "板块与三棱柱为当前建模展示题；学习分析与测验保留2026-10-22的独立基础题及合成作答记录，不借用新模型的参数改写历史答案。"
 }

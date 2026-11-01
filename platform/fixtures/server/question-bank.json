@@ -1,0 +1,1045 @@
+[
+  {
+    "question": {
+      "id": "Q01",
+      "version": 1,
+      "title": "确定平面的条件",
+      "stem": "下列对象中，能够确定唯一平面的是哪一项？",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G1-01"],
+      "unitIds": ["SG-01"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q01",
+      "type": "SINGLE_CHOICE",
+      "options": [
+        {
+          "id": "A",
+          "text": "空间中任意三个点"
+        },
+        {
+          "id": "B",
+          "text": "一条直线上的三个不同点"
+        },
+        {
+          "id": "C",
+          "text": "一条直线与它外面的一个点"
+        },
+        {
+          "id": "D",
+          "text": "两条异面直线"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "C",
+      "explanation": "A、B：三个点共线时不能唯一确定平面。C：取直线上两个不同点，与线外一点构成三个不共线点，确定唯一平面。D：异面直线不存在公共平面。"
+    },
+    "grading": {
+      "mode": "CHOICE_SET",
+      "correctOptionIds": ["C"]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q01",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q02",
+      "version": 1,
+      "title": "相交直线确定平面",
+      "stem": "已知 a、b 为异面直线，c 分别与它们相交。只考虑这三条直线中两条能确定的不同平面，共有________个。",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G1-01", "G1-02"],
+      "unitIds": ["SG-01"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q02",
+      "type": "FILL_BLANK",
+      "blanks": [
+        {
+          "id": "b1",
+          "label": "平面个数",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": "个"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "2",
+      "explanation": "a、c 相交，确定一个平面；b、c 相交，确定另一个平面。两个平面若重合，a、b 就会共面，矛盾。a、b 本身不能确定平面，因此共 2 个。"
+    },
+    "grading": {
+      "mode": "ALIASES_OR_REVIEW",
+      "blanks": [
+        {
+          "blankId": "b1",
+          "acceptedValues": [["2"]]
+        }
+      ]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q02",
+      "note": "网络改编 S1；第1页第2题第1小题；重新组织题干，解析重写"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q03",
+      "version": 1,
+      "title": "平行平面中的线面关系",
+      "stem": "设 α、β 是两个不同的平行平面，a∥α。以下哪些情况可能发生？",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G1-03", "G2-04"],
+      "unitIds": ["SG-01", "SG-02"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q03",
+      "type": "MULTIPLE_CHOICE",
+      "options": [
+        {
+          "id": "A",
+          "text": "a∥β"
+        },
+        {
+          "id": "B",
+          "text": "a 在 β 内"
+        },
+        {
+          "id": "C",
+          "text": "a 与 β 相交且只有一个公共点"
+        },
+        {
+          "id": "D",
+          "text": "a⊥β"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "AB",
+      "explanation": "A：可取平行于两个平面且不在其中的直线。B：β 内任一直线都平行于 α。C、D 不可能：a 的方向平行于 α，也平行于 β，因而与 β 只有平行或包含两种关系。"
+    },
+    "grading": {
+      "mode": "CHOICE_SET",
+      "correctOptionIds": ["A", "B"]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q03",
+      "note": "网络改编 S1；第1页第2题第2小题；填空改为多选并增加干扰项"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q04",
+      "version": 1,
+      "title": "正方体中的异面直线",
+      "stem": "在图 A 的正方体中，下列哪组直线异面？",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G1-02"],
+      "unitIds": ["SG-01"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q04",
+      "type": "SINGLE_CHOICE",
+      "options": [
+        {
+          "id": "A",
+          "text": "AB 与 CD"
+        },
+        {
+          "id": "B",
+          "text": "AB 与 CC₁"
+        },
+        {
+          "id": "C",
+          "text": "AA₁ 与 BB₁"
+        },
+        {
+          "id": "D",
+          "text": "AB 与 BC"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "B",
+      "explanation": "A、C 都是共面平行直线；D 相交于 B。若 AB 与 CC₁ 共面，则 A、B、C 所确定的底面还应包含 C₁，矛盾。所以只有 B 为异面。"
+    },
+    "grading": {
+      "mode": "CHOICE_SET",
+      "correctOptionIds": ["B"]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q04",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q05",
+      "version": 1,
+      "title": "判定与性质辨析",
+      "stem": "判断并说明理由：①a∥α，则 a 平行于 α 内的每一条直线。②a∥α，β 经过 a 且 β∩α＝b，则 a∥b。",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G1-03", "G2-02"],
+      "unitIds": ["SG-01", "SG-02"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q05",
+      "type": "JUDGMENT_REASON",
+      "statements": [
+        {
+          "id": "s1",
+          "prompt": "a∥α，则 a 平行于 α 内的每一条直线。"
+        },
+        {
+          "id": "s2",
+          "prompt": "a∥α，β 经过 a 且 β∩α＝b，则 a∥b。"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "①错；②对",
+      "explanation": "①错：在正方体中 A₁B₁∥底面 ABCD，但 A₁B₁ 与 BC 异面，不平行。②对：a、b 同在 β 内；若相交，则 a 与 α 有公共点，矛盾，因此平行。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q05",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q06",
+      "version": 1,
+      "title": "截面与交线",
+      "stem": "图 A 中，平面 ACC₁A₁ 与下底面、上底面的交线依次为________、________；这两条交线的关系是________。",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G1-04", "G2-04"],
+      "unitIds": ["SG-01", "SG-02"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q06",
+      "type": "FILL_BLANK",
+      "blanks": [
+        {
+          "id": "b1",
+          "label": "下底面交线",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": null
+        },
+        {
+          "id": "b2",
+          "label": "上底面交线",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": null
+        },
+        {
+          "id": "b3",
+          "label": "交线关系",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": null
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "AC；A₁C₁；平行",
+      "explanation": "A、C 同属截面和下底面，故下交线为 AC；同理上交线为 A₁C₁。上下底面平行，被同一截面所截，交线平行。"
+    },
+    "grading": {
+      "mode": "ALIASES_OR_REVIEW",
+      "blanks": [
+        {
+          "blankId": "b1",
+          "acceptedValues": [["AC", "CA"]]
+        },
+        {
+          "blankId": "b2",
+          "acceptedValues": [["A₁C₁", "C₁A₁", "A1C1", "C1A1"]]
+        },
+        {
+          "blankId": "b3",
+          "acceptedValues": [["平行", "∥"]]
+        }
+      ]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q06",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q07",
+      "version": 1,
+      "title": "线面平行的完整条件",
+      "stem": "已知 b 在平面 α 内，a∥b。以下哪个补充条件能保证 a∥α？",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G2-01"],
+      "unitIds": ["SG-02"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q07",
+      "type": "SINGLE_CHOICE",
+      "options": [
+        {
+          "id": "A",
+          "text": "a 与 α 至少有一个公共点"
+        },
+        {
+          "id": "B",
+          "text": "a 不在 α 内"
+        },
+        {
+          "id": "C",
+          "text": "a 在 α 内"
+        },
+        {
+          "id": "D",
+          "text": "a 与 b 同在一个平面内"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "B",
+      "explanation": "由线面平行判定，B 与原条件组成充分条件。A、C 会使 a 在 α 内；D 是 a、b 平行本来就具备的条件，不能排除 a 在 α 内。"
+    },
+    "grading": {
+      "mode": "CHOICE_SET",
+      "correctOptionIds": ["B"]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q07",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q08",
+      "version": 1,
+      "title": "平面垂线的性质",
+      "stem": "已知 a⊥α，m、n 是 α 内不同直线。下列必然成立的是哪些？",
+      "difficulty": "BASIC",
+      "knowledgeIds": ["G3-01", "G3-02"],
+      "unitIds": ["SG-03"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q08",
+      "type": "MULTIPLE_CHOICE",
+      "options": [
+        {
+          "id": "A",
+          "text": "a⊥m"
+        },
+        {
+          "id": "B",
+          "text": "m∥n"
+        },
+        {
+          "id": "C",
+          "text": "任一直线 b 若 b⊥α 且 b≠a，则 b∥a"
+        },
+        {
+          "id": "D",
+          "text": "a∥α"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "AC",
+      "explanation": "A 由线面垂直定义成立；C 由同一平面的两条不同垂线平行成立。B：m、n 可以相交。D：垂线与平面相交，不能平行。"
+    },
+    "grading": {
+      "mode": "CHOICE_SET",
+      "correctOptionIds": ["A", "C"]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q08",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q09",
+      "version": 1,
+      "title": "结构中的线面平行",
+      "stem": "图 A 中，证明 A₁B₁∥平面 ABCD。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G2-01"],
+      "unitIds": ["SG-02"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q09",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "写出完整证明过程"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "A₁B₁∥平面 ABCD",
+      "explanation": "侧面 ABB₁A₁ 是正方形，故 A₁B₁∥AB。AB 在底面内，A₁B₁ 在底面外，由线面平行判定，结论成立。关键依据为对应棱平行及两条直线的平面归属。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q09",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q10",
+      "version": 1,
+      "title": "三角形中位线与线面平行",
+      "stem": "三棱锥 P—ABC 中，M、N 分别为 PA、PB 的中点。证明 MN∥平面 ABC。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G2-01"],
+      "unitIds": ["SG-02"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q10",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "写出完整证明过程"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "MN∥平面 ABC",
+      "explanation": "在三角形 PAB 中，MN 是中位线，故 MN∥AB。侧面 PAB 与底面 ABC 的交线为 AB；MN 在侧面内且平行于 AB，因此与底面无公共点。再由 AB 在底面内，可得 MN∥平面 ABC。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q10",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q11",
+      "version": 1,
+      "title": "中点截面的面面平行",
+      "stem": "三棱锥 P—ABC 中，M、N、R 分别为 PA、PB、PC 的中点。证明平面 MNR∥平面 ABC。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G2-03"],
+      "unitIds": ["SG-02"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q11",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "写出完整证明过程"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "平面 MNR∥平面 ABC",
+      "explanation": "由中位线定理 MN∥AB、MR∥AC。依 Q10 的方法，MN∥平面 ABC、MR∥平面 ABC。MN 与 MR 相交于 M，同在平面 MNR 内，由面面平行判定得证。不能只写一组平行线就得出面面平行。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q11",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q12",
+      "version": 1,
+      "title": "侧棱垂直于底面",
+      "stem": "图 A 中，证明 CC₁⊥平面 ABCD，并说明 CC₁ 与 AB 是否垂直。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G3-01", "G3-02"],
+      "unitIds": ["SG-03"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q12",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "证明 CC₁⊥平面 ABCD"
+        },
+        {
+          "id": "p2",
+          "prompt": "说明 CC₁ 与 AB 是否垂直，并给出理由"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "CC₁⊥平面 ABCD；CC₁⊥AB",
+      "explanation": "相邻侧面为正方形，因此 CC₁⊥BC、CC₁⊥CD。BC、CD 在底面内且相交于 C，故 CC₁⊥底面。AB 在底面内，利用线面垂直性质可得 CC₁⊥AB；两条直线虽然异面，仍可垂直。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q12",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q13",
+      "version": 1,
+      "title": "体对角线与底面的夹角",
+      "stem": "图 A 中，正方体棱长为 2，设直线 AC₁ 与平面 ABCD 所成角为 θ，求 sin θ＝________。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["E1"],
+      "unitIds": ["E1"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q13",
+      "type": "FILL_BLANK",
+      "blanks": [
+        {
+          "id": "b1",
+          "label": "sin θ",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": null
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "√3／3",
+      "explanation": "C₁ 在底面的垂足为 C，所以 AC 是 AC₁ 的射影，θ＝∠C₁AC。直角三角形 ACC₁ 中，CC₁＝2，AC＝2√2，AC₁＝2√3，因此 sin θ＝CC₁／AC₁＝√3／3。不要将体对角线与任意底边的夹角当成线面角。"
+    },
+    "grading": {
+      "mode": "ALIASES_OR_REVIEW",
+      "blanks": [
+        {
+          "blankId": "b1",
+          "acceptedValues": [["√3/3", "sqrt(3)/3", "1/√3", "1/sqrt(3)"]]
+        }
+      ]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q13",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q14",
+      "version": 1,
+      "title": "中点距离的分类讨论",
+      "stem": "两点 U、V 到平面 α 的距离依次为 5、9，M 是 UV 中点。若未说明 U、V 位于平面哪一侧，M 到 α 的距离可能为________。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["E2"],
+      "unitIds": ["E2"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q14",
+      "type": "FILL_BLANK",
+      "blanks": [
+        {
+          "id": "b1",
+          "label": "所有可能距离",
+          "valueCount": 2,
+          "unordered": true,
+          "unit": null
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "7 或 2",
+      "explanation": "同侧时，中点到平面的距离为两距离的平均数，即 7；异侧时，为两距离差的绝对值的一半，即 2。可沿统一法向取有向距离 +5、+9 或 +5、−9，中点有向距离分别为 7、−2，取绝对值。"
+    },
+    "grading": {
+      "mode": "ALIASES_OR_REVIEW",
+      "blanks": [
+        {
+          "blankId": "b1",
+          "acceptedValues": [["2"], ["7"]]
+        }
+      ]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q14",
+      "note": "网络改编 S2；PDF第150页，印刷第148页，例三第1小题；改为5和9并更换字母"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q15",
+      "version": 1,
+      "title": "平行垂直关系中的错误类比",
+      "stem": "判断并给出理由：①α⊥γ、β⊥γ，则 α∥β。②α∥γ、β⊥γ，则 β⊥α。均假设提及的平面互不重合。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G3-02", "G3-03"],
+      "unitIds": ["SG-03"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q15",
+      "type": "JUDGMENT_REASON",
+      "statements": [
+        {
+          "id": "s1",
+          "prompt": "α⊥γ、β⊥γ，则 α∥β。"
+        },
+        {
+          "id": "s2",
+          "prompt": "α∥γ、β⊥γ，则 β⊥α。均假设提及的平面互不重合。"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "①错；②对",
+      "explanation": "①反例：正方体两个相邻侧面都垂直于底面，但它们相交。②因为 β 内存在 γ 的垂线 l，而 α∥γ，这条垂线也垂直于 α；由 β 包含 α 的垂线，得 β⊥α。注意平面垂直关系没有一般的传递性。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q15",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q16",
+      "version": 1,
+      "title": "对角截面与底面垂直",
+      "stem": "图 A 中，证明平面 ACC₁A₁⊥平面 ABCD。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G3-03"],
+      "unitIds": ["SG-03"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q16",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "写出完整证明过程"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "平面 ACC₁A₁⊥平面 ABCD",
+      "explanation": "由 AA₁⊥AB、AA₁⊥AD 及 AB∩AD＝A，得 AA₁⊥底面 ABCD。AA₁ 在平面 ACC₁A₁ 内，因此该截面包含底面的垂线，利用面面垂直判定得证。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q16",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q17",
+      "version": 1,
+      "title": "从垂直侧面构造底面高",
+      "stem": "四棱锥 P—ABCD 中，底面 ABCD 是矩形，平面 PAD⊥底面，且 PA＝PD。E 是 AD 的中点。证明 PE⊥底面 ABCD，并推出 PE⊥BC。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["G3-04"],
+      "unitIds": ["SG-03"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q17",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "证明 PE⊥底面 ABCD"
+        },
+        {
+          "id": "p2",
+          "prompt": "推出 PE⊥BC"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "PE⊥平面 ABCD；PE⊥BC",
+      "explanation": "等腰三角形 PAD 中，底边中线 PE 也是高，故 PE⊥AD。面 PAD 与底面垂直，交线为 AD，而 PE 在面 PAD 内，因此由面面垂直性质，PE⊥底面。BC 在底面内，进一步得 PE⊥BC。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q17",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q18",
+      "version": 1,
+      "title": "用正确的高计算三棱锥体积",
+      "stem": "图 A 中，正方体棱长为 3，求三棱锥 A₁—ABC 的体积。",
+      "difficulty": "INTERMEDIATE",
+      "knowledgeIds": ["E2"],
+      "unitIds": ["E2"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q18",
+      "type": "FILL_BLANK",
+      "blanks": [
+        {
+          "id": "b1",
+          "label": "体积",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": null
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "9／2",
+      "explanation": "底面三角形 ABC 的面积为正方形底面的一半，等于 9／2。A₁ 到底面的距离为 A₁A＝3，体积为底面积乘高再除以 3，得到 9／2。侧棱 A₁B 或 A₁C 不是这个底面对应的高。"
+    },
+    "grading": {
+      "mode": "ALIASES_OR_REVIEW",
+      "blanks": [
+        {
+          "blankId": "b1",
+          "acceptedValues": [["9/2", "4.5"]]
+        }
+      ]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q18",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q19",
+      "version": 1,
+      "title": "平行截线的反证法",
+      "stem": "设 α∥β，平面 γ 分别与 α、β 相交于 a、b。证明 a∥b，并说明能否去掉“两条交线同属 γ”这一信息。",
+      "difficulty": "COMPREHENSIVE",
+      "knowledgeIds": ["G2-02", "G2-04"],
+      "unitIds": ["SG-02"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q19",
+      "type": "PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "证明 a∥b"
+        },
+        {
+          "id": "p2",
+          "prompt": "说明能否省略两条交线共面的依据"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "a∥b；证明中不能省略共面依据",
+      "explanation": "a、b 都在 γ 内。若相交，则交点同时属于 α、β，与 α∥β 矛盾，因此 a、b 共面且不相交，故平行。共面性是从“不相交”推到“平行”的必要依据；分属两个平行平面的任意两条直线还可能异面。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q19",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q20",
+      "version": 1,
+      "title": "三棱锥侧面重心构成的截面",
+      "stem": "在三棱锥 P—ABC 中，G₁、G₂、G₃ 分别是三角形 PAB、PBC、PCA 的重心。证明平面 G₁G₂G₃∥底面 ABC，并求两三角形面积比。",
+      "difficulty": "COMPREHENSIVE",
+      "knowledgeIds": ["G2-03", "E2"],
+      "unitIds": ["SG-02", "E2"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q20",
+      "type": "PROOF_CALCULATION",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "证明平面 G₁G₂G₃∥底面 ABC"
+        },
+        {
+          "id": "p2",
+          "prompt": "求两三角形面积比并写出推导"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "平面平行；面积比 1∶9",
+      "explanation": "取 AB、BC、CA 的中点 M、N、R。PG₁／PM＝PG₂／PN＝PG₃／PR＝2／3。由三角形内相似关系，G₁G₂∥MN∥AC，且 G₁G₂＝(2／3)MN＝AC／3；同理另外两边分别平行于底面另外两边且长度为其 1／3。两条相交边都与底面平行，得面面平行；三角形相似比为 1／3，故面积比为 1／9。不能把 2／3 直接当作与底面三角形的相似比。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q20",
+      "note": "网络改编 S2；PDF第146页，印刷第144页，例二；更换编号并补足推导"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q21",
+      "version": 1,
+      "title": "平移构造异面直线所成角",
+      "stem": "图 A 中，直线 AB₁ 与 BC₁ 所成的角为________度。",
+      "difficulty": "COMPREHENSIVE",
+      "knowledgeIds": ["E1"],
+      "unitIds": ["E1"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q21",
+      "type": "FILL_BLANK",
+      "blanks": [
+        {
+          "id": "b1",
+          "label": "所成角",
+          "valueCount": 1,
+          "unordered": false,
+          "unit": "度"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "60",
+      "explanation": "把 BC₁ 平移至经过 A 的直线 AD₁，因为 A、B、C、D 对应关系及各棱等长，AD₁∥BC₁。连接 B₁D₁；AB₁、AD₁、B₁D₁ 都是同棱长正方形的对角线，长度相等，所以三角形 AB₁D₁ 为等边三角形，所求角为 60°。"
+    },
+    "grading": {
+      "mode": "ALIASES_OR_REVIEW",
+      "blanks": [
+        {
+          "blankId": "b1",
+          "acceptedValues": [["60"]]
+        }
+      ]
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q21",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q22",
+      "version": 1,
+      "title": "沿底面对角线的二面角",
+      "stem": "图 A 中，求二面角 A—BD—A₁ 的正切值。要求明确找出二面角的平面角。",
+      "difficulty": "COMPREHENSIVE",
+      "knowledgeIds": ["E1"],
+      "unitIds": ["E1"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q22",
+      "type": "PROOF_CALCULATION",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "找出二面角的平面角并证明"
+        },
+        {
+          "id": "p2",
+          "prompt": "求该二面角的正切值并写出计算"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "√2",
+      "explanation": "设 O 为正方形底面对角线交点。AO⊥BD；AA₁⊥底面，故 AA₁⊥BD。BD 垂直于平面 AA₁O，因而 BD⊥A₁O。所以 ∠AOA₁ 是指定二面角的平面角。若棱长为 a，则 AO＝a√2／2，AA₁＝a；在直角三角形 AOA₁ 中，tan∠AOA₁＝AA₁／AO＝√2。注意 A、A₁ 所在半平面决定这里取锐角。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q22",
+      "note": "补充设计；按本材料知识点编写，非网络原题"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q23",
+      "version": 1,
+      "title": "动点与线面垂直的条件",
+      "stem": "图 A 中，正方体棱长为 1，E 为 BC 中点，F 在线段 CD 上。确定 F 的位置，使 D₁E⊥平面 AB₁F，并证明。",
+      "difficulty": "COMPREHENSIVE",
+      "knowledgeIds": ["G3-01", "E3"],
+      "unitIds": ["SG-03", "E3"],
+      "figures": [
+        {
+          "id": "cube-a-v1",
+          "src": "/geometry/cube-a-v1.png",
+          "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+          "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+        }
+      ],
+      "sourceLabel": "李梓禾分层题库 Q23",
+      "type": "EXPLORATION_PROOF",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "确定 F 的位置"
+        },
+        {
+          "id": "p2",
+          "prompt": "证明必要性与充分性"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "F 为 CD 中点",
+      "explanation": "取 A(0,0,0)、B(1,0,0)、C(1,1,0)、D(0,1,0)，上底对应点第三坐标为 1。设 F(t,1,0)，0≤t≤1。D₁E 的方向向量为 (1,−1／2,−1)，AB₁ 的方向为 (1,0,1)，数量积为 0；与 AF 的方向 (t,1,0) 的数量积为 t−1／2。故垂直条件等价于 t＝1／2。此时 D₁E 同时垂直于相交直线 AB₁、AF，故垂直于其平面；反过来线面垂直也强制 t＝1／2。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q23",
+      "note": "网络改编 S2；PDF第150页，印刷第148页，例一第2小题；改写任务表述，解析重写"
+    },
+    "publicationStatus": "DRAFT"
+  },
+  {
+    "question": {
+      "id": "Q24",
+      "version": 1,
+      "title": "垂直侧面与二面角综合",
+      "stem": "四棱锥 P—ABCD 的底面是边长为 2 的正方形，平面 PAD⊥底面，PA＝PD＝√5。点 P 位于底面上方。①证明 AB⊥平面 PAD；②求体积；③求面 PAD 与面 PDB 所成锐二面角的正切值。",
+      "difficulty": "COMPREHENSIVE",
+      "knowledgeIds": ["G3-04", "E2", "E3"],
+      "unitIds": ["SG-03", "E2", "E3"],
+      "figures": [],
+      "sourceLabel": "李梓禾分层题库 Q24",
+      "type": "COMPREHENSIVE",
+      "parts": [
+        {
+          "id": "p1",
+          "prompt": "证明 AB⊥平面 PAD"
+        },
+        {
+          "id": "p2",
+          "prompt": "求四棱锥体积并写出计算"
+        },
+        {
+          "id": "p3",
+          "prompt": "求锐二面角的正切值并写出推导"
+        }
+      ]
+    },
+    "reference": {
+      "answerText": "①成立；②8／3；③√5／2",
+      "explanation": "设 E 为 AD 中点，等腰三角形 PAD 给出 PE⊥AD，再由面面垂直性质得 PE⊥底面。AE＝1，PA＝√5，故 PE＝2。AB⊥AD 且 AB⊥PE，两线 AD、PE 相交并在面 PAD 内，故 AB⊥面 PAD。体积＝(1／3)×4×2＝8／3。建系 A(0,0,0)、B(2,0,0)、D(0,2,0)、P(0,1,2)。面 PAD 可取法向量 (1,0,0)，面 PDB 可取 (2,2,1)，数量积计算得锐二面角余弦为 2／3，正切为 √5／2。最后一问为向量拓展。"
+    },
+    "grading": {
+      "mode": "REVIEW_REQUIRED"
+    },
+    "source": {
+      "document": "02_立体几何分层题库与解析.docx",
+      "questionId": "Q24",
+      "note": "网络改编 S2；PDF第156页，印刷第154页，例五的结构启发；改顶点、侧边条件，增加体积问，非原真题"
+    },
+    "publicationStatus": "DRAFT"
+  }
+]

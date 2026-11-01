@@ -1,0 +1,22 @@
+{
+  "data": {
+    "items": [
+      {
+        "id": "fixture-submission-all",
+        "practiceId": "fixture-practice-all",
+        "submittedAt": "2026-11-01T03:30:00.000Z",
+        "totalCount": 24,
+        "gradedCount": 11,
+        "pendingCount": 13,
+        "correctCount": 11,
+        "gradingStatus": "PENDING_REVIEW",
+        "score": null,
+        "maxScore": 24
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "pageSize": 20
+  },
+  "error": null
+}

@@ -1,4 +1,5 @@
-// 维护人：王宁岳。首日仅提供工程所需公共类型，业务字段由接口负责人继续完善。
+// 维护人：王宁岳。业务契约 v2，覆盖文档 Q01—Q24。
+export * from './learning';
 export type ApiErrorCode =
   | 'VALIDATION_ERROR'
   | 'UNAUTHENTICATED'

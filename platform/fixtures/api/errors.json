@@ -1,0 +1,101 @@
+[
+  {
+    "scenario": "未登录",
+    "status": 401,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "UNAUTHENTICATED",
+        "message": "请先登录"
+      }
+    }
+  },
+  {
+    "scenario": "账号或密码错误",
+    "status": 401,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "UNAUTHENTICATED",
+        "message": "账号或密码错误"
+      }
+    }
+  },
+  {
+    "scenario": "空选题或漏答",
+    "status": 400,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请按练习题项完整提交"
+      }
+    }
+  },
+  {
+    "scenario": "资源不存在或属于其他人",
+    "status": 404,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "NOT_FOUND",
+        "message": "记录不存在"
+      }
+    }
+  },
+  {
+    "scenario": "重复提交且修改答案",
+    "status": 409,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "CONFLICT",
+        "message": "该练习已提交，不能更改答案"
+      }
+    }
+  },
+  {
+    "scenario": "题量不足",
+    "status": 409,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "CONFLICT",
+        "message": "符合条件的题目数量不足"
+      }
+    }
+  },
+  {
+    "scenario": "提交保存失败",
+    "status": 503,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "SERVICE_UNAVAILABLE",
+        "message": "暂时无法保存，请使用相同答案重试"
+      }
+    }
+  },
+  {
+    "scenario": "接口未实现",
+    "status": 501,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "NOT_IMPLEMENTED",
+        "message": "业务接口尚未实现"
+      }
+    }
+  },
+  {
+    "scenario": "未知异常",
+    "status": 500,
+    "response": {
+      "data": null,
+      "error": {
+        "code": "INTERNAL_ERROR",
+        "message": "服务异常，请稍后重试"
+      }
+    }
+  }
+]

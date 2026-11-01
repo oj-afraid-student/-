@@ -1,0 +1,319 @@
+{
+  "answers": [
+    {
+      "practiceItemId": "fixture-item-01",
+      "answer": {
+        "type": "SINGLE_CHOICE",
+        "selectedOptionId": "C"
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-02",
+      "answer": {
+        "type": "FILL_BLANK",
+        "blanks": [
+          {
+            "blankId": "b1",
+            "values": ["2"]
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-03",
+      "answer": {
+        "type": "MULTIPLE_CHOICE",
+        "selectedOptionIds": ["A", "B"]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-04",
+      "answer": {
+        "type": "SINGLE_CHOICE",
+        "selectedOptionId": "B"
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-05",
+      "answer": {
+        "type": "JUDGMENT_REASON",
+        "judgments": [
+          {
+            "statementId": "s1",
+            "value": false,
+            "reason": "开发样例：请结合定理条件与反例复核我的说明。"
+          },
+          {
+            "statementId": "s2",
+            "value": true,
+            "reason": "开发样例：请结合定理条件与反例复核我的说明。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-06",
+      "answer": {
+        "type": "FILL_BLANK",
+        "blanks": [
+          {
+            "blankId": "b1",
+            "values": ["AC"]
+          },
+          {
+            "blankId": "b2",
+            "values": ["A₁C₁"]
+          },
+          {
+            "blankId": "b3",
+            "values": ["平行"]
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-07",
+      "answer": {
+        "type": "SINGLE_CHOICE",
+        "selectedOptionId": "B"
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-08",
+      "answer": {
+        "type": "MULTIPLE_CHOICE",
+        "selectedOptionIds": ["A", "C"]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-09",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-10",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-11",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-12",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-13",
+      "answer": {
+        "type": "FILL_BLANK",
+        "blanks": [
+          {
+            "blankId": "b1",
+            "values": ["√3/3"]
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-14",
+      "answer": {
+        "type": "FILL_BLANK",
+        "blanks": [
+          {
+            "blankId": "b1",
+            "values": ["2", "7"]
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-15",
+      "answer": {
+        "type": "JUDGMENT_REASON",
+        "judgments": [
+          {
+            "statementId": "s1",
+            "value": false,
+            "reason": "开发样例：请结合定理条件与反例复核我的说明。"
+          },
+          {
+            "statementId": "s2",
+            "value": true,
+            "reason": "开发样例：请结合定理条件与反例复核我的说明。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-16",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-17",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-18",
+      "answer": {
+        "type": "FILL_BLANK",
+        "blanks": [
+          {
+            "blankId": "b1",
+            "values": ["9/2"]
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-19",
+      "answer": {
+        "type": "PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-20",
+      "answer": {
+        "type": "PROOF_CALCULATION",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-21",
+      "answer": {
+        "type": "FILL_BLANK",
+        "blanks": [
+          {
+            "blankId": "b1",
+            "values": ["60"]
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-22",
+      "answer": {
+        "type": "PROOF_CALCULATION",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-23",
+      "answer": {
+        "type": "EXPLORATION_PROOF",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    },
+    {
+      "practiceItemId": "fixture-item-24",
+      "answer": {
+        "type": "COMPREHENSIVE",
+        "parts": [
+          {
+            "partId": "p1",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p2",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          },
+          {
+            "partId": "p3",
+            "text": "开发样例：已填写推理过程，需人工对照参考解析复核。"
+          }
+        ]
+      }
+    }
+  ]
+}

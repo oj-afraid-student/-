@@ -1,0 +1,394 @@
+[
+  {
+    "slug": "space-lines",
+    "position": 1,
+    "knowledge_code": "G01",
+    "title": "空间直线的位置关系",
+    "summary": "从共面、交点与方向三个方面，分清相交、平行和异面。",
+    "content": {
+      "figure": "cube",
+      "duration": "约 12 分钟",
+      "concepts": [
+        {
+          "name": "相交直线",
+          "text": "两条不同直线有一个公共点，它们必在同一平面内。"
+        },
+        {
+          "name": "平行直线",
+          "text": "同一平面内不相交的两条直线互相平行。"
+        },
+        {
+          "name": "异面直线",
+          "text": "不在同一平面内的两条直线叫异面直线，它们既不平行，也不相交。"
+        }
+      ],
+      "theorems": [
+        {
+          "name": "空间平行线的传递性",
+          "conditions": [
+            "a、b、c 是三条不同直线",
+            "a∥b，b∥c"
+          ],
+          "conclusion": "a∥c。",
+          "pitfall": "不能仅因屏幕图像中方向相近就认定平行。"
+        },
+        {
+          "name": "异面直线的判别要点",
+          "conditions": [
+            "两条直线没有公共点",
+            "两条直线不平行"
+          ],
+          "conclusion": "两条直线异面。",
+          "pitfall": "投影上的交叉不等于空间中的相交。"
+        }
+      ],
+      "examples": [
+        {
+          "title": "正方体中的平行与异面",
+          "prompt": "在正方体 ABCD—A₁B₁C₁D₁ 中，判断 AB 与 CD、AB 与 B₁C₁ 的位置关系。",
+          "steps": [
+            "AB、CD 是底面上的一组对边，同平面且不相交，因此平行。",
+            "AB 与 B₁C₁ 方向不同，不平行；它们位于不同高度且没有交点，因此异面。"
+          ],
+          "answer": "AB∥CD；AB 与 B₁C₁ 异面。"
+        }
+      ]
+    },
+    "questions": [
+      {
+        "id": "G01-01",
+        "version": 1,
+        "type": "choice",
+        "prompt": "在正方体 ABCD—A₁B₁C₁D₁ 中，AB 与 CD 的位置关系是？",
+        "options": {
+          "A": "相交",
+          "B": "平行",
+          "C": "异面",
+          "D": "重合"
+        },
+        "answer": "B",
+        "explanation": "AB 和 CD 是同一正方形底面的对边，因此互相平行。",
+        "figure": "cube"
+      },
+      {
+        "id": "G01-02",
+        "version": 1,
+        "type": "choice",
+        "prompt": "在同一正方体中，AB 与 B₁C₁ 的位置关系是？",
+        "options": {
+          "A": "相交",
+          "B": "平行",
+          "C": "异面",
+          "D": "重合"
+        },
+        "answer": "C",
+        "explanation": "两直线不平行，也没有公共点，因此是异面直线。",
+        "figure": "cube"
+      },
+      {
+        "id": "G01-03",
+        "version": 1,
+        "type": "choice",
+        "prompt": "判断两条直线是否异面，下面哪项是异面的定义？",
+        "options": {
+          "A": "不在同一平面内",
+          "B": "投影相交",
+          "C": "方向看起来不同",
+          "D": "经过同一个点"
+        },
+        "answer": "A",
+        "explanation": "异面直线的定义是不在同一平面内。投影关系不能代替空间关系。",
+        "figure": "cube"
+      },
+      {
+        "id": "G01-04",
+        "version": 1,
+        "type": "choice",
+        "prompt": "直三棱柱 ABC—A₁B₁C₁ 中，M、N 分别为 BC、B₁C₁ 中点。MN 与 AA₁ 的位置关系是？",
+        "options": {
+          "A": "相交",
+          "B": "平行",
+          "C": "异面",
+          "D": "重合"
+        },
+        "answer": "B",
+        "explanation": "N 是 M 沿侧棱方向平移得到的对应点，故 MN∥AA₁。",
+        "figure": "prism"
+      },
+      {
+        "id": "G01-05",
+        "version": 1,
+        "type": "choice",
+        "prompt": "空间中两条不同直线既不相交、也不平行，它们一定是什么关系？",
+        "options": {
+          "A": "相交",
+          "B": "平行",
+          "C": "异面",
+          "D": "重合"
+        },
+        "answer": "C",
+        "explanation": "若两直线共面，不相交就应平行。既不相交又不平行，因此必不共面，即异面。",
+        "figure": "cube"
+      }
+    ]
+  },
+  {
+    "slug": "line-plane",
+    "position": 2,
+    "knowledge_code": "G02",
+    "title": "直线与平面垂直",
+    "summary": "把定理条件说完整：两条直线必须在平面内，并且相交。",
+    "content": {
+      "figure": "cube",
+      "duration": "约 15 分钟",
+      "concepts": [
+        {
+          "name": "线面垂直",
+          "text": "若一条直线与一个平面内的任意直线都垂直，就称这条直线与这个平面垂直。"
+        },
+        {
+          "name": "垂足与方向",
+          "text": "直线与平面垂直时，它们只有一个公共点，称为垂足；该直线方向与平面内任意直线的方向成直角。"
+        }
+      ],
+      "theorems": [
+        {
+          "name": "线面垂直判定定理",
+          "conditions": [
+            "a、b 都在平面 α 内",
+            "a 与 b 相交",
+            "l⊥a，l⊥b"
+          ],
+          "conclusion": "l⊥α。",
+          "pitfall": "“平面内两条相交直线”不能简化为任意两条直线；只垂直两条平行线不够。"
+        },
+        {
+          "name": "线面垂直的性质",
+          "conditions": [
+            "l⊥α",
+            "a 是平面 α 内的任意直线"
+          ],
+          "conclusion": "l⊥a。",
+          "pitfall": "l 与 a 不一定相交；其方向仍然垂直。"
+        },
+        {
+          "name": "平行线的线面垂直性质",
+          "conditions": [
+            "l⊥α",
+            "m∥l"
+          ],
+          "conclusion": "m⊥α。",
+          "pitfall": "应先有已证的线面垂直关系，再使用平行条件。"
+        }
+      ],
+      "examples": [
+        {
+          "title": "证明正方体侧棱垂直底面",
+          "prompt": "在正方体 ABCD—A₁B₁C₁D₁ 中，证明 AA₁⊥平面 ABCD。",
+          "steps": [
+            "AB、AD 都在平面 ABCD 内，并且相交于 A。",
+            "正方体的相邻棱互相垂直，AA₁⊥AB 且 AA₁⊥AD。",
+            "满足线面垂直判定定理的全部条件。"
+          ],
+          "answer": "AA₁⊥平面 ABCD。"
+        }
+      ]
+    },
+    "questions": [
+      {
+        "id": "G02-01",
+        "version": 1,
+        "type": "choice",
+        "prompt": "下列哪组条件足以判定直线 l 垂直平面 α？",
+        "options": {
+          "A": "l 垂直 α 内一条直线",
+          "B": "l 垂直 α 内两条平行直线",
+          "C": "l 垂直 α 内两条相交直线",
+          "D": "l 与 α 有一个交点"
+        },
+        "answer": "C",
+        "explanation": "判定定理要求所垂直的两条直线在平面内，且两直线相交。",
+        "figure": "cube"
+      },
+      {
+        "id": "G02-02",
+        "version": 1,
+        "type": "choice",
+        "prompt": "正方体中，侧棱 AA₁ 与底面 ABCD 的关系是？",
+        "options": {
+          "A": "垂直",
+          "B": "平行",
+          "C": "AA₁ 在底面内",
+          "D": "无法判断"
+        },
+        "answer": "A",
+        "explanation": "AA₁ 与底面内相交的 AB、AD 均垂直，故 AA₁⊥平面 ABCD。",
+        "figure": "cube"
+      },
+      {
+        "id": "G02-03",
+        "version": 1,
+        "type": "numeric",
+        "prompt": "若 l⊥平面 α，a 是 α 内任意直线，则 l 与 a 所成角是多少度？",
+        "answer": "90",
+        "unit": "°",
+        "tolerance": "0.01",
+        "explanation": "线面垂直的性质保证 l 与平面内任意直线方向垂直，所成角为 90°。",
+        "figure": "cube"
+      },
+      {
+        "id": "G02-04",
+        "version": 1,
+        "type": "choice",
+        "prompt": "已知 l⊥平面 α，另一条直线 m∥l，则有？",
+        "options": {
+          "A": "m 必在 α 内",
+          "B": "m⊥α",
+          "C": "m 必与 α 平行",
+          "D": "条件不足"
+        },
+        "answer": "B",
+        "explanation": "平行于一条垂直某平面的直线的另一条直线，也垂直这个平面。",
+        "figure": "cube"
+      },
+      {
+        "id": "G02-05",
+        "version": 1,
+        "type": "choice",
+        "prompt": "直线 l 只已知垂直平面 α 内两条平行直线，这能否充分判定 l⊥α？",
+        "options": {
+          "A": "不能，还需适当补充条件",
+          "B": "能，两条直线已经足够",
+          "C": "能，因为平行线一定相交",
+          "D": "能，因为 l 必不在 α 内"
+        },
+        "answer": "A",
+        "explanation": "两条平行线不能替代判定定理中的两条相交直线。例如 l 可位于 α 内并垂直这两条平行线。",
+        "figure": "cube"
+      }
+    ]
+  },
+  {
+    "slug": "prism-section",
+    "position": 3,
+    "knowledge_code": "G03",
+    "title": "辅助截面与三棱柱",
+    "summary": "从棱上中点补出辅助线，发现三棱柱里隐藏的正方形截面。",
+    "content": {
+      "figure": "prism",
+      "duration": "约 15 分钟",
+      "concepts": [
+        {
+          "name": "直三棱柱",
+          "text": "上下底面是全等且对应边平行的三角形，侧棱互相平行且垂直底面。"
+        },
+        {
+          "name": "对应分点",
+          "text": "上下对应棱按相同比例取点，点之间的连线平行于侧棱。"
+        },
+        {
+          "name": "辅助截面",
+          "text": "用经过已知点的平面截取几何体，把空间关系转化为一个可计算、可证明的平面图形。"
+        }
+      ],
+      "theorems": [
+        {
+          "name": "等腰三角形的底边中线",
+          "conditions": [
+            "AB=AC",
+            "M 为 BC 中点"
+          ],
+          "conclusion": "AM⊥BC；AM 可用勾股定理计算。",
+          "pitfall": "M 不是中点时，一般不能直接把 AM 当作高。"
+        },
+        {
+          "name": "正方形对角线的性质",
+          "conditions": [
+            "四边形已证明为正方形",
+            "所研究的线是它的两条对角线"
+          ],
+          "conclusion": "两条对角线互相平分且垂直。",
+          "pitfall": "普通矩形的对角线不一定垂直，必须补齐相邻边相等的条件。"
+        }
+      ],
+      "examples": [
+        {
+          "title": "找到隐藏的垂直关系",
+          "prompt": "在直三棱柱 ABC—A₁B₁C₁ 中，AB=AC=5，BC=6，AA₁=4。M、N 分别为 BC、B₁C₁ 中点。判断 AN 与 A₁M 的关系。",
+          "steps": [
+            "BM=3；等腰三角形中 AM 为高，AM=√(25−9)=4。",
+            "AA₁∥MN，AM∥A₁N，且 AA₁⊥AM，所以 AMNA₁ 为矩形。",
+            "AM=AA₁=4，故 AMNA₁ 为正方形。",
+            "AN、A₁M 是其对角线，因此相交且垂直。"
+          ],
+          "answer": "AN⊥A₁M，空间夹角为 90°。"
+        }
+      ]
+    },
+    "questions": [
+      {
+        "id": "G03-01",
+        "version": 1,
+        "type": "numeric",
+        "prompt": "在本单元例题中，BC=6，M 为 BC 中点，BM 的长度是多少？",
+        "answer": "3",
+        "unit": "长度单位",
+        "tolerance": "0.01",
+        "explanation": "中点将 BC 平分，BM=BC/2=3。",
+        "figure": "prism"
+      },
+      {
+        "id": "G03-02",
+        "version": 1,
+        "type": "numeric",
+        "prompt": "同一题中，AB=AC=5，BC=6，M 为 BC 中点。AM 的长度是多少？",
+        "answer": "4",
+        "unit": "长度单位",
+        "tolerance": "0.01",
+        "explanation": "AM 是等腰三角形的高。BM=3，由勾股定理 AM=√(5²−3²)=4。",
+        "figure": "prism"
+      },
+      {
+        "id": "G03-03",
+        "version": 1,
+        "type": "choice",
+        "prompt": "在该直三棱柱中，AA₁=4，M、N 为对应中点。四边形 AMNA₁ 是？",
+        "options": {
+          "A": "普通平行四边形",
+          "B": "正方形",
+          "C": "非矩形的菱形",
+          "D": "任意四边形"
+        },
+        "answer": "B",
+        "explanation": "先由侧棱垂直底面得到矩形，再由 AM=AA₁=4 得到正方形。",
+        "figure": "prism"
+      },
+      {
+        "id": "G03-04",
+        "version": 1,
+        "type": "numeric",
+        "prompt": "在该正方形截面中，AN 与 A₁M 所成角是多少度？",
+        "answer": "90",
+        "unit": "°",
+        "tolerance": "0.01",
+        "explanation": "AN 与 A₁M 是正方形的两条对角线，彼此垂直，故所成角为 90°。",
+        "figure": "prism"
+      },
+      {
+        "id": "G03-05",
+        "version": 1,
+        "type": "choice",
+        "prompt": "在本题中，AB 与 MN 的位置关系是？",
+        "options": {
+          "A": "相交",
+          "B": "平行",
+          "C": "异面",
+          "D": "重合"
+        },
+        "answer": "C",
+        "explanation": "MN 垂直底面，而 AB 位于底面；MN 与底面的交点 M 不在 AB 上，所以两直线不相交且不平行，是异面直线。",
+        "figure": "prism"
+      }
+    ]
+  }
+]

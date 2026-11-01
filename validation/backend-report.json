@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "date": "2026-11-01",
+  "test_count": 11,
+  "command": "python manage.py test tests --verbosity 2",
+  "checks": [
+    "registration, password hash, login and logout",
+    "student-only registration and access",
+    "CSRF required and rotated at login",
+    "three complete units and five questions per unit",
+    "server grading and immutable repeat submission",
+    "historical question snapshots survive catalog edits",
+    "personal practice ownership",
+    "illegal answers and non-finite/extreme numeric input",
+    "wrong-history filter and independent retry",
+    "personal material import, deduplication and ownership",
+    "private catalog not exposed as static; frontend wording scan"
+  ]
+}

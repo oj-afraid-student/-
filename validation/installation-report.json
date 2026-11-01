@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "date": "2026-11-01",
+  "clean_install": true,
+  "offline_dependencies": true,
+  "initial_users": 0,
+  "units": 3,
+  "questions": 15,
+  "server_restart_preserves_account_and_submission": true,
+  "additional_unit_server_grade": "5/5",
+  "temporary_test_account_removed": true,
+  "runtime_excluded_from_archive": true,
+  "installer_temp_location": "project runtime/install-temp"
+}

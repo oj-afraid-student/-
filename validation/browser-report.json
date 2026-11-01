@@ -2,14 +2,14 @@
   "passed": true,
   "date": "2026-11-01",
   "checks": [
-    "login route guard, incorrect credentials, existing material reading, viewed records, search and type filters",
-    "simulated image selection, parsing stages, review validation, edited metadata, complete material creation, model rotation and perpendicular reveal, refresh and logout/login persistence",
-    "same image does not create duplicate or overwrite existing metadata",
-    "refresh during parsing resumes; failed storage never reports saved; user title renders as text"
+    "real registration/login with validation; student-only interface; three units with theorem conditions and figures; exactly five questions without answer leakage; server grades 3/5; saved history; wrong-only filter and two-question retry preserve original result",
+    "logout/relogin preserves own records; second real account has no copied history and cannot read first account result",
+    "V1.0 material browsing and sample-image flow merged into V0.2 layout; backend personal material import, confirmation gate, persisted title/note, other-account isolation",
+    "original prism and block-plank interaction retained; angle updates under changed height; unanswered submission confirmation and server zero score"
   ],
   "consoleErrors": [],
   "externalRequests": [],
-  "desktop": "1440x1000",
-  "mobile": "390x844",
-  "source": "fresh private browser context; standalone file"
+  "ui_forbidden_word_absent": true,
+  "desktop": "1440x1024",
+  "mobile": "390x844"
 }

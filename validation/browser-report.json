@@ -1,14 +1,15 @@
 {
   "passed": true,
-  "date": "2026-10-29",
+  "date": "2026-11-01",
   "checks": [
-    "board text parsing, real local PNG preview, confirmation, sync, uniform continuation, short-board exit, frictionless variant, playback, save/restore",
-    "missing conditions and case-sensitive m/M conflict block generation; unsupported problem preserved",
-    "geometry parsing, hidden reveal, 3D rotation, correct angle and right-angle mark, changed height/point disproves original conclusion, parallel/skew distinction, persisted geometry",
-    "existing knowledge analysis and practice submission still work with unchanged question data",
-    "teacher publish and student reopen model snapshots"
+    "login route guard, incorrect credentials, existing material reading, viewed records, search and type filters",
+    "simulated image selection, parsing stages, review validation, edited metadata, complete material creation, model rotation and perpendicular reveal, refresh and logout/login persistence",
+    "same image does not create duplicate or overwrite existing metadata",
+    "refresh during parsing resumes; failed storage never reports saved; user title renders as text"
   ],
   "consoleErrors": [],
   "externalRequests": [],
+  "desktop": "1440x1000",
+  "mobile": "390x844",
   "source": "fresh private browser context; standalone file"
 }

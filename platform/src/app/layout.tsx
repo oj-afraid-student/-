@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { SessionProvider } from '@/features/auth/session';
+import { AppShell } from '@/shared/ui/app-shell';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -9,7 +11,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        <SessionProvider
+          developmentFixtures={
+            process.env.NODE_ENV === 'development' && process.env.ZHIXU_DEV_FIXTURES === '1'
+          }
+        >
+          <AppShell>{children}</AppShell>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

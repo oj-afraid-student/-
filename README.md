@@ -30,7 +30,7 @@
 ### Windows PowerShell
 
 ```powershell
-git clone --branch v2.0 --single-branch https://github.com/oj-afraid-student/-.git zhixu-v2
+git clone --branch feature/platform-init --single-branch https://github.com/oj-afraid-student/-.git zhixu-v2
 cd zhixu-v2/platform
 pnpm install --frozen-lockfile
 Copy-Item .env.example .env.local
@@ -41,7 +41,7 @@ pnpm dev
 ### Linux / macOS / WSL
 
 ```bash
-git clone --branch v2.0 --single-branch https://github.com/oj-afraid-student/-.git zhixu-v2
+git clone --branch feature/platform-init --single-branch https://github.com/oj-afraid-student/-.git zhixu-v2
 cd zhixu-v2/platform
 pnpm install --frozen-lockfile
 cp .env.example .env.local
@@ -99,4 +99,4 @@ ZHIXU_DEV_FIXTURES=1 pnpm dev
 | `docs/李梓禾_知识点文档/`                   | 知识与题库来源文档                                       |
 | `index.html`、根目录 `src/`、`data/`        | 历史 HTML 原型，非 v2.0 正式入口                         |
 
-发布分支为 `v2.0`，源自 `codex/frontend-contract-v2`。本次不合并或覆盖 main、version1、v1.1 和其他成员分支。
+当前协作分支为 `feature/platform-init`（wny24 提交接口契约的分支），已包含本轮学生端前端及完成情况说明。`v2.0` 保留为本阶段版本标识。main、version1、v1.1 和 codex/frontend-contract-v2 分支保持原提交。

@@ -1,8 +1,10 @@
 import 'server-only';
+import { cookies } from 'next/headers';
 import type { CurrentUser } from '@/shared/contracts';
-import { ApiError } from '@/server/http';
+import { SESSION_COOKIE, sessionUser } from './service';
 
-// AUTH-01 接入真实会话后替换实现。当前明确拒绝，不读取浏览器传入的 userId。
+/** 由真实数据库会话读取当前用户；业务模块不接收浏览器指定的可信 userId。 */
 export async function requireCurrentUser(): Promise<CurrentUser> {
-  throw new ApiError('NOT_IMPLEMENTED', 501, '账号与会话服务尚未接入。');
+  const jar = await cookies();
+  return sessionUser(jar.get(SESSION_COOKIE)?.value);
 }

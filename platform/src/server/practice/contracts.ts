@@ -12,7 +12,7 @@ export interface QuestionVersionRecord {
   publicationStatus: 'DRAFT';
 }
 
-/** catalog 由李梓禾实现；每次练习固定题目版本，不能在提交时读取已更新的最新版。 */
+/** catalog 由赵景言实现；当前是接口草稿，正式端口需支持已发布选题与按固定版本读取。 */
 export interface PracticeCatalogPort {
   loadQuestionVersions(questionIds: string[]): Promise<QuestionVersionRecord[]>;
 }

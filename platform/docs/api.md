@@ -2,7 +2,7 @@
 
 维护：王宁岳。依据 `../../docs/李梓禾_知识点文档/详细版/` 三份 DOCX。
 本契约包含接口定义、共享类型、可追溯数据与开发样例；当前本地已实现 health 与四个真实学生认证接口。
-本契约替代原先固定五道单选题的业务契约；知识、练习、结果和历史业务路由、多题型数据库迁移及人工批改后台仍待实现。真实认证说明见 [auth-handoff.md](auth-handoff.md)。
+本契约替代原先固定五道单选题的业务契约；多题型数据库迁移见[存储交接](contracts/storage-handoff.md)，知识、练习、结果和历史业务路由及人工批改后台仍待实现。真实认证说明见 [auth-handoff.md](auth-handoff.md)。
 
 ## 统一规则
 
@@ -25,8 +25,8 @@
 | POST /auth/login           | Credentials                  | CurrentUser；建立会话          | 200                    | 穆泓烨     |
 | POST /auth/logout          | 无                           | LogoutResult                   | 200                    | 穆泓烨     |
 | GET /auth/me               | 无                           | CurrentUser                    | 200                    | 穆泓烨     |
-| GET /knowledge-points      | 无                           | KnowledgeSummary[]，order 升序 | 200                    | 李梓禾     |
-| GET /knowledge-points/:id  | 单元 ID：SG-01/02/03、E1/2/3 | KnowledgeDetail                | 200                    | 李梓禾     |
+| GET /knowledge-points      | 无                           | KnowledgeSummary[]，order 升序 | 200                    | 赵景言     |
+| GET /knowledge-points/:id  | 单元 ID：SG-01/02/03、E1/2/3 | KnowledgeDetail                | 200                    | 赵景言     |
 | POST /practices            | CreatePracticeRequest        | Practice                       | 201                    | 王宁岳     |
 | GET /practices/:id         | 本人 practice ID             | Practice                       | 200                    | 王宁岳     |
 | POST /practices/:id/submit | SubmitPracticeRequest        | SubmitPracticeResult           | 首次 201、相同重试 200 | 王宁岳     |
@@ -120,7 +120,7 @@ page 默认 1、pageSize 默认 20，page≥1，1≤pageSize≤100；不接受�
 
 ## 数据与上下游
 
-- 李梓禾：提供按题号读取不可变版本的 catalog；source-manifest 保留原文件哈希；24 题均是 DRAFT，发布前复核。原图 A 已从 DOCX 无改动提取到 public/geometry，保持 A₁ 等标记，不套用旧 ABCD-EFGH 命名。
+- 赵景言：提供按题号读取不可变版本的 catalog；source-manifest 保留原文件哈希；24 题均是 DRAFT，发布前复核。原图 A 已从 DOCX 无改动提取到 public/geometry，保持 A₁ 等标记，不套用旧 ABCD-EFGH 命名。
 - 穆泓烨：提供 requireCurrentUser、事务与新版持久化结构；迁移需求见 [storage-handoff.md](contracts/storage-handoff.md)。现有 001 不能存本契约，禁止将全量 JSON 直接塞入旧 schema。
-- 赵景言：按 type 渲染不同作答控件，使用 fixtures/api 的样例；只导入 shared/contracts，不能导入 fixtures/server。提交后显示待复核状态，最终结果不能只呈现分数。
+- 李梓禾：按 type 渲染不同作答控件，使用 fixtures/api 的样例；只导入 shared/contracts，不能导入 fixtures/server。提交后显示待复核状态，最终结果不能只呈现分数。
 - 王宁岳：维护契约与样例，并在认证/题库/数据层接齐后实现练习业务；`src/server/practice/contracts.ts` 仅是服务端题目边界，不是已完成服务。

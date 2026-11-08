@@ -46,9 +46,9 @@ node scripts/check-contract-types.mjs
 
 ## 当前实现边界
 
-题库是开发数据，正式导入与发布须完成逐题复核。真实认证已实现，存储结构见[数据库交接](storage-handoff.md)，正式知识、练习和历史接口仍需接入。以下验证是当初的契约交付记录。
+题库是开发数据，正式导入与发布须完成逐题复核。真实认证已实现，存储结构见[数据库交接](storage-handoff.md)，五个正式练习/提交/查询接口已实现，知识接口、正式导入与发布仍待接通。最新实现、验证命令和协作边界见[练习服务交接](../practice-handoff.md)。以下验证是当初的契约交付记录，不是当前环境状态。
 
-## 本次验证结果
+## 原契约交付验证记录（历史）
 
 - `node --test tests/contracts.test.mjs`：6 项通过。
 - `node scripts/check-contract-types.mjs <临时 TypeScript 路径>`：38 个真实 JSON 样例通过严格类型检查。

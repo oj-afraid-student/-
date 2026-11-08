@@ -1,8 +1,8 @@
 # 业务接口契约 v2：全量 24 题
 
 维护：王宁岳。依据 `../../docs/李梓禾_知识点文档/详细版/` 三份 DOCX。
-本契约包含接口定义、共享类型、可追溯数据与开发样例；当前本地已实现 health 与四个真实学生认证接口。
-本契约替代原先固定五道单选题的业务契约；多题型数据库迁移见[存储交接](contracts/storage-handoff.md)，知识、练习、结果和历史业务路由及人工批改后台仍待实现。真实认证说明见 [auth-handoff.md](auth-handoff.md)。
+本契约包含接口定义、共享类型、可追溯数据与开发样例；当前已实现 health、四个真实学生认证接口及下表五个练习/提交/查询接口。实现和验证见[练习服务交接](practice-handoff.md)。
+本契约替代原先固定五道单选题的业务契约；多题型数据库迁移见[存储交接](contracts/storage-handoff.md)，知识业务路由、正式内容导入与发布仍待接通；人工批改后台不在本轮范围。真实认证说明见 [auth-handoff.md](auth-handoff.md)。
 
 ## 统一规则
 
@@ -33,7 +33,7 @@
 | GET /me/submissions        | page、pageSize               | HistoryPage                    | 200                    | 王宁岳     |
 | GET /me/submissions/:id    | 本人 submission ID           | SubmissionDetail               | 200                    | 王宁岳     |
 
-每个入口都有请求/响应配对样例：`fixtures/api/scenarios.json`。样例是目标行为；当前真实认证路由已实现，其余业务路由仍待接通。
+每个入口都有请求/响应配对样例：`fixtures/api/scenarios.json`。样例与共享 DTO 保持一致；真实认证与五个练习/查询路由已实现，知识路由仍待接通。
 知识单元返回 3 个核心单元与 3 个拓展单元；15 个细分知识点位于 sections。学习例题属于学习内容，不重复作为额外练习编号。
 知识内容允许讲解例题；未提交练习响应不得包含参考答案、解析或判题规则。不能在学生端通过题号导入服务端答案库。
 
@@ -43,7 +43,7 @@
 { "mode": "ALL" }
 ```
 
-返回当前已发布题库的全部题目，按 Q 编号排序；本次完整开发样例为 24 题。
+返回每个题号最新已发布版本，按 Q 编号排序；草稿新版不遮蔽已发布旧版；本次完整开发样例为 24 题。
 
 ```json
 { "mode": "FILTERED", "knowledgePointId": "SG-02", "difficulty": "INTERMEDIATE", "count": 3 }
@@ -58,7 +58,7 @@ FILTERED 的单元、难度、questionTypes、count 均可选，筛选条件之�
 ```
 
 EXPLICIT 指定 1—100 个不重复题号，按请求顺序返回；不存在或未发布题返回 404，不能静默省略。
-ALL/FILTERED 匹配超过 100 题时返回 400，要求缩小范围，不截断；100 是本版接口上限，不是题库总量上限。
+ALL 或未设置 count 的 FILTERED 匹配超过 100 题时返回 400，要求缩小范围，不隐式截断；设置 count 时按明确请求取前 count 题。100 是本版接口上限，不是题库总量上限。
 不接受旧版只有 knowledgePointId 的请求，不默认退回五题。ALL 不接受任何筛选字段。
 创建时保存题序和不可变题目版本，totalCount = items.length；提交时不重新抽题或读取新版答案。
 
@@ -97,7 +97,7 @@ Q06 三个空分别存交线、交线、关系；Q14 一个空内存两个距离
 - 全量示例故意给出 11 道客观题匹配答案，13 道需要推理过程的题保持待复核；这些数据不是实际学生成绩。
 - 证明、判断理由等仅保存、展示参考解析供复核；此次未提供教师批改接口，也不声称待复核会自动完成。人工复核录入与权限留给后续独立任务。
 - 相同答案重试返回同一 submissionId。题项/分问数组按 ID 比较，多选与无序填空按集合比较；文本使用上述规范化后比较，不用数学等价性判断是否同一次提交。
-- 已提交且答案改变返回 409；重做创建新 practice。并发提交靠事务和 practice_id 唯一约束保证只有一个结果。
+- 已提交且答案改变返回 409；重做创建新 practice。并发提交先锁定本人 practice 行，再查询已有提交；事务与 practice_id 唯一约束保证只有一个结果。
 - 校验、判题、答案保存、结果保存、状态更新必须在同一事务内完成；失败不部分保存。客户端不确定是否保存成功时用原答案重试。
 - 已提交的 GET practice 仍返回无答案题目和 submissionId，解析仅从本人结果接口读取。
 
@@ -116,11 +116,17 @@ page 默认 1、pageSize 默认 20，page≥1，1≤pageSize≤100；不接受�
 | SERVICE_UNAVAILABLE | 503  | 数据库不可用或暂时无法保存                    |
 | INTERNAL_ERROR      | 500  | 未分类异常，不泄露内部堆栈                    |
 
-完整异常响应见 `fixtures/api/errors.json`。类型只描述结构，实际路由仍须增加运行时校验。
+完整异常响应见 `fixtures/api/errors.json`。类型只描述结构，正式五个练习/查询路由已实现严格运行时校验。
 
 ## 数据与上下游
 
-- 赵景言：提供按题号读取不可变版本的 catalog；source-manifest 保留原文件哈希；24 题均是 DRAFT，发布前复核。原图 A 已从 DOCX 无改动提取到 public/geometry，保持 A₁ 等标记，不套用旧 ABCD-EFGH 命名。
-- 穆泓烨：提供 requireCurrentUser、事务与新版持久化结构；迁移需求见 [storage-handoff.md](contracts/storage-handoff.md)。现有 001 不能存本契约，禁止将全量 JSON 直接塞入旧 schema。
+- 赵景言：维护内容复核、导入和统一 catalog；`PracticeCatalogPort.listPublished()` 返回按题号排序的最新已发布版本，`loadQuestionVersions(versionIds)` 按内部 UUID 原序读取且允许下架版本；当前最小 SQL 适配器位于 `server/practice/catalog.ts`；source-manifest 保留原文件哈希；24 题均是 DRAFT，发布前复核。原图 A 已从 DOCX 无改动提取到 public/geometry，保持 A₁ 等标记，不套用旧 ABCD-EFGH 命名。
+- 穆泓烨：提供 requireCurrentUser、事务与新版持久化结构；迁移需求见 [storage-handoff.md](contracts/storage-handoff.md)。正式练习服务使用 001 + 002，不能只运行旧 001。
 - 李梓禾：按 type 渲染不同作答控件，使用 fixtures/api 的样例；只导入 shared/contracts，不能导入 fixtures/server。提交后显示待复核状态，最终结果不能只呈现分数。
-- 王宁岳：维护契约与样例，并在认证/题库/数据层接齐后实现练习业务；`src/server/practice/contracts.ts` 仅是服务端题目边界，不是已完成服务。
+- 王宁岳：已实现五个正式路由、运行时校验、判题、事务提交与查询，保持现有共享 DTO 和38份样例不变。catalog 发布状态为 `DRAFT | PUBLISHED`，`StoredQuestionVersion.versionId` 是不对客户端暴露的内部 UUID。
+
+## 简版错题与重练
+
+结果只将 INCORRECT 归入错题；PENDING_REVIEW 不进入错题。现有前端用 EXPLICIT 和原题号创建新练习，读取当前最新已发布版本并保留原结果。某题无任何已发布版本时整次创建返回404，不静默省略。下架不阻止既有练习提交和旧结果读取。本轮不提供指定旧版本重练、跨历史错题检索或人工批改接口。
+
+团队对接状态：本分支未更改现有公开DTO或11个入口；catalog内部签名及重练版本规则已有实现和测试，仍需按[团队v0.2](student-practice-handoff-v0.2.md)第5节与相关负责人共同核对，不能将本地实现记录当作全员验收结论。

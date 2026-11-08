@@ -1,10 +1,16 @@
 # 学生端前端交接（契约 v2）
 
-日期：2026-11-01（Asia/Shanghai）。中期准备已结束，当前面向完整项目开发。
+日期：2026-11-08（Asia/Shanghai）。中期准备已结束，当前面向完整项目开发。
 
 ## 实现范围与负责人
 
 现有学生端页面是本轮接入的起点。李梓禾负责公共布局、账号、选题、作答和结果，赵景言负责内容、知识、学习与历史。穆泓烨负责工程、认证、数据库和部署，王宁岳维护契约与练习服务。完整任务见[学生端开发交接 v0.2](student-practice-handoff-v0.2.md)。
+
+## 本轮接入更新
+
+以 `feature/practice-v2-storage` 的 `cfede3e` 为基线，已关闭开发样例验证真实认证、24 题八题型、提交恢复、版本与下架重练、双账号隔离和应用重启。新增非阻塞会话检查、目录失败仍可选题、持久化原提交快照、手动查询恢复，以及结果页完整原选项/分问。知识 API 和正式内容复核发布仍待赵景言接通，不能把隔离测试库装入 fixture 当作正式题库发布。
+
+交付：[使用说明与操作步骤](frontend-user-guide.md)、[本轮验收记录及截图](frontend-integration-verification.md)。
 
 ## 路由与代码入口
 
@@ -90,4 +96,4 @@ node --test tests/frontend-integration.mjs
 
 可选浏览器验收位于 tests/frontend-browser.mjs，使用单独安装的 Playwright 1.58.2 与本机 Edge/Chrome，不改变项目依赖。将 ZHIXU_PLAYWRIGHT_MODULE 指向该工具的 playwright/index.mjs；非默认浏览器可设置 ZHIXU_BROWSER_EXECUTABLE。ZHIXU_TEST_URL 默认 http://127.0.0.1:3000，ZHIXU_QA_OUTPUT 可设为仓库外截图目录。执行 node tests/frontend-browser.mjs。
 
-完整检查、HTTP 和浏览器测试各有验证边界；开发模式通过不代表真实数据库、正式认证和判题服务通过。实际记录见 frontend-verification.md。
+完整检查、HTTP 和浏览器测试各有验证边界；开发模式通过不代表真实数据库、正式认证和判题服务通过。旧开发样例记录见 frontend-verification.md；本轮真实 PostgreSQL 与页面证据见 [前端接入验收](frontend-integration-verification.md)。

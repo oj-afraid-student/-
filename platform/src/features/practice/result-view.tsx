@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Answer, Evaluation, PublicQuestion, SubmissionDetail } from '@/shared/contracts';
 import { useSession } from '@/features/auth/session';
@@ -16,7 +16,7 @@ import {
   PageHead,
 } from '@/shared/ui/common';
 import { Icon } from '@/shared/ui/icons';
-import { QuestionContent } from './question-renderer';
+import { QuestionContent, QuestionStructure } from './question-renderer';
 
 const evaluations = {
   CORRECT: { label: '正确', className: 'green', icon: 'check' },
@@ -38,7 +38,10 @@ function ResultContent({ result }: { result: SubmissionDetail }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const incorrect = result.items.filter((item) => item.evaluation.status === 'INCORRECT');
+  const creating = useRef(false);
   async function retry(onlyIncorrect: boolean) {
+    if (creating.current) return;
+    creating.current = true;
     setBusy(true);
     setError('');
     try {
@@ -49,8 +52,13 @@ function ResultContent({ result }: { result: SubmissionDetail }) {
       router.push(`/practice/${encodeURIComponent(practice.id)}`);
     } catch (error) {
       if (error instanceof ApiClientError && error.status === 401) expire();
-      setError(errorMessage(error));
+      setError(
+        error instanceof ApiClientError && error.status === 404
+          ? '部分题目已不在可练习范围，暂时无法重新组题。原作答结果仍保留，请选择其他题目。'
+          : errorMessage(error),
+      );
     } finally {
+      creating.current = false;
       setBusy(false);
     }
   }
@@ -119,6 +127,9 @@ function ResultContent({ result }: { result: SubmissionDetail }) {
           待复核题仅保存过程并提供参考解析；复核完成前不生成最终总分。你可以继续学习或另建练习。
         </p>
       )}
+      <p className="field-hint">
+        重练使用当前最新已发布版本；本次结果继续保留原题目、原答案和解析。
+      </p>
       <div className="result-toolbar">
         <div className="filter-tabs" aria-label="筛选题目">
           {(
@@ -176,6 +187,7 @@ function ResultContent({ result }: { result: SubmissionDetail }) {
                 </span>
               </div>
               <QuestionContent question={item.question} />
+              <QuestionStructure question={item.question} />
               <div className="answer-review">
                 <div>
                   <h3>我的作答</h3>

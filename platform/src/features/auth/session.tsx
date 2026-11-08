@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Fragment,
   createContext,
   useCallback,
   useContext,
@@ -20,9 +21,11 @@ interface SessionContext {
   user: CurrentUser | null;
   loading: boolean;
   error: string;
+  warning: string;
   developmentFixtures: boolean;
   setUser: (user: CurrentUser | null) => void;
   reload: () => Promise<void>;
+  recheck: () => Promise<void>;
   expire: () => void;
 }
 const Session = createContext<SessionContext | null>(null);
@@ -41,17 +44,21 @@ export function SessionProvider({
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
   const epoch = useRef(0);
-  const updateUser = useCallback((user: CurrentUser | null) => {
+  const checking = useRef(false);
+  const updateUser = useCallback((current: CurrentUser | null) => {
     epoch.current++;
-    setUser(user);
+    setUser(current);
     setError('');
+    setWarning('');
     setLoading(false);
   }, []);
   const reload = useCallback(async () => {
     const revision = ++epoch.current;
     setLoading(true);
     setError('');
+    setWarning('');
     try {
       const current = await api.me();
       if (revision === epoch.current) setUser(current);
@@ -63,6 +70,24 @@ export function SessionProvider({
       if (revision === epoch.current) setLoading(false);
     }
   }, [api]);
+  const recheck = useCallback(async () => {
+    if (checking.current) return;
+    checking.current = true;
+    const revision = epoch.current;
+    try {
+      const current = await api.me();
+      if (revision === epoch.current) {
+        setUser(current);
+        setWarning('');
+      }
+    } catch (error) {
+      if (revision !== epoch.current) return;
+      if (error instanceof ApiClientError && error.status === 401) updateUser(null);
+      else setWarning('暂时无法确认登录状态，当前输入已保留，请检查连接后重试。');
+    } finally {
+      checking.current = false;
+    }
+  }, [api, updateUser]);
   useEffect(() => {
     const controller = new AbortController();
     const revision = ++epoch.current;
@@ -82,6 +107,18 @@ export function SessionProvider({
       });
     return () => controller.abort();
   }, [api]);
+  useEffect(() => {
+    if (!user) return;
+    const focus = () => {
+      if (document.visibilityState === 'visible') void recheck();
+    };
+    window.addEventListener('focus', focus);
+    document.addEventListener('visibilitychange', focus);
+    return () => {
+      window.removeEventListener('focus', focus);
+      document.removeEventListener('visibilitychange', focus);
+    };
+  }, [user, recheck]);
   const expire = useCallback(() => updateUser(null), [updateUser]);
   return (
     <Session.Provider
@@ -90,9 +127,11 @@ export function SessionProvider({
         user,
         loading,
         error,
+        warning,
         developmentFixtures,
         setUser: updateUser,
         reload,
+        recheck,
         expire,
       }}
     >
@@ -111,11 +150,11 @@ export function RequireUser({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   useEffect(() => {
     if (!session.loading && !session.error && !session.user)
-      router.replace(`/login?returnTo=${encodeURIComponent(pathname + window.location.search)}`);
+      router.replace('/login?returnTo=' + encodeURIComponent(pathname + window.location.search));
   }, [session.loading, session.error, session.user, router, pathname]);
   if (session.loading) return <LoadingState text="正在确认登录状态…" />;
   if (session.error)
     return <ErrorState message={session.error} retry={() => void session.reload()} />;
   if (!session.user) return <LoadingState text="正在前往登录…" />;
-  return children;
+  return <Fragment key={session.user.id}>{children}</Fragment>;
 }

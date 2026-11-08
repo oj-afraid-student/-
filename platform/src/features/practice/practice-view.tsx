@@ -52,9 +52,8 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
   const [confirm, setConfirm] = useState(false);
   const [savedAt, setSavedAt] = useState('');
   const sending = useRef(false);
-  const snapshot = useRef<SubmitPracticeRequest | null>(
-    initial.locked ? prepareSubmission(practice, initial.drafts).payload : null,
-  );
+  const snapshot = useRef<SubmitPracticeRequest | null>(initial.pending);
+  const [hasSnapshot, setHasSnapshot] = useState(!!initial.pending);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const item = practice.items[index];
   const completed = practice.items.filter(
@@ -73,9 +72,10 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
     }
   }
   useEffect(() => {
+    if (locked && !hasSnapshot) return;
     const timer = setTimeout(() => {
       try {
-        saveDraft(key, practice, drafts, locked);
+        saveDraft(key, practice, drafts, locked, snapshot.current);
         setStorageWarning('');
         setSavedAt(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
       } catch {
@@ -83,7 +83,7 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
       }
     }, 250);
     return () => clearTimeout(timer);
-  }, [key, practice, drafts, locked]);
+  }, [key, practice, drafts, locked, hasSnapshot]);
   useEffect(() => {
     const handler = (event: BeforeUnloadEvent) => {
       if (locked || busy || storageWarning) event.preventDefault();
@@ -96,8 +96,35 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
     setConfirm(false);
     requestAnimationFrame(() => titleRef.current?.focus());
   }
+  async function querySubmission() {
+    if (sending.current) return;
+    sending.current = true;
+    setBusy(true);
+    setError('');
+    try {
+      const current = await api.practice(practice.id);
+      if (current.status === 'SUBMITTED' && current.submissionId) {
+        try {
+          localStorage.removeItem(key);
+        } catch {
+          /* Server result remains authoritative. */
+        }
+        router.replace('/results/' + encodeURIComponent(current.submissionId));
+      } else setError('当前练习尚未确认提交成功。原答案已保留，可使用原内容重试。');
+    } catch (error) {
+      if (error instanceof ApiClientError && error.status === 401) expire();
+      else setError(errorMessage(error));
+    } finally {
+      sending.current = false;
+      setBusy(false);
+    }
+  }
   async function send() {
     if (sending.current) return;
+    if (locked && !snapshot.current) {
+      setError('原提交快照无法恢复，请查询提交状态或创建新练习。');
+      return;
+    }
     const prepared = snapshot.current
       ? { payload: snapshot.current, issues: [] }
       : prepareSubmission(practice, drafts);
@@ -108,13 +135,14 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
       return;
     }
     snapshot.current = prepared.payload;
+    setHasSnapshot(true);
     setLocked(true);
     setBusy(true);
     setError('');
     setConfirm(false);
     sending.current = true;
     try {
-      saveDraft(key, practice, drafts, true);
+      saveDraft(key, practice, drafts, true, snapshot.current);
     } catch {
       setStorageWarning('当前无法保存提交快照，请保持页面打开。');
     }
@@ -129,9 +157,13 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
     } catch (error) {
       if (error instanceof ApiClientError && error.status === 400) {
         snapshot.current = null;
+        setHasSnapshot(false);
         setLocked(false);
       }
-      if (error instanceof ApiClientError && error.status === 401) expire();
+      if (error instanceof ApiClientError && error.status === 401) {
+        expire();
+        return;
+      }
       if (!(error instanceof ApiClientError && error.status === 400)) {
         try {
           const current = await api.practice(practice.id);
@@ -288,11 +320,21 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
           <p className="field-hint">提交后才计入练习记录。退出账号将清除本机草稿。</p>
           <button
             className="btn primary wide"
-            disabled={busy}
+            disabled={busy || (locked && !hasSnapshot)}
             onClick={() => (locked ? void send() : startSubmit())}
           >
             {busy ? '正在提交…' : locked ? '使用原答案重试提交' : '检查并提交'}
           </button>
+          {locked && (
+            <button className="btn wide" disabled={busy} onClick={() => void querySubmission()}>
+              重新查询提交状态
+            </button>
+          )}
+          {locked && !hasSnapshot && (
+            <Link className="btn wide" href="/practice/new">
+              创建新练习
+            </Link>
+          )}
           <p className="field-hint">判断说明及证明过程需要复核，未复核时不产生最终总分。</p>
         </aside>
       </div>

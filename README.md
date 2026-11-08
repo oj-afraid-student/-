@@ -6,6 +6,12 @@
 
 正式工程入口是 **[platform/](platform/README.md)**，采用 Next.js、TypeScript、Tailwind。根目录 `index.html`、`src/`、`data/` 属于较早的 HTML 原型，不能代表 v2.0 的功能或运行方式。v2.0 需要启动应用服务，不能仅双击 HTML 运行。
 
+## 2026-11-08 前端接入进展
+
+李梓禾基于 `cfede3e` 完成前端接入与恢复增强：真实账号、24 题八题型、三种组题、原答案重试、手动查询提交状态、固定版本原题回看、换版/下架重练和手机操作已在隔离 PostgreSQL 验收。开发样例回归另行通过。知识接口、内容复核导入与发布、共享部署及人工复核后台仍待完成，当前没有传题功能。
+
+见 [使用说明与操作步骤](platform/docs/frontend-user-guide.md) 和 [本轮验收记录与截图](platform/docs/frontend-integration-verification.md)。
+
 ## 当前完成了什么
 
 | 模块       | 已完成内容                                                             | 当前实现边界                                                                |

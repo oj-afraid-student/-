@@ -10,7 +10,9 @@ export function QuestionContent({ question }: { question: PublicQuestion }) {
       <div className="question-meta">
         <span className="tag green">{questionTypeLabels[question.type]}</span>
         <span className="tag">{difficultyLabels[question.difficulty]}</span>
-        <span className="code-label">{question.id}</span>
+        <span className="code-label">
+          {question.id} · 第 {question.version} 版
+        </span>
       </div>
       <h2 className="question-title">{question.title}</h2>
       <MathText className="question-stem">{question.stem}</MathText>
@@ -19,6 +21,35 @@ export function QuestionContent({ question }: { question: PublicQuestion }) {
       ))}
     </>
   );
+}
+export function QuestionStructure({ question }: { question: PublicQuestion }) {
+  if ('options' in question)
+    return (
+      <div className="original-question" aria-label="原题选项">
+        {question.options.map((option) => (
+          <div className="row" key={option.id}>
+            <strong>{option.id}.</strong>
+            <MathText>{option.text}</MathText>
+          </div>
+        ))}
+      </div>
+    );
+  const parts =
+    question.type === 'JUDGMENT_REASON'
+      ? question.statements
+      : 'parts' in question
+        ? question.parts
+        : [];
+  return parts.length ? (
+    <div className="original-question" aria-label="原题分问">
+      {parts.map((part, index) => (
+        <div key={part.id}>
+          <strong>（{index + 1}）</strong>
+          <MathText>{part.prompt}</MathText>
+        </div>
+      ))}
+    </div>
+  ) : null;
 }
 export function QuestionRenderer({
   question,

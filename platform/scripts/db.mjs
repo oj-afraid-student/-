@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
+import { importContent, readContentRelease } from './lib/content.mjs';
 import { applyMigrations } from './lib/migrations.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -11,8 +12,8 @@ for (const name of ['.env.local', '.env']) {
 }
 
 const command = process.argv[2];
-if (!['check', 'migrate', 'seed'].includes(command)) {
-  console.error('Usage: node scripts/db.mjs check|migrate|seed');
+if (!['check', 'migrate', 'seed', 'import-content'].includes(command)) {
+  console.error('Usage: node scripts/db.mjs check|migrate|seed|import-content');
   process.exit(1);
 }
 if (!process.env.DATABASE_URL) {
@@ -35,6 +36,9 @@ try {
   } else if (command === 'migrate') {
     const names = await applyMigrations(client, path.join(root, 'db/migrations'));
     console.log(names.length ? `已执行迁移：${names.join(', ')}` : '迁移已是最新。');
+  } else if (command === 'import-content') {
+    const { units, questions } = await importContent(client, readContentRelease());
+    console.log('正式内容导入完成：' + units + ' 个知识单元，' + questions + ' 道已发布题目。');
   } else {
     await client.query('BEGIN');
     try {

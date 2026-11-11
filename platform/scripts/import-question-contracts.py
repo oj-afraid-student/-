@@ -97,6 +97,21 @@ save('fixtures/content/questions.json', [r['question'] for r in records])
 
 # 知识文档包含的例题保留在学习内容中，不重复计作 Q01—Q24 的独立作业题。
 klines = read_doc('01_立体几何知识内容详解.docx')
+# 将内容复核中确认的文字修订应用到生成数据，保留原始资料供对照。
+knowledge_corrections = {
+    'G2-03': (
+        '也可先在 β 内分别找到与 a、b 平行的两条相交直线。',
+        '若在两个不同平面内分别找到两条相交直线，且两组直线分别平行，也可判定这两个平面平行。',
+    ),
+    'E1': (
+        '二面角 A—BD—A₁ 要按 A、A₁ 所在半平面选角，可能为锐角或钝角；“两平面所成锐角”则通常选不超过90°的那个角。',
+        '指定的二面角须按两侧半平面选角，可以是锐角、直角或钝角。图 A 中 A—BD—A₁ 的平面角为锐角。两相交平面的夹角取两个互补二面角中较小的一个，垂直时为90°。',
+    ),
+    'E2': (
+        '高指顶点或底面到所选底面的垂直距离，通常不等于侧棱或斜高。',
+        '棱柱的高是两个底面所在平面间的距离，棱锥的高是顶点到底面所在平面的距离。高通常不等于侧棱或斜高。',
+    ),
+}
 sections = []
 for i,line in enumerate(klines):
     m = re.match(r'^(G[123]-\d{2}|E[23]) (.+)$',line)
@@ -107,7 +122,12 @@ for i,line in enumerate(klines):
         end = next(j for j in range(i+1,len(klines)) if klines[j].startswith('关联：'))+1
     else:
         end = next(j for j in range(i+1,len(klines)) if klines[j] in ['拓展 E2 与 E3 距离体积和向量方法','E3 空间向量作为拓展工具','统一模型与内容复核'])
-    sections.append({'id':kid,'title':title,'paragraphs':klines[i+1:end]})
+    paragraphs = klines[i+1:end]
+    if kid in knowledge_corrections:
+        before, after = knowledge_corrections[kid]
+        assert sum(p.count(before) for p in paragraphs) == 1, f'需重新核对知识正文：{kid}'
+        paragraphs = [p.replace(before, after) for p in paragraphs]
+    sections.append({'id':kid,'title':title,'paragraphs':paragraphs})
 assert len(sections)==15
 units = []
 for n,(uid,title) in enumerate([('SG-01','空间位置关系'),('SG-02','线面平行'),('SG-03','线面垂直'),('E1','空间角'),('E2','距离与体积'),('E3','空间向量')],1):

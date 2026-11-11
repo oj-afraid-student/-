@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
 import pg from 'pg';
 const connection = process.env.ZHIXU_PRACTICE_TEST_DATABASE_URL;
@@ -129,7 +129,44 @@ try {
   }
   await anonymous.call('/practices', 'POST', { mode: 'ALL' }, 401);
   await a.call('/practices', 'POST', { mode: 'ALL' }, 404);
-  await pool.query('UPDATE question_version SET is_published = true');
+  await anonymous.call('/knowledge-points', 'GET', undefined, 401);
+  assert.deepEqual(await a.call('/knowledge-points'), []);
+  const importRelease = () => {
+    const imported = spawnSync(process.execPath, ['scripts/db.mjs', 'import-content'], {
+      cwd: new URL('../', import.meta.url),
+      env: { ...process.env, DATABASE_URL: testUrl.href },
+      encoding: 'utf8',
+    });
+    assert.equal(imported.status, 0, imported.error?.message ?? imported.stderr);
+  };
+  importRelease();
+  importRelease();
+  const units = JSON.parse(await read('fixtures/content/knowledge-units.json'));
+  assert.deepEqual(
+    await a.call('/knowledge-points'),
+    units.map(({ sections, figures, ...summary }) => summary),
+  );
+  for (const unit of units) {
+    assert.deepEqual(await a.call('/knowledge-points/' + unit.id), unit);
+    const practice = await a.call(
+      '/practices',
+      'POST',
+      {
+        mode: 'FILTERED',
+        knowledgePointId: unit.id,
+      },
+      201,
+    );
+    assert.deepEqual(
+      practice.items.map(({ question }) => question.id),
+      unit.questionIds,
+    );
+  }
+  await a.call('/knowledge-points/unknown', 'GET', undefined, 404);
+  const figure = await fetch(origin + units[0].figures[0].src);
+  assert.equal(figure.status, 200);
+  assert.match(figure.headers.get('content-type'), /^image\//);
+  console.log('PASS 正式导入重跑、六单元15知识点、图形和单元选题一致');
   await a.call('/practices', 'POST', { mode: 'ALL', userId: 'forged' }, 400);
   await a.call('/practices', 'POST', { mode: 'ALL' }, 400, { Origin: 'http://foreign.invalid' });
   const p = await a.call('/practices', 'POST', { mode: 'ALL' }, 201);
@@ -241,6 +278,7 @@ try {
   );
   assert.equal((await a.call(`/me/submissions/${sid}`)).items[0].question.version, 1);
   await pool.query("UPDATE question_version SET is_published=false WHERE question_key='Q01'");
+  assert.ok(!(await a.call('/knowledge-points/SG-01')).questionIds.includes('Q01'));
   await a.call('/practices', 'POST', { mode: 'EXPLICIT', questionIds: ['Q01'] }, 404);
   assert.deepEqual(await a.call(`/me/submissions/${sid}`), result);
   await a.call(`/practices/${p.id}/submit`, 'POST', payload(p));

@@ -191,18 +191,12 @@ try {
   await admin.query('CREATE SCHEMA ' + schema);
   for (const name of ['001_initial.sql', '002_practice_v2.sql'])
     await pool.query(await readFile(new URL('../db/migrations/' + name, import.meta.url), 'utf8'));
-  for (const record of bank)
-    await pool.query(
-      'INSERT INTO question_version (question_key,version,public_question,reference_answer,grading,source,is_published) VALUES ($1,$2,$3,$4,$5,$6,true)',
-      [
-        record.question.id,
-        record.question.version,
-        record.question,
-        record.reference,
-        record.grading,
-        record.source,
-      ],
-    );
+  const imported = spawnSync(process.execPath, ['scripts/db.mjs', 'import-content'], {
+    cwd: new URL('../', import.meta.url),
+    env: { ...process.env, DATABASE_URL: scoped.href },
+    encoding: 'utf8',
+  });
+  assert.equal(imported.status, 0, imported.error?.message ?? imported.stderr);
   await start();
   browser = await chromium.launch({
     headless: true,
@@ -228,13 +222,51 @@ try {
   assert.equal(await page.locator('.development-banner').count(), 0);
   check('关闭开发样例：真实注册不自动登录，真实 Cookie 登录成功');
 
+  const units = await read('fixtures/content/knowledge-units.json');
+  await page.goto(origin + '/learn');
+  await page.locator('.unit-card').last().waitFor();
+  assert.equal(await page.locator('.unit-card').count(), 6);
+  for (const unit of units) {
+    await page
+      .locator('.unit-card')
+      .filter({ has: page.getByRole('heading', { name: unit.title, exact: true }) })
+      .getByRole('link', { name: '进入学习' })
+      .click();
+    await page.waitForURL('**/learn/' + unit.id);
+    await page.locator('.knowledge-section').last().waitFor();
+    assert.equal(await page.locator('.knowledge-section').count(), unit.sections.length);
+    await page
+      .locator('.knowledge-content img')
+      .first()
+      .evaluate((img) => img.decode());
+    if (unit.id === 'SG-01') {
+      await page.getByRole('button', { name: '开始单元练习' }).click();
+      await page.waitForURL('**/practice/**');
+      await page.locator('.question-numbers button').last().waitFor();
+      assert.equal(await page.locator('.question-numbers button').count(), unit.questionIds.length);
+      await page.goto(origin + '/learn');
+    } else {
+      await page.getByRole('link', { name: '返回目录' }).click();
+    }
+    await page.locator('.unit-card').last().waitFor();
+  }
+  check('正式导入后打开六单元，知识正文、图形及单元练习入口可用');
+  await shot('01-真实知识目录');
+
+  const knowledgeRoute = '**/api/v1/knowledge-points';
+  await page.route(knowledgeRoute, (route) =>
+    route.fulfill({
+      status: 503,
+      json: { data: null, error: { code: 'SERVICE_UNAVAILABLE', message: '目录暂不可用。' } },
+    }),
+  );
   await page.goto(origin + '/practice/new');
   await page
     .getByText('暂时无法读取单元目录，仍可练习全部题目、按题型或难度筛选，或指定题号。', {
       exact: true,
     })
     .waitFor();
-  await shot('01-真实选题-知识目录未接入');
+  await page.unroute(knowledgeRoute);
   await page.getByRole('radio', { name: /按条件选题/ }).check();
   await page.getByLabel('单选题', { exact: true }).check();
   await page.getByLabel('多选题', { exact: true }).check();
@@ -585,7 +617,7 @@ try {
         {
           base: 'cfede3e',
           database: 'PostgreSQL 17.11; isolated temporary schema',
-          knowledge: 'No knowledge endpoints implemented or intercepted',
+          knowledge: 'Six units and their practice links use the formal PostgreSQL import',
           checks,
           errors,
           passed: true,

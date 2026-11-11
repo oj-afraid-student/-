@@ -1,8 +1,8 @@
 # 业务接口契约 v2：全量 24 题
 
 维护：王宁岳。依据 `../../docs/李梓禾_知识点文档/详细版/` 三份 DOCX。
-本契约包含接口定义、共享类型、可追溯数据与开发样例；当前已实现 health、四个真实学生认证接口及下表五个练习/提交/查询接口。实现和验证见[练习服务交接](practice-handoff.md)。
-本契约替代原先固定五道单选题的业务契约；多题型数据库迁移见[存储交接](contracts/storage-handoff.md)，知识业务路由、正式内容导入与发布仍待接通；人工批改后台不在本轮范围。真实认证说明见 [auth-handoff.md](auth-handoff.md)。
+本契约包含接口定义、共享类型、可追溯数据与开发样例；当前已实现 health、四个真实学生认证接口、两个知识接口及下表五个练习/提交/查询接口。实现和验证见[练习服务交接](practice-handoff.md)。
+本契约替代原先固定五道单选题的业务契约；多题型数据库迁移见[存储交接](contracts/storage-handoff.md)，知识内容及正式题库按[数据库说明](../db/README.md)导入。真实认证说明见 [auth-handoff.md](auth-handoff.md)。
 
 ## 统一规则
 
@@ -33,8 +33,8 @@
 | GET /me/submissions        | page、pageSize               | HistoryPage                    | 200                    | 王宁岳     |
 | GET /me/submissions/:id    | 本人 submission ID           | SubmissionDetail               | 200                    | 王宁岳     |
 
-每个入口都有请求/响应配对样例：`fixtures/api/scenarios.json`。样例与共享 DTO 保持一致；真实认证与五个练习/查询路由已实现，知识路由仍待接通。
-知识单元返回 3 个核心单元与 3 个拓展单元；15 个细分知识点位于 sections。学习例题属于学习内容，不重复作为额外练习编号。
+每个入口都有请求/响应配对样例：`fixtures/api/scenarios.json`。样例与共享 DTO 保持一致；真实认证、知识与练习路由均遵循本契约。
+知识单元返回 3 个核心单元与 3 个拓展单元；15 个细分知识点位于 sections。目录与详情中的 questionIds 随当前已发布题目版本更新，与单元选题使用相同的题目范围。学习例题属于学习内容，不重复作为额外练习编号。
 知识内容允许讲解例题；未提交练习响应不得包含参考答案、解析或判题规则。不能在学生端通过题号导入服务端答案库。
 
 ## 创建练习：取消五题限制
@@ -120,7 +120,7 @@ page 默认 1、pageSize 默认 20，page≥1，1≤pageSize≤100；不接受�
 
 ## 数据与上下游
 
-- 赵景言：维护内容复核、导入和统一 catalog；`PracticeCatalogPort.listPublished()` 返回按题号排序的最新已发布版本，`loadQuestionVersions(versionIds)` 按内部 UUID 原序读取且允许下架版本；当前最小 SQL 适配器位于 `server/practice/catalog.ts`；source-manifest 保留原文件哈希；24 题均是 DRAFT，发布前复核。原图 A 已从 DOCX 无改动提取到 public/geometry，保持 A₁ 等标记，不套用旧 ABCD-EFGH 命名。
+- 赵景言：维护内容复核、导入和统一 catalog；`PracticeCatalogPort.listPublished()` 返回按题号排序的最新已发布版本，`loadQuestionVersions(versionIds)` 按内部 UUID 原序读取且允许下架版本；当前最小 SQL 适配器位于 `server/practice/catalog.ts`；source-manifest 保留原文件哈希；正式导入使用[已复核内容](catalog-content-review.md)，发布状态以数据库为准。原图 A 已从 DOCX 无改动提取到 public/geometry，保持 A₁ 等标记，不套用旧 ABCD-EFGH 命名。
 - 穆泓烨：提供 requireCurrentUser、事务与新版持久化结构；迁移需求见 [storage-handoff.md](contracts/storage-handoff.md)。正式练习服务使用 001 + 002，不能只运行旧 001。
 - 李梓禾：按 type 渲染不同作答控件，使用 fixtures/api 的样例；只导入 shared/contracts，不能导入 fixtures/server。提交后显示待复核状态，最终结果不能只呈现分数。
 - 王宁岳：已实现五个正式路由、运行时校验、判题、事务提交与查询，保持现有共享 DTO 和38份样例不变。catalog 发布状态为 `DRAFT | PUBLISHED`，`StoredQuestionVersion.versionId` 是不对客户端暴露的内部 UUID。

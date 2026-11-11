@@ -19,7 +19,8 @@
     "check": "node scripts/check.mjs",
     "db:check": "node scripts/db.mjs check",
     "db:migrate": "node scripts/db.mjs migrate",
-    "db:seed": "node scripts/db.mjs seed"
+    "db:seed": "node scripts/db.mjs seed",
+    "db:import-content": "node scripts/db.mjs import-content"
   },
   "dependencies": {
     "next": "16.4.3",

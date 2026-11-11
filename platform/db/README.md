@@ -1,41 +1,46 @@
-# PostgreSQL 初始化与迁移
+# PostgreSQL 初始化、迁移和恢复
 
-维护人：穆泓烨。连接采用 `pg`；SQL 用参数占位符，多个保存操作通过同一事务连接执行。
+穆泓烨维护运行环境和迁移。业务模块的存储入口见[存储交接](../docs/contracts/storage-handoff.md)。
 
-## 本地数据库
+## 新环境
 
-已有 PostgreSQL 时，创建本项目专用数据库，在 `platform/.env.local` 填写 DATABASE_URL。开发数据库与共享或生产数据库分别配置。
-
-也可在 Docker 可用时，于 `platform/` 执行：
-
-```bash
-docker compose up -d db
-```
-
-此配置启动本机专用 PostgreSQL 17，绑定 `127.0.0.1:15432`。示例凭据仅供本地开发；`.env.local` 对应填写：
-
-```dotenv
-DATABASE_URL=postgresql://zhixu:zhixu_local_only@127.0.0.1:15432/zhixu
-```
-
-WSL 使用 Docker Desktop 时，先在 Docker Desktop 启用对应发行版的 WSL Integration。没有 Docker / PostgreSQL 时，首页、health、格式、类型、构建与数据库内存测试仍可运行。
-
-## 顺序执行
+1. 使用 Node.js 24.22.2、pnpm 12.16.1 和 PostgreSQL 17。进入 `platform/`，执行 `pnpm install --frozen-lockfile`。
+2. 准备项目专用数据库及有迁移权限的账号。开发库、共享联调库和生产库使用各自的凭据。已有本机 PostgreSQL 可直接使用，也可在 Docker 可用时执行 `docker compose up -d db`，使用绑定在 `127.0.0.1:15432` 的本地数据库。
+3. 参照 `.env.example` 设置 `DATABASE_URL`，本机保存到未纳入版本控制的 `.env.local`。正式联调设 `ZHIXU_DEV_FIXTURES=0`。共享环境在服务端注入连接和运行配置，通过 HTTPS 访问应用。
 
 ```bash
 pnpm db:check
 pnpm db:migrate
-pnpm db:seed
+pnpm db:import-content
+pnpm build
+pnpm start
 ```
 
-种子可重复执行，仅补齐 SG-01、SG-02、SG-03 的单元元数据，不覆盖已有内容。正式题目由李梓禾提供并复核后再导入。
+`db:check` 检查数据库连接，`/api/v1/health` 检查应用进程。注册新账号、登录、读取当前用户、退出可以单独验证真实认证。`db:import-content` 读取 [发布清单](content-release.json) 指定的已复核数据及配图，将六单元、15 个知识点和 24 道题写入数据库，并发布清单中的题目版本。复核依据见 [内容复核记录](../docs/catalog-content-review.md)。`db:seed` 仍可用于仅需三个核心单元元数据的开发环境。
 
-迁移使用事务、互斥锁和校验和。已经执行的文件禁止修改，结构变更新增 `002_...sql` 等后续迁移。迁移失败整体回滚；重复执行跳过已完成文件。
+导入在一个事务中完成。重复执行同一份发布内容保留题目内部 ID，不增加题目版本。同一题号及版本出现不同题干、答案、判定规则或来源时，导入会回滚并报告冲突。修改题目时提高版本号，修改配图时使用新地址并保留旧文件。重跑发布命令会将清单内的版本设为已发布，已下架的版本应从后续发布内容中排除。
 
-结构删除、重置和生产数据迁移需要单独评估，本工程不提供自动删除数据库的命令。
+执行导入后，用正式账号确认 `/learn` 显示三个核心单元和三个拓展单元。逐个打开详情与配图，从单元进入练习并核对题量，再用全量组题检查 24 道题。
 
-## 约束测试与真实连接
+## 迁移、备份和恢复演练
 
-`pnpm test` 在 PGlite 的 PostgreSQL 引擎运行迁移、约束和回滚检查，不需要系统级数据库服务。PGlite 仅是开发依赖，不在应用内使用。
+迁移按编号执行，使用事务、互斥锁与校验和。已执行的迁移保持原样。002 原地保留旧题、答卷和关联，再写入 v2 结构。部署前暂停目标库的业务写入，记录当前应用版本及迁移编号，使用同一 PostgreSQL 主版本的工具备份。命令通过已经配置好的 PostgreSQL service 别名连接，分别为源库和一份**空的隔离恢复库**设置 `ZHIXU_SOURCE_SERVICE`、`ZHIXU_RESTORE_SERVICE`。
 
-真实 PostgreSQL 的网络、认证、并发与部署仍通过 `db:check` 和后续接口联调验证。health 只检查应用进程，数据库不可用时它仍可能返回 ok。
+```bash
+umask 077
+pg_dump --format=custom --no-owner --no-privileges \
+  --dbname="service=${ZHIXU_SOURCE_SERVICE:?}" --file=zhixu-backup.dump
+pg_restore --list zhixu-backup.dump
+pg_restore --exit-on-error --single-transaction --no-owner --no-privileges \
+  --dbname="service=${ZHIXU_RESTORE_SERVICE:?}" zhixu-backup.dump
+```
+
+对恢复库执行 `db:check`、`db:migrate`，核对账号数量、旧练习题项顺序、提交 ID、答卷及参考解析。正式发布前，用恢复库运行对应应用版本的认证和业务读写检查。迁移失败时先检查事务回滚和迁移日志，再用独立恢复库验证备份及旧版应用，确认后切换连接。备份含账号和作答数据，保存到访问受限的位置。
+
+本地重置用一份新建的空开发库，切换 `.env.local` 后重新迁移和初始化。核验新库后再按需处理原开发库。共享库的重置和数据恢复安排独立窗口。图片资源随版本部署，备份恢复时一并核对旧版本仍可访问。
+
+## 发布检查
+
+1. 确认部署的 Git 提交、Node/pnpm 版本、迁移编号、HTTPS、数据库连接和日志访问。应用、数据库或内容导入报错时记录发生阶段与对应请求，避免在日志打印连接配置、会话令牌或学生原文。
+2. 用正式数据验收 24 题组题、提交、历史分页与回看。记录代表性请求耗时、数据库数据量和并发数，再核对重启和恢复后的同一份记录。环境或数据不同时，分别记录条件和结果。
+3. `pnpm check` 使用 PGlite 测试迁移和约束。真实数据库的认证测试见[认证交接](../docs/auth-handoff.md)，整轮验收见[开发交接](../docs/student-practice-handoff-v0.2.md)。

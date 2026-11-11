@@ -1,0 +1,7 @@
+{
+  "files": {
+    "fixtures/content/knowledge-units.json": "ff8a6caa3bd35c00c46d60d790c79e00da6983ecf12bb5491f367064533521bb",
+    "fixtures/server/question-bank.json": "5ea273389cb773e175bd72ed606c0eecf2e9f5688f9b81d0b2441dc60fcd704c",
+    "public/geometry/cube-a-v1.png": "06b43e1db25af6502ca26f30991f6dc60970f7372bab24c264ce4694c4ece616"
+  }
+}

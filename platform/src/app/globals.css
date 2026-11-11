@@ -2067,3 +2067,22 @@ td > small {
     scroll-behavior: auto !important;
   }
 }
+
+.original-question {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 19px;
+  margin: 18px 0;
+  background: #fafcf6;
+  font-size: 13px;
+}
+.original-question > div + div {
+  margin-top: 12px;
+}
+.original-question > .row {
+  align-items: flex-start;
+}
+.original-question strong {
+  flex: none;
+  font-weight: 600;
+}

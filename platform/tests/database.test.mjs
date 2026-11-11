@@ -12,6 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const migrationDir = path.join(root, 'db/migrations');
 const seed = await readFile(path.join(root, 'db/seed.sql'), 'utf8');
 let db;
+let initialOnlyDir;
 
 // PGlite 使用 PostgreSQL 引擎，在测试中无需启动本地数据库服务。
 function adapter(database) {
@@ -26,12 +27,21 @@ function adapter(database) {
   };
 }
 
+// 这些用例保留对 001 的验证。002 与升级路径由 database-v2.test.mjs 验证。
 before(async () => {
+  initialOnlyDir = await mkdtemp(path.join(os.tmpdir(), 'zhixu-001-'));
+  await writeFile(
+    path.join(initialOnlyDir, '001_initial.sql'),
+    await readFile(path.join(migrationDir, '001_initial.sql')),
+  );
   db = new PGlite();
-  await applyMigrations(adapter(db), migrationDir);
+  await applyMigrations(adapter(db), initialOnlyDir);
   await db.exec(seed);
 });
-after(async () => db?.close());
+after(async () => {
+  await db?.close();
+  if (initialOnlyDir) await rm(initialOnlyDir, { recursive: true, force: true });
+});
 
 async function question(overrides = {}) {
   const value = {
@@ -67,7 +77,7 @@ async function practice() {
 }
 
 test('迁移与种子可重复执行，种子仅创建三个单元', async () => {
-  assert.deepEqual(await applyMigrations(adapter(db), migrationDir), []);
+  assert.deepEqual(await applyMigrations(adapter(db), initialOnlyDir), []);
   await db.exec(seed);
   const { rows } = await db.query('SELECT id FROM knowledge_point ORDER BY sort_order');
   assert.deepEqual(

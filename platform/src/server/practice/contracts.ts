@@ -9,10 +9,18 @@ export interface QuestionVersionRecord {
     | { mode: 'ALIASES_OR_REVIEW'; blanks: { blankId: string; acceptedValues: string[][] }[] }
     | { mode: 'REVIEW_REQUIRED' };
   source: { document: string; questionId: string; note: string };
-  publicationStatus: 'DRAFT';
+  publicationStatus: 'DRAFT' | 'PUBLISHED';
 }
 
-/** catalog 由李梓禾实现；每次练习固定题目版本，不能在提交时读取已更新的最新版。 */
+/** 内部版本 UUID 只用于数据库引用，不进入公开题目 DTO。 */
+export interface StoredQuestionVersion extends QuestionVersionRecord {
+  versionId: string;
+}
+
+/** 同一事务内读取；发布审核和内容导入由赵景言维护。 */
 export interface PracticeCatalogPort {
-  loadQuestionVersions(questionIds: string[]): Promise<QuestionVersionRecord[]>;
+  /** 每题最新已发布版本，按题号排序；草稿新版不遮蔽已发布旧版。 */
+  listPublished(): Promise<StoredQuestionVersion[]>;
+  /** 按内部版本 ID 原序读取，包括已下架版本；缺失版本必须报错。 */
+  loadQuestionVersions(versionIds: string[]): Promise<StoredQuestionVersion[]>;
 }

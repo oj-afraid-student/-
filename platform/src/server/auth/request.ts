@@ -8,7 +8,7 @@ function invalid(message = '请求字段不符合契约。'): never {
   throw new ApiError('VALIDATION_ERROR', 400, message);
 }
 
-async function readBody(request: NextRequest): Promise<string> {
+export async function readBody(request: NextRequest): Promise<string> {
   const size = request.headers.get('content-length');
   if (size && (!/^\d+$/.test(size) || Number(size) > BODY_LIMIT)) invalid('请求内容过大。');
   if (!request.body) return '';

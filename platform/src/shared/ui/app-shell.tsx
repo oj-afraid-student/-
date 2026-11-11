@@ -15,7 +15,7 @@ const navigation = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, api, setUser, developmentFixtures } = useSession();
+  const { user, api, setUser, developmentFixtures, warning, recheck } = useSession();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -149,6 +149,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         )}
         <main id="main-content" className="content">
+          {warning && (
+            <div className="notice amber" role="status">
+              {warning}{' '}
+              <button className="btn small" onClick={() => void recheck()}>
+                重新确认登录状态
+              </button>
+            </div>
+          )}
           {children}
           <footer className="page-footer">
             <span>知序 · 理解空间，建立联系</span>

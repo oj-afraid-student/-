@@ -11,6 +11,7 @@ const navigation = [
   { href: '/learn', text: '知识学习', icon: 'book', hint: '概念 · 条件 · 例题' },
   { href: '/practice/new', text: '自主练习', icon: 'pen', hint: '选择题组，逐步推理' },
   { href: '/history', text: '练习记录', icon: 'history', hint: '回顾每一次思考' },
+  { href: '/knowledge-map', text: '知识图谱', icon: 'diamond', hint: '探索知识的上下层关系' },
 ];
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -51,6 +52,61 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         {children}
       </>
+    );
+  if (pathname === '/knowledge-map')
+    return (
+      <div className="graph-app">
+        <header className="graph-topbar">
+          <Link className="brand" href="/learn">
+            <span className="brandmark">知</span>
+            <strong>知序</strong>
+          </Link>
+          <nav aria-label="主要导航">
+            {[navigation[0], navigation[3], navigation[1], navigation[2]].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={item.href === pathname ? 'page' : undefined}
+              >
+                {item.text}
+              </Link>
+            ))}
+          </nav>
+          <div className="graph-user">
+            <span className="avatar">{user?.username.slice(0, 1).toUpperCase() ?? '同'}</span>
+            <strong>{user?.username}</strong>
+            <button
+              className="icon-button"
+              aria-label="退出登录"
+              disabled={busy}
+              onClick={() => void logout()}
+            >
+              <Icon name="exit" />
+            </button>
+          </div>
+        </header>
+        {developmentFixtures && (
+          <div className="development-banner" role="status">
+            开发样例环境 · 账号与练习数据在重启后重置
+          </div>
+        )}
+        {error && (
+          <p className="notice error" role="alert">
+            {error}
+          </p>
+        )}
+        {warning && (
+          <p className="notice amber" role="status">
+            {warning}
+            <button className="btn small" onClick={() => void recheck()}>
+              重新确认登录状态
+            </button>
+          </p>
+        )}
+        <main className="graph-main" id="main-content">
+          {children}
+        </main>
+      </div>
     );
   const current = pathname.startsWith('/practice')
     ? navigation[1]

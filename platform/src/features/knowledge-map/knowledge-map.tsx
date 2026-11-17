@@ -1,11 +1,30 @@
 'use client';
 
-import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from 'react';
 import { useResource } from '@/shared/api/use-resource';
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
 import { ancestors, radialLayout, validateStructure, type GraphStructure } from './graph-model';
 import { loadGraphStructure } from './structure';
+import { KnowledgePanel } from './knowledge-panel';
+
+function observeFocus(listener: () => void) {
+  window.addEventListener('popstate', listener);
+  window.addEventListener('zhixu:graph-focus', listener);
+  return () => {
+    window.removeEventListener('popstate', listener);
+    window.removeEventListener('zhixu:graph-focus', listener);
+  };
+}
+function readFocus() {
+  return new URLSearchParams(window.location.search).get('node');
+}
 
 export function KnowledgeMap({
   initialId,
@@ -29,9 +48,8 @@ export function KnowledgeMap({
 }
 function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?: string }) {
   const root = data.nodes.find((node) => node.parentId === null)!;
-  const [focusId, setFocusId] = useState(
-    data.nodes.some((node) => node.id === initialId) ? initialId! : root.id,
-  );
+  const requestedId = useSyncExternalStore(observeFocus, readFocus, () => initialId ?? null);
+  const focusId = data.nodes.some((node) => node.id === requestedId) ? requestedId! : root.id;
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 850, height: 650 });
@@ -56,22 +74,20 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
   }, []);
   useEffect(() => {
     const back = () => {
-      const id = new URLSearchParams(window.location.search).get('node');
-      setFocusId(data.nodes.some((node) => node.id === id) ? id! : root.id);
       setPan({ x: 0, y: 0 });
       setZoom(1);
     };
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
-  }, [data, root.id]);
+  }, []);
   function select(id: string) {
     if (id === focusId) return;
-    setFocusId(id);
     setPan({ x: 0, y: 0 });
     setZoom(1);
     const url = new URL(window.location.href);
     url.searchParams.set('node', id);
     window.history.pushState(null, '', url.pathname + url.search);
+    window.dispatchEvent(new Event('zhixu:graph-focus'));
   }
   function resetView() {
     setZoom(1);
@@ -201,6 +217,8 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
                       '--node-x': `${point?.x ?? 0}px`,
                       '--node-y': `${point?.y ?? 0}px`,
                       '--node-scale': central ? 1 : 0.64,
+                      '--node-font':
+                        node.label.length > 24 ? '18px' : node.label.length > 16 ? '21px' : '23px',
                       opacity: point ? 1 : 0,
                       visibility: point ? 'visible' : 'hidden',
                       pointerEvents: point ? 'auto' : 'none',
@@ -252,59 +270,7 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
         </footer>
       </section>
       <aside className="km-right" aria-label="关联题目与学习助手">
-        <section className="km-questions">
-          <header>
-            <h2>关联题目</h2>
-            <span className="tag">待接入</span>
-          </header>
-          <div className="km-tabs">
-            <span aria-current="page">知识点题目</span>
-            <button disabled>
-              上传的题目 <small>待接入</small>
-            </button>
-          </div>
-          <p className="km-context" aria-live="polite">
-            当前节点：<b>{focus.label}</b>
-          </p>
-          <article className="km-question-card">
-            <span className="code-label">QUESTION / 题目区域</span>
-            <h3>题目占位</h3>
-            <p>知识内容与关联题目接入后，可在这里阅读当前节点对应的题目。</p>
-            <div className="km-skeleton" aria-hidden="true">
-              <i />
-              <i />
-            </div>
-            <div className="km-figure">
-              <svg viewBox="0 0 160 120" aria-hidden="true">
-                <path
-                  d="M80 12 133 40 133 85 80 113 27 85 27 40Z M27 40 80 69 133 40 M80 69V113"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              <span>配图区域</span>
-            </div>
-          </article>
-          <div className="km-question-actions">
-            <button className="btn small" disabled>
-              上一题
-            </button>
-            <button className="btn small" disabled>
-              下一题
-            </button>
-            {focus.detailHref ? (
-              <Link className="btn small" href={focus.detailHref}>
-                知识详情
-              </Link>
-            ) : (
-              <button className="btn small" disabled>
-                知识详情
-              </button>
-            )}
-          </div>
-          <p className="km-future-note">上传题目定位与知识链高亮将在后续接入。</p>
-        </section>
+        <KnowledgePanel key={focusId} data={data} focus={focus} select={select} />
         <section className="km-chat" aria-label="AI 对话预留区">
           <header>
             <h2>

@@ -1,13 +1,22 @@
+import type { Figure } from '@/shared/contracts';
+
 export interface GraphNode {
   id: string;
   label: string;
   parentId: string | null;
-  /** Future catalog adapter may supply an authorized detail URL. */
+  kind?: 'overview' | 'group' | 'unit' | 'point';
+  code?: string;
+  summary?: string;
+  paragraphs?: string[];
+  figures?: Figure[];
+  knowledgeIds?: string[];
+  /** Optional link to a separately provided detail page. */
   detailHref?: string;
 }
 export interface GraphStructure {
   nodes: GraphNode[];
   placeholder: boolean;
+  questions?: GraphQuestion[];
 }
 export function validateStructure(data: GraphStructure): GraphStructure {
   const ids = new Map(data.nodes.map((node) => [node.id, node]));
@@ -51,4 +60,25 @@ export function radialLayout(nodes: GraphNode[], focusId: string) {
     points.set(node.id, { x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
   });
   return { points, parent, children, extent: 2 * (radius + 88) };
+}
+
+export interface GraphQuestion {
+  id: string;
+  version: number;
+  title: string;
+  stem: string;
+  knowledgeIds: string[];
+  unitIds: string[];
+  figures: Figure[];
+  options?: { id: string; text: string }[];
+  prompts?: { id: string; prompt: string }[];
+  readingOnly: boolean;
+  needsReview: boolean;
+}
+export function questionsForNode(data: GraphStructure, id: string): GraphQuestion[] {
+  const subtree = data.nodes.filter((node) =>
+    ancestors(data.nodes, node.id).some((n) => n.id === id),
+  );
+  const tags = new Set(subtree.flatMap((n) => n.knowledgeIds ?? []));
+  return (data.questions ?? []).filter((q) => q.knowledgeIds.some((tag) => tags.has(tag)));
 }

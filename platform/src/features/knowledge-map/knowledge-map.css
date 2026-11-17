@@ -531,3 +531,132 @@
     transition: none !important;
   }
 }
+
+/* The graph keeps its viewport while long question/knowledge content scrolls independently. */
+@media (min-width: 761px) {
+  .km-workspace {
+    height: calc(100dvh - 74px);
+    min-height: 700px;
+  }
+  .graph-app:has(.development-banner) .km-workspace {
+    height: calc(100dvh - 110px);
+  }
+  .km-viewport {
+    min-height: 0;
+  }
+  .km-right {
+    min-height: 0;
+  }
+  .km-questions {
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .km-chat {
+    flex-shrink: 0;
+  }
+}
+.km-node strong {
+  font-size: var(--node-font, 23px);
+  -webkit-line-clamp: 4;
+}
+.km-node-role,
+.km-node-hint {
+  font-size: 14px;
+}
+.km-question-card {
+  font-family: 'Question Numerals', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+.km-question-card .math-text {
+  font-size: 14px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.km-question-card .question-stem {
+  margin: 12px 0;
+}
+.km-question-card .geometry-figure {
+  margin: 14px 0;
+  padding: 8px;
+}
+.km-question-card .geometry-figure img {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  object-fit: contain;
+}
+.km-option {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 10px 0;
+}
+.km-option > b {
+  flex-shrink: 0;
+}
+.km-detail {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f5f7ef;
+  padding: 12px;
+  margin: 10px 0 16px;
+  font-size: 13px;
+}
+.km-detail summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+.km-detail .math-text {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.km-child-link {
+  display: block;
+  text-align: left;
+  color: var(--accent-dark);
+  margin: 8px 0;
+}
+.km-picker {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.km-picker select {
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: white;
+  color: var(--ink);
+}
+.km-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.km-tags button {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #e9f0e2;
+  color: #496c53;
+  font-size: 11px;
+  text-align: left;
+}
+.km-tags button:hover {
+  background: #d6e9cf;
+}
+.km-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.km-questions {
+  overflow-anchor: none;
+}

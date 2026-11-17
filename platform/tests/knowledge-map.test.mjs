@@ -1,18 +1,54 @@
 import './helpers/server-loader.mjs';
 import test from 'node:test';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
-const { radialLayout, validateStructure, ancestors } =
+import { readFileSync } from 'node:fs';
+const { radialLayout, validateStructure, ancestors, questionsForNode } =
   await import('../src/features/knowledge-map/graph-model.ts');
-const { placeholderStructure } = await import('../src/features/knowledge-map/structure.ts');
-test('图谱占位目录编号稳定、父链完整，可从叶子回到最高层', () => {
-  const data = validateStructure(placeholderStructure);
-  const leaf = data.nodes.find((n) => n.id === 'topic-A-1-0');
+const data = JSON.parse(
+  readFileSync(new URL('../public/content/geometry-knowledge-map.json', import.meta.url)),
+).data;
+test('真实目录39个知识点具有稳定命名空间，E1单元与细分点不冲突', () => {
+  validateStructure(data);
+  assert.equal(data.nodes.filter((n) => n.kind === 'unit').length, 15);
+  assert.equal(data.nodes.filter((n) => n.kind === 'point').length, 39);
   assert.deepEqual(
-    ancestors(data.nodes, leaf.id).map((n) => n.id),
-    ['overview', 'topic-A', 'topic-A-1', leaf.id],
+    ancestors(data.nodes, 'point:E1').map((n) => n.id),
+    ['overview', 'extension', 'unit:E1', 'point:E1'],
   );
-  assert.equal(radialLayout(data.nodes, leaf.id).children.length, 0);
-  assert.equal(radialLayout(data.nodes, leaf.id).parent.id, 'topic-A-1');
+  assert.equal(radialLayout(data.nodes, 'point:G5-04').children.length, 0);
+});
+test('题目按实际细分标签去重筛选，包含原题与扩充题，空专题不误配', () => {
+  assert.equal(questionsForNode(data, 'overview').length, 86);
+  assert.deepEqual(
+    questionsForNode(data, 'point:G5-04').map((q) => q.id),
+    ['Q58', 'Q59'],
+  );
+  assert.equal(questionsForNode(data, 'unit:E4').length, 0);
+  const cube = questionsForNode(data, 'point:G1-01');
+  assert.ok(cube.some((q) => q.id === 'Q01') && cube.some((q) => q.id === 'Q36'));
+  assert.ok(questionsForNode(data, 'unit:SG-01').every((q) => q.unitIds.includes('SG-01')));
+  assert.equal(questionsForNode(data, 'missing').length, 0);
+});
+test('62道扩充题只阅读且Q33待核，公开快照没有答案解析或判题配置', () => {
+  assert.equal(data.questions.filter((q) => q.readingOnly).length, 62);
+  assert.deepEqual(
+    data.questions.filter((q) => q.needsReview).map((q) => q.id),
+    ['Q33'],
+  );
+  const text = JSON.stringify(data);
+  for (const field of [
+    'answer',
+    'answerText',
+    'grading',
+    'reference',
+    'correctOptionIds',
+    'acceptedValues',
+    'note',
+  ])
+    assert.ok(!text.includes('"' + field + '"'));
+  assert.ok(!text.includes('展示'));
 });
 test('1至32个邻居等角排布、间距不重叠，父节点占用独立方位', () => {
   for (let count = 1; count <= 32; count++) {
@@ -53,4 +89,13 @@ test('脏目录缺父、循环、重复编号和多根被拒绝，空目录仍�
     assert.throws(() => validateStructure({ nodes, placeholder: false }));
   assert.deepEqual(validateStructure({ nodes: [], placeholder: false }).nodes, []);
   assert.throws(() => radialLayout([], 'missing'));
+});
+
+test('公开快照与上游内容一致且全部配图存在', () => {
+  const result = spawnSync(
+    process.execPath,
+    ['scripts/build-knowledge-map-content.mjs', '--check'],
+    { cwd: fileURLToPath(new URL('../', import.meta.url)), encoding: 'utf8' },
+  );
+  assert.equal(result.status, 0, result.stdout + result.stderr);
 });

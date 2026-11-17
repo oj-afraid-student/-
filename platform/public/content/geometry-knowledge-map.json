@@ -1,0 +1,3060 @@
+{
+  "data": {
+    "nodes": [
+      {
+        "id": "overview",
+        "label": "立体几何",
+        "parentId": null,
+        "kind": "overview",
+        "summary": "从知识单元进入具体考点，结合题目理解空间关系。"
+      },
+      {
+        "id": "core",
+        "label": "核心单元",
+        "parentId": "overview",
+        "kind": "group",
+        "summary": "学习空间关系、几何体与专题方法。"
+      },
+      {
+        "id": "extension",
+        "label": "拓展单元",
+        "parentId": "overview",
+        "kind": "group",
+        "summary": "连接空间角、向量与翻折等综合方法。"
+      },
+      {
+        "id": "unit:SG-01",
+        "label": "空间位置关系",
+        "code": "SG-01",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "按定义、条件、例题与易错点组织。",
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-01", "G1-02", "G1-03", "G1-04", "G1-05", "G1-06"]
+      },
+      {
+        "id": "point:G1-01",
+        "label": "平面的基本性质与共面问题",
+        "code": "G1-01",
+        "parentId": "unit:SG-01",
+        "kind": "point",
+        "paragraphs": [
+          "目标：能用点、直线、平面的关系读图，判断确定平面的条件，并证明简单的共面和共线结论。点在直线上或平面内用“∈”表示；直线在平面内用“⊂”表示。平面向各方向无限延展，图中的平行四边形只代表它的一部分。",
+          "基本事实：不共线的三点确定唯一平面；直线上两个不同点在某平面内，则整条直线在该平面内；两个不同平面有公共点时，相交于经过该点的一条直线。常用推论：一条直线及其外一点、两条相交直线、两条不同的平行直线，都能确定唯一平面。",
+          "例：证明正方体中的 A、B、C、D 共面。A、B、C 不共线，确定平面 ABC；正方体的底面是正方形 ABCD，因此 D 也在该平面内。推广到未知图形时，应先用三个不共线的点确定平面，再证明剩余点属于它。证明三点共线时，可证明三点同时属于两个不同平面的交线。",
+          "易错：三点如果共线，就不能唯一确定平面；两条异面直线不能确定一个平面。一个点在某平面内，也不能推出经过它的整条直线都在平面内。",
+          "关联：Q01、Q02；后继 G1-02 至 G1-04。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-01"]
+      },
+      {
+        "id": "point:G1-02",
+        "label": "两条直线的位置关系",
+        "code": "G1-02",
+        "parentId": "unit:SG-01",
+        "kind": "point",
+        "paragraphs": [
+          "目标：从共面性和公共点数区分相交、平行、异面。讨论两条不同直线：相交时共面且有一个公共点；平行时共面且无公共点；异面时不存在同时包含它们的平面。重合不属于本单元讨论的三种情况。",
+          "判断方法：有真实公共点，判相交；无公共点时，还需区分平行与异面。证明异面可用反证法：假设共面，再由确定平面的条件推出某个平面外点在该平面内。空间中的垂直可指异面直线所成角为直角，因此“垂直”和“相交”不等价。",
+          "例：在正方体中 AB 与 CC₁ 异面。若二者同在平面 α，则 α 包含 A、B、C；这三点不共线，所以 α 是平面 ABCD。但 C₁ 也在 α 内，与正方体结构矛盾。AB 与 CD 平行，AB 与 BC 相交，分别提供另外两类关系的实例。",
+          "易错：屏幕上两条线的投影交叉，不代表空间中相交；“不在同一个已画出的面内”也不等于异面，可能存在未画出的公共平面。",
+          "关联：Q02、Q04、Q21；后继 G1-03。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-02"]
+      },
+      {
+        "id": "point:G1-03",
+        "label": "直线与平面的位置关系",
+        "code": "G1-03",
+        "parentId": "unit:SG-01",
+        "kind": "point",
+        "paragraphs": [
+          "目标：根据公共点的数量判断线面关系。直线在平面内时有无数个公共点；相交时有且只有一个公共点；平行时没有公共点。这里的“直线在平面外”包括相交和平行两种情况。",
+          "分类流程：先检查是否整条直线都在平面内，再检查是否存在交点，最后才判定平行。线段与所画平行四边形不相交，不足以说明直线与无限延伸的平面平行；交点可能在线段延长线或所画区域外。",
+          "例：正方体中 AB 在平面 ABCD 内；AA₁ 与平面 ABCD 相交于 A；A₁B₁ 与平面 ABCD 平行。若 α∥β 且 a∥α，则 a 与 β 可能平行，也可能在 β 内；例如取 a 为 β 内一条直线，即能实现后一种情况。",
+          "易错：a 与平面内的一条直线平行时，a 可能也在该平面内；证明线面平行必须排除这种情形。直线与平面有一个已知公共点，也要检查是否还有其他公共点。",
+          "关联：Q03、Q05、Q07、Q09；后继 G2-01。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-03"]
+      },
+      {
+        "id": "point:G1-04",
+        "label": "两个平面的位置关系与交线",
+        "code": "G1-04",
+        "parentId": "unit:SG-01",
+        "kind": "point",
+        "paragraphs": [
+          "目标：理解两个不同平面只有平行、相交两类关系。平行平面无公共点；相交平面的全部公共点构成一条直线。判断时应把平面看作无限延伸的对象，不能只看示意图中两个有限区域。",
+          "寻找交线：找出两个不同公共点，连接它们；或者找到一条同时位于两个平面内的直线。证明某点在交线上，需分别证明该点属于这两个平面。面面垂直是面面相交的一种特殊情况，不是与相交并列的第三类。",
+          "例：正方体中，平面 ABB₁A₁ 与平面 ABCD 的交线是 AB；平面 A₁B₁C₁D₁ 与平面 ABCD 平行。平面 ACC₁A₁ 与两个底面分别交于 AC、A₁C₁，且这两条交线平行。",
+          "易错：两个平面各有一条直线相互平行，不能推出这两个平面平行。相交平面中的某些直线也可能平行，例如正方体两个邻侧面内的竖直棱。",
+          "关联：Q06、Q15、Q19；后继 G2-03、G3-03。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-04"]
+      },
+      {
+        "id": "point:G1-05",
+        "label": "相交直线与平行直线",
+        "code": "G1-05",
+        "parentId": "unit:SG-01",
+        "kind": "point",
+        "paragraphs": [
+          "在同一平面内，两条不同直线有唯一公共点时相交，无公共点时平行。判定平行时可用公理、平行线传递性或方向向量共线。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-05"]
+      },
+      {
+        "id": "point:G1-06",
+        "label": "异面直线",
+        "code": "G1-06",
+        "parentId": "unit:SG-01",
+        "kind": "point",
+        "paragraphs": [
+          "两条异面直线不能同在一个平面内。证明时可用反证法，或先取包含其中一条直线的辅助平面，核对另一条直线与该平面的交点及两条直线的方向。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G1-06"]
+      },
+      {
+        "id": "unit:SG-02",
+        "label": "线面平行",
+        "code": "SG-02",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "按定义、条件、例题与易错点组织。",
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G2-01", "G2-02", "G2-03", "G2-04"]
+      },
+      {
+        "id": "point:G2-01",
+        "label": "直线与平面平行的判定",
+        "code": "G2-01",
+        "parentId": "unit:SG-02",
+        "kind": "point",
+        "paragraphs": [
+          "目标：能把线面平行转化为线线平行证明。判定条件为：a 不在 α 内，b 在 α 内，且 a∥b，则 a∥α。三项条件缺一不可；在本定理中“平面外”表示“不包含于平面”。",
+          "解题步骤：确认目标直线在目标平面外；在目标平面内寻找或构造与它平行的直线；说明该辅助线确实在平面内；再引用定理。常用构造来自三角形中位线、平行四边形及棱柱对应棱。",
+          "例：三棱锥 P—ABC 中，M、N 分别为 PA、PB 的中点。由三角形 PAB 中位线定理，MN∥AB；AB 在平面 ABC 内。MN 与底面无公共点，因为它在侧面 PAB 内平行于该侧面与底面的交线 AB，所以 MN 在底面外，进而 MN∥平面 ABC。",
+          "易错：只写“MN∥AB，所以 MN∥底面”缺少对象归属和排除直线在平面内的说明。已有线面平行时，不能推断它平行于平面内的每条直线。",
+          "关联：Q07、Q09、Q10；前置 G1-03。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G2-01"]
+      },
+      {
+        "id": "point:G2-02",
+        "label": "直线与平面平行的性质",
+        "code": "G2-02",
+        "parentId": "unit:SG-02",
+        "kind": "point",
+        "paragraphs": [
+          "目标：利用截面把已知的线面平行转化为线线平行。若 a∥α，另有平面 β 包含 a，且 α 与 β 相交于 b，则 a∥b。必须同时具备“过 a 的平面”和“明确交线”两个条件。",
+          "证明思路：a、b 同在 β 内；若它们相交，交点就在 α 内，与 a∥α 矛盾，因此二者平行。应用时常主动作一个经过 a 的辅助平面，使得与 α 的交线可以连接或计算。",
+          "例：α∩β＝b，a 在 β 内且 a∥α。由性质得 a∥b。若再有 c 在 β 内且 c∥α，则 c∥b；在 a、c 不重合时，可进一步得到 a∥c。同一截面条件十分关键，跨出 β 后 a、c 可能异面。",
+          "易错：若没有要求辅助平面经过 a，就不能由它与 α 的交线推断线线平行；若 β∥α，则交线不存在，本性质也无从使用。",
+          "关联：Q05、Q19 中的截面思想；前置 G2-01。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G2-02"]
+      },
+      {
+        "id": "point:G2-03",
+        "label": "两个平面平行的判定",
+        "code": "G2-03",
+        "parentId": "unit:SG-02",
+        "kind": "point",
+        "paragraphs": [
+          "目标：用一个平面内的两条相交直线控制平面的两个方向。若 a、b 在 α 内，a 与 b 相交，且 a∥β、b∥β，则 α∥β。若在两个不同平面内分别找到两条相交直线，且两组直线分别平行，也可判定这两个平面平行。",
+          "证明流程：明确两条直线同属待证平面；检查其交点；分别完成两次线面平行；再引用面面平行判定。三角形中位线和同一顶点出发的等比例分点，是构造两组平行线的常见方法。",
+          "例：三棱锥 P—ABC 中，M、N、R 分别是 PA、PB、PC 的中点。MN∥AB，MR∥AC；故 MN、MR 都与平面 ABC 平行。MN∩MR＝M，两线都在平面 MNR 内，因此平面 MNR∥平面 ABC。",
+          "易错：将“两条相交直线”换成“两条平行直线”会失效。两个相交平面也可沿共同方向各含无数条平行直线，不能据数量多就推出面面平行。",
+          "关联：Q11、Q20；前置 G2-01、G1-04。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G2-03"]
+      },
+      {
+        "id": "point:G2-04",
+        "label": "两个平面平行的性质",
+        "code": "G2-04",
+        "parentId": "unit:SG-02",
+        "kind": "point",
+        "paragraphs": [
+          "目标：会用平行平面产生线面平行和线线平行。性质一：α∥β，且 a 在 α 内，则 a∥β。性质二：α∥β，γ 分别与它们交于 a、b，则 a∥b。",
+          "性质二的证明：a、b 在 γ 内；若有公共点，该点同时属于 α、β，与两平面平行矛盾，所以 a、b 是同一平面内不相交的两条直线。注意 α 内任一直线与 β 内任一直线可以平行或异面，不能相交。",
+          "例：正方体上下底面平行，用对角截面 ACC₁A₁ 去截，得到 AC∥A₁C₁。若用一个与两底面都相交的斜截面去截，所得两条交线依然平行，与截面是否垂直于底面无关。",
+          "易错：从 a∥α、a∥β 不能推出 α∥β；同一条直线可同时平行于两个相交平面。使用截线平行时，要说清截线来自哪三个平面。",
+          "关联：Q03、Q06、Q19、Q20；前置 G1-04、G2-03。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G2-04"]
+      },
+      {
+        "id": "unit:SG-03",
+        "label": "线面垂直",
+        "code": "SG-03",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "按定义、条件、例题与易错点组织。",
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G3-01", "G3-02", "G3-03", "G3-04"]
+      },
+      {
+        "id": "point:G3-01",
+        "label": "直线与平面垂直的判定",
+        "code": "G3-01",
+        "parentId": "unit:SG-03",
+        "kind": "point",
+        "paragraphs": [
+          "目标：用两条相交直线验证垂直关系。直线与平面垂直，指它垂直于平面内任意一条直线。判定定理：a、b 在 α 内且相交，l⊥a、l⊥b，则 l⊥α。",
+          "证明流程：在目标平面内找交叉的两条直线；分别给出垂直依据；标明它们的交点和所属平面。垂直依据可来自正方形邻边、直角三角形、等腰三角形底边中线，或者已知的线面垂直性质。",
+          "例：正方体中，AA₁⊥AB、AA₁⊥AD；AB 与 AD 相交于 A，且都在平面 ABCD 内，所以 AA₁⊥平面 ABCD。由侧面正方形结构，还可对其他三条侧棱作同样证明。",
+          "易错：垂直于平面内两条平行直线还不足以判定。即使垂直于平面内无数条直线，如果这些直线方向相同，也不能保证线面垂直。",
+          "关联：Q08、Q12、Q23；前置 G1-03。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G3-01"]
+      },
+      {
+        "id": "point:G3-02",
+        "label": "直线与平面垂直的性质",
+        "code": "G3-02",
+        "parentId": "unit:SG-03",
+        "kind": "point",
+        "paragraphs": [
+          "目标：把线面垂直转化为线线垂直或线线平行。若 l⊥α，且 m 在 α 内，则 l⊥m；m 无须经过垂足。两条不同直线若都垂直于同一平面，则互相平行。若 a∥b 且 a⊥α，则 b⊥α。",
+          "使用时先核对目标线确实在被垂直的平面内。空间直线的垂直允许异面，因此从线面垂直导出的垂直关系未必都有交点。过空间任一点有且只有一条直线与给定平面垂直。",
+          "例：AA₁⊥平面 ABCD，BC 在底面内，因此 AA₁⊥BC；两条线不相交，但方向垂直。又因为 BB₁⊥同一底面，可得 AA₁∥BB₁。反过来，借助侧棱平行也可传递线面垂直。",
+          "易错：垂直于同一条直线的两条直线不一定平行，例如同一平面内两条相交直线都可垂直于该平面的垂线。不要把“同垂直于一个平面”替换成“同垂直于一条直线”。",
+          "关联：Q08、Q12、Q15；前置 G3-01。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G3-02"]
+      },
+      {
+        "id": "point:G3-03",
+        "label": "两个平面垂直的判定",
+        "code": "G3-03",
+        "parentId": "unit:SG-03",
+        "kind": "point",
+        "paragraphs": [
+          "目标：用线面垂直证明面面垂直。两个相交平面所成的二面角为直二面角时，两平面垂直。常用判定：若平面 α 内有直线 l，且 l⊥β，则 α⊥β。",
+          "证明流程：在一个平面内寻找另一个平面的垂线；必要时先用两条相交直线证线面垂直；最后写出垂线属于哪个平面。面面垂直并不要求一个平面内的每条直线都垂直于另一个平面。",
+          "例：正方体的对角截面 ACC₁A₁ 包含 AA₁，而 AA₁⊥平面 ABCD，所以平面 ACC₁A₁⊥平面 ABCD。它不是侧面，但仍可用同一定理。",
+          "易错：两平面各有一条直线互相垂直，不能推出面面垂直；同垂直于第三个平面的两个平面，也不一定平行，它们可以相交。",
+          "关联：Q15、Q16、Q24；前置 G3-01、G1-04。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G3-03"]
+      },
+      {
+        "id": "point:G3-04",
+        "label": "两个平面垂直的性质",
+        "code": "G3-04",
+        "parentId": "unit:SG-03",
+        "kind": "point",
+        "paragraphs": [
+          "目标：从面面垂直找出线面垂直。若 α⊥β，α∩β＝l，m 在 α 内且 m⊥l，则 m⊥β。三个检查点是：面面垂直、m 属于其中一个平面、m 垂直于交线。",
+          "常用构造：在一个侧面内向底面交线作垂线。若侧面三角形是等腰三角形，可连顶点与底边中点，得到底边上的高；再用面面垂直性质把它提升为整个底面的垂线。",
+          "例：四棱锥 P—ABCD 中，平面 PAD⊥底面 ABCD，PA＝PD，E 是 AD 中点。等腰三角形 PAD 中 PE⊥AD；两平面交线为 AD，PE 在平面 PAD 内，故 PE⊥平面 ABCD。进而 PE 垂直于底面内任意直线。",
+          "易错：只知道 PE 在垂直侧面内，并不能推出 PE⊥底面；PE⊥交线 AD 才是决定性条件。性质定理得到的“平面垂线”与任意斜线应分清。",
+          "关联：Q17、Q24；前置 G3-03、G3-01。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["G3-04"]
+      },
+      {
+        "id": "unit:E1",
+        "label": "空间角",
+        "code": "E1",
+        "parentId": "extension",
+        "kind": "unit",
+        "summary": "源文档学习内容；拓展单元按前置知识选学。",
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["E1"]
+      },
+      {
+        "id": "point:E1",
+        "label": "空间角的识别与计算",
+        "code": "E1",
+        "parentId": "unit:E1",
+        "kind": "point",
+        "paragraphs": [
+          "异面直线所成角",
+          "把两条异面直线分别平移到同一点，取它们所成的锐角或直角，范围大于0°且不超过90°。基本步骤：平移找角、证明对应边平行、放入三角形求角。若作出的三角形内角为钝角，最后应取其补角。",
+          "例：正方体中的 AB₁ 与 BC₁，可用 AD₁∥BC₁，把问题转为 AB₁ 与 AD₁ 的夹角。连接 B₁D₁ 得到等边三角形，所以角为60°。对应 Q21。",
+          "直线与平面所成角",
+          "斜线与平面所成角，是斜线与其在平面上的正射影所成的锐角；直线平行于平面或在平面内时，约定为0°；直线垂直于平面时为90°。先找垂足，再连射影，才能确定角的位置。",
+          "设斜线段端点 P 在平面外，另一端 A 在平面内，PH 垂直于平面，H 为垂足。AH 是 PA 的射影，所求角为 ∠PAH；在直角三角形 PAH 中，正弦等于 PH 与 PA 的比。若 A＝H，则线面角为90°，无需寻找非零射影。对应 Q13。",
+          "二面角与平面角",
+          "二面角由一条棱及从这条棱出发的两个半平面组成。在棱上取点 O，分别在两个半平面内作垂直于棱的射线，所得角为二面角的平面角。应证明两条射线分别在指定半平面内，且均垂直于棱。",
+          "指定的二面角须按两侧半平面选角，可以是锐角、直角或钝角。图 A 中 A—BD—A₁ 的平面角为锐角。两相交平面的夹角取两个互补二面角中较小的一个，垂直时为90°。法向量计算取绝对值只能得到两平面的锐角或直角，不能不经判断直接当作任意指定二面角。对应 Q22、Q24。",
+          "常见错误与自检",
+          "异面直线角不能直接测量图上两线的夹角；线面角不能用斜线与平面内任意直线的夹角代替；二面角不能只连接两个顶点就认定角。每次求角前，先写“为什么该角就是所求角”。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["E1"]
+      },
+      {
+        "id": "unit:E2",
+        "label": "距离与体积",
+        "code": "E2",
+        "parentId": "extension",
+        "kind": "unit",
+        "summary": "源文档学习内容；拓展单元按前置知识选学。",
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["E2"]
+      },
+      {
+        "id": "point:E2",
+        "label": "距离与体积",
+        "code": "E2",
+        "parentId": "unit:E2",
+        "kind": "point",
+        "paragraphs": [
+          "点到平面的距离是点与垂足之间的长度。直线与平面平行时，直线上任一点到平面的距离相等；两个平行平面间的距离，可取其中一个平面内任一点到另一个平面的距离。若点、线、面已相交，不能直接套用“平行对象间距离”的表述。",
+          "求距离的常见路径：直接作垂线；借助平行关系转移到易求的点；同一棱锥更换底面，用体积相等反求高。计算之前必须证明所取线段为相应平面的垂线段。点分处平面同侧或异侧会影响中点距离，应使用有向距离分类讨论。对应 Q14。",
+          "棱柱体积为底面积乘高；棱锥体积为底面积乘高的三分之一。棱柱的高是两个底面所在平面间的距离，棱锥的高是顶点到底面所在平面的距离。高通常不等于侧棱或斜高。同一图形更换底面时，高也必须随之改变。对应 Q18、Q24。",
+          "面积比来自平面三角形相似时，要把线性比平方；体积比来自三维相似时，要把线性比立方。Q20 中重心三角形与底面三角形的对应边长比为1∶3，面积比才是1∶9，而不是重心在线段上的分点比直接平方。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["E2"]
+      },
+      {
+        "id": "unit:E3",
+        "label": "空间向量",
+        "code": "E3",
+        "parentId": "extension",
+        "kind": "unit",
+        "summary": "源文档学习内容；拓展单元按前置知识选学。",
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["E3"]
+      },
+      {
+        "id": "point:E3",
+        "label": "空间向量作为拓展工具",
+        "code": "E3",
+        "parentId": "unit:E3",
+        "kind": "point",
+        "paragraphs": [
+          "优先以三条两两垂直的棱或垂线为坐标轴。写清原点、轴方向和单位，再给点坐标。方向向量为终点坐标减起点坐标；两非零方向向量数量积为0，表示对应直线垂直。",
+          "平面的法向量是垂直于平面内两个不共线方向的非零向量。用两个数量积等于0求法向量时，要避免全零解；已知候选向量时，应代入两个独立方向检查。两平面的锐夹角可用两法向量数量积的绝对值与模长乘积之比求余弦。",
+          "动点题把坐标写成参数，代入垂直或平行条件求参数，再检查点是否在线段给定范围内。最后要说明条件既必要又充分。Q23 的 F(t,1,0) 必须满足0≤t≤1；求出 t 后不能省略线面垂直判定。"
+        ],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "knowledgeIds": ["E3"]
+      },
+      {
+        "id": "unit:SG-11",
+        "label": "空间几何体概念",
+        "code": "SG-11",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "识别常见空间几何体并计算面积、体积。",
+        "figures": [],
+        "knowledgeIds": ["G11-01", "G11-02", "G11-03"]
+      },
+      {
+        "id": "point:G11-01",
+        "label": "认识常见空间几何体",
+        "code": "G11-01",
+        "parentId": "unit:SG-11",
+        "kind": "point",
+        "paragraphs": [
+          "区分棱柱、棱锥、棱台和圆柱、圆锥、圆台、球。识别时先看底面、侧面与棱的关系。正棱锥还要求顶点在底面中心的正上方。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G11-01"]
+      },
+      {
+        "id": "point:G11-02",
+        "label": "几何体的表面积与侧面积",
+        "code": "G11-02",
+        "parentId": "unit:SG-11",
+        "kind": "point",
+        "paragraphs": [
+          "表面积由各外表面面积相加得到。圆锥侧面积为 πrl，圆台侧面积为 π(R＋r)l，球的表面积为 4πr²。r、R 为圆的半径，l 为母线长。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G11-02"]
+      },
+      {
+        "id": "point:G11-03",
+        "label": "几何体的体积",
+        "code": "G11-03",
+        "parentId": "unit:SG-11",
+        "kind": "point",
+        "paragraphs": [
+          "柱体体积为 Sh，锥体体积为 Sh/3。相似平行底面的台体体积为 h(S₁＋√(S₁S₂)＋S₂)/3，球的体积为 4πr³/3。计算时区分垂直高度和侧棱、母线。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G11-03"]
+      },
+      {
+        "id": "unit:SG-05",
+        "label": "空间中的距离问题",
+        "code": "SG-05",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "按点、线、面之间的对象关系求最短距离。",
+        "figures": [],
+        "knowledgeIds": ["G5-01", "G5-02", "G5-03", "G5-04", "G5-05"]
+      },
+      {
+        "id": "point:G5-01",
+        "label": "点到直线的距离",
+        "code": "G5-01",
+        "parentId": "unit:SG-05",
+        "kind": "point",
+        "paragraphs": [
+          "点到直线的距离是点到垂足的线段长。可在含该点和直线的平面内作垂线，也可用方向向量求垂直分量的长度。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G5-01"]
+      },
+      {
+        "id": "point:G5-02",
+        "label": "点到平面的距离",
+        "code": "G5-02",
+        "parentId": "unit:SG-05",
+        "kind": "point",
+        "paragraphs": [
+          "点到平面的距离是点到其正射影的线段长。平面方程已知时，可用点的坐标代入平面方程的左式并取绝对值，再除以法向量长度。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G5-02"]
+      },
+      {
+        "id": "point:G5-03",
+        "label": "平行直线间的距离与直线到平行平面的距离",
+        "code": "G5-03",
+        "parentId": "unit:SG-05",
+        "kind": "point",
+        "paragraphs": [
+          "两条平行线可在一条上任选一点，转化为点到另一线的距离。直线与平面平行时，可在直线上任选一点，转化为点到平面的距离。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G5-03"]
+      },
+      {
+        "id": "point:G5-04",
+        "label": "异面直线间的距离",
+        "code": "G5-04",
+        "parentId": "unit:SG-05",
+        "kind": "point",
+        "paragraphs": [
+          "异面直线间的距离等于公垂线段的长度。用坐标法时，将分别位于两条直线上的点连成向量，再取该向量在两直线方向的公法向上的投影长度。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G5-04"]
+      },
+      {
+        "id": "point:G5-05",
+        "label": "平行平面之间的距离",
+        "code": "G5-05",
+        "parentId": "unit:SG-05",
+        "kind": "point",
+        "paragraphs": [
+          "在一个平面上任选一点，求它到另一平面的距离。若两个平面方程采用相同法向量，距离等于常数项之差的绝对值除以法向量长度。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G5-05"]
+      },
+      {
+        "id": "unit:SG-06",
+        "label": "空间中的角度问题",
+        "code": "SG-06",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "从线线角、线面角、面面角的定义出发选取求法。",
+        "figures": [],
+        "knowledgeIds": ["G6-01", "G6-02", "G6-03"]
+      },
+      {
+        "id": "point:G6-01",
+        "label": "空间直线夹角的定义与求解",
+        "code": "G6-01",
+        "parentId": "unit:SG-06",
+        "kind": "point",
+        "paragraphs": [
+          "把异面直线平移到相交的位置，取两直线所成的锐角或直角。向量求角时取点积绝对值以消除方向选取的影响。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G6-01"]
+      },
+      {
+        "id": "point:G6-02",
+        "label": "直线与平面所成角的定义与求解",
+        "code": "G6-02",
+        "parentId": "unit:SG-06",
+        "kind": "point",
+        "paragraphs": [
+          "斜线与平面的夹角是它与自身在平面上正射影的锐角。用法向量时，夹角正弦是直线方向单位向量与平面单位法向量点积的绝对值。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G6-02"]
+      },
+      {
+        "id": "point:G6-03",
+        "label": "平面夹角与二面角",
+        "code": "G6-03",
+        "parentId": "unit:SG-06",
+        "kind": "point",
+        "paragraphs": [
+          "平面夹角通常取锐角或直角。指定二面角需要在两个指定半平面中各取一条与棱垂直的射线，从而确定取锐角还是钝角。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G6-03"]
+      },
+      {
+        "id": "unit:SG-07",
+        "label": "截面问题",
+        "code": "SG-07",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "从截平面与各面的交线恢复截面形状，再计算周长或面积。",
+        "figures": [],
+        "knowledgeIds": ["G7-01", "G7-02"]
+      },
+      {
+        "id": "point:G7-01",
+        "label": "截面识别与作图",
+        "code": "G7-01",
+        "parentId": "unit:SG-07",
+        "kind": "point",
+        "paragraphs": [
+          "过三个不共线的点可以确定截平面。依次找截平面与各个面的共有线段，沿多面体的边界连接相邻交点形成截面。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G7-01"]
+      },
+      {
+        "id": "point:G7-02",
+        "label": "截面周长、面积与极值",
+        "code": "G7-02",
+        "parentId": "unit:SG-07",
+        "kind": "point",
+        "paragraphs": [
+          "先确认截面形状和顶点，再计算平面内的长度与面积。动点或动平面的题还要判断极值位置是否落在允许范围内。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G7-02"]
+      },
+      {
+        "id": "unit:SG-08",
+        "label": "空间几何体的切接问题",
+        "code": "SG-08",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "区分内切、外接和棱切的条件，再确定球心及半径。",
+        "figures": [],
+        "knowledgeIds": ["G8-01", "G8-02", "G8-03"]
+      },
+      {
+        "id": "point:G8-01",
+        "label": "几何体的内切球",
+        "code": "G8-01",
+        "parentId": "unit:SG-08",
+        "kind": "point",
+        "paragraphs": [
+          "内切球与几何体的各个面相切，球心到各面的距离均为半径。多面体存在内切球时，可将其分成以各面为底、球心为顶点的小棱锥，得到 V＝rS/3。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G8-01"]
+      },
+      {
+        "id": "point:G8-02",
+        "label": "几何体的外接球",
+        "code": "G8-02",
+        "parentId": "unit:SG-08",
+        "kind": "point",
+        "paragraphs": [
+          "外接球的球面经过几何体的各个顶点。可以利用球心到各顶点等距写出方程，也可以从对称性或底面外接圆确定球心的候选位置。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G8-02"]
+      },
+      {
+        "id": "point:G8-03",
+        "label": "几何体的棱切球",
+        "code": "G8-03",
+        "parentId": "unit:SG-08",
+        "kind": "point",
+        "paragraphs": [
+          "棱切球与多面体的各条棱相切。由同一顶点引出的各条切线段等长，因此有棱切球的四面体三组对棱长度之和相等。计算完成后检查切点落在棱上。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G8-03"]
+      },
+      {
+        "id": "unit:SG-09",
+        "label": "斜二测画法",
+        "code": "SG-09",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "按两个轴向的缩放规则画直观图或还原原图。",
+        "figures": [],
+        "knowledgeIds": ["G9-01", "G9-02"]
+      },
+      {
+        "id": "point:G9-01",
+        "label": "斜二测作图规则与图形性质",
+        "code": "G9-01",
+        "parentId": "unit:SG-09",
+        "kind": "point",
+        "paragraphs": [
+          "标准画法中，两轴在纸面上取 45° 或 135°，平行于 x 轴的线段保持长度，平行于 y 轴的线段取原长的一半。平行和共线关系保留，角度与一般线段长度随方向改变。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G9-01"]
+      },
+      {
+        "id": "point:G9-02",
+        "label": "由直观图还原长度与面积",
+        "code": "G9-02",
+        "parentId": "unit:SG-09",
+        "kind": "point",
+        "paragraphs": [
+          "根据图中方向恢复原图的两个轴向分量。水平图形的直观图面积为原面积的 √2/4，可用该比例在原图与直观图之间换算。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G9-02"]
+      },
+      {
+        "id": "unit:SG-10",
+        "label": "几何体的展开图问题",
+        "code": "SG-10",
+        "parentId": "core",
+        "kind": "unit",
+        "summary": "识别展开关系并求通过指定面或边的最短路径。",
+        "figures": [],
+        "knowledgeIds": ["G10-01", "G10-02"]
+      },
+      {
+        "id": "point:G10-01",
+        "label": "几何体的展开图",
+        "code": "G10-01",
+        "parentId": "unit:SG-10",
+        "kind": "point",
+        "paragraphs": [
+          "沿适当的棱展开多面体时，共边两侧的面可展开到同一平面。圆锥侧面展开为扇形，扇形半径为母线长，弧长等于锥底圆周长。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G10-01"]
+      },
+      {
+        "id": "point:G10-02",
+        "label": "空间中的最短路径问题",
+        "code": "G10-02",
+        "parentId": "unit:SG-10",
+        "kind": "point",
+        "paragraphs": [
+          "在指定面或线段约束下，用展开、翻折或平面转化把折线最短问题变成直线距离。直线交点须在允许的棱或线段上，否则还要检查端点。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["G10-02"]
+      },
+      {
+        "id": "unit:E4",
+        "label": "圆锥的截面与圆锥曲线",
+        "code": "E4",
+        "parentId": "extension",
+        "kind": "unit",
+        "summary": "按截平面与圆锥轴、母线的相对位置识别截线。",
+        "figures": [],
+        "knowledgeIds": ["E4-01"]
+      },
+      {
+        "id": "point:E4-01",
+        "label": "圆锥截面与圆锥曲线识别",
+        "code": "E4-01",
+        "parentId": "unit:E4",
+        "kind": "point",
+        "paragraphs": [
+          "截平面垂直于轴且避开锥顶时截得圆。一般位置可得到椭圆、抛物线或双圆锥的双曲线。讨论截平面经过锥顶时，需要另行处理退化情形。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["E4-01"]
+      },
+      {
+        "id": "unit:E5",
+        "label": "翻折问题",
+        "code": "E5",
+        "parentId": "extension",
+        "kind": "unit",
+        "summary": "保持折叠前后的不变量，用翻折角刻画空间关系。",
+        "figures": [],
+        "knowledgeIds": ["E5-01"]
+      },
+      {
+        "id": "point:E5-01",
+        "label": "沿折痕翻折与空间关系",
+        "code": "E5-01",
+        "parentId": "unit:E5",
+        "kind": "point",
+        "paragraphs": [
+          "翻折可看作部分平面图形绕折痕旋转。折痕上的点不动，同一刚性图形内的长度与角度保持。遇到动点、夹角和体积极值时，可用折痕作坐标轴并用翻折角描述点的位置。"
+        ],
+        "figures": [],
+        "knowledgeIds": ["E5-01"]
+      }
+    ],
+    "placeholder": false,
+    "questions": [
+      {
+        "id": "Q01",
+        "version": 1,
+        "title": "确定平面的条件",
+        "stem": "下列对象中，能够确定唯一平面的是哪一项？",
+        "knowledgeIds": ["G1-01"],
+        "unitIds": ["SG-01"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "空间中任意三个点"
+          },
+          {
+            "id": "B",
+            "text": "一条直线上的三个不同点"
+          },
+          {
+            "id": "C",
+            "text": "一条直线与它外面的一个点"
+          },
+          {
+            "id": "D",
+            "text": "两条异面直线"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q02",
+        "version": 1,
+        "title": "相交直线确定平面",
+        "stem": "已知 a、b 为异面直线，c 分别与它们相交。只考虑这三条直线中两条能确定的不同平面，共有________个。",
+        "knowledgeIds": ["G1-01", "G1-02"],
+        "unitIds": ["SG-01"],
+        "figures": [],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q03",
+        "version": 1,
+        "title": "平行平面中的线面关系",
+        "stem": "设 α、β 是两个不同的平行平面，a∥α。以下哪些情况可能发生？",
+        "knowledgeIds": ["G1-03", "G2-04"],
+        "unitIds": ["SG-01", "SG-02"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "a∥β"
+          },
+          {
+            "id": "B",
+            "text": "a 在 β 内"
+          },
+          {
+            "id": "C",
+            "text": "a 与 β 相交且只有一个公共点"
+          },
+          {
+            "id": "D",
+            "text": "a⊥β"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q04",
+        "version": 1,
+        "title": "正方体中的异面直线",
+        "stem": "在图 A 的正方体中，下列哪组直线异面？",
+        "knowledgeIds": ["G1-02"],
+        "unitIds": ["SG-01"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "AB 与 CD"
+          },
+          {
+            "id": "B",
+            "text": "AB 与 CC₁"
+          },
+          {
+            "id": "C",
+            "text": "AA₁ 与 BB₁"
+          },
+          {
+            "id": "D",
+            "text": "AB 与 BC"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q05",
+        "version": 1,
+        "title": "判定与性质辨析",
+        "stem": "判断并说明理由：①a∥α，则 a 平行于 α 内的每一条直线。②a∥α，β 经过 a 且 β∩α＝b，则 a∥b。",
+        "knowledgeIds": ["G1-03", "G2-02"],
+        "unitIds": ["SG-01", "SG-02"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "s1",
+            "prompt": "a∥α，则 a 平行于 α 内的每一条直线。"
+          },
+          {
+            "id": "s2",
+            "prompt": "a∥α，β 经过 a 且 β∩α＝b，则 a∥b。"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q06",
+        "version": 1,
+        "title": "截面与交线",
+        "stem": "图 A 中，平面 ACC₁A₁ 与下底面、上底面的交线依次为________、________；这两条交线的关系是________。",
+        "knowledgeIds": ["G1-04", "G2-04"],
+        "unitIds": ["SG-01", "SG-02"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q07",
+        "version": 1,
+        "title": "线面平行的完整条件",
+        "stem": "已知 b 在平面 α 内，a∥b。以下哪个补充条件能保证 a∥α？",
+        "knowledgeIds": ["G2-01"],
+        "unitIds": ["SG-02"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "a 与 α 至少有一个公共点"
+          },
+          {
+            "id": "B",
+            "text": "a 不在 α 内"
+          },
+          {
+            "id": "C",
+            "text": "a 在 α 内"
+          },
+          {
+            "id": "D",
+            "text": "a 与 b 同在一个平面内"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q08",
+        "version": 1,
+        "title": "平面垂线的性质",
+        "stem": "已知 a⊥α，m、n 是 α 内不同直线。下列必然成立的是哪些？",
+        "knowledgeIds": ["G3-01", "G3-02"],
+        "unitIds": ["SG-03"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "a⊥m"
+          },
+          {
+            "id": "B",
+            "text": "m∥n"
+          },
+          {
+            "id": "C",
+            "text": "任一直线 b 若 b⊥α 且 b≠a，则 b∥a"
+          },
+          {
+            "id": "D",
+            "text": "a∥α"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q09",
+        "version": 1,
+        "title": "结构中的线面平行",
+        "stem": "图 A 中，证明 A₁B₁∥平面 ABCD。",
+        "knowledgeIds": ["G2-01"],
+        "unitIds": ["SG-02"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "写出完整证明过程"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q10",
+        "version": 1,
+        "title": "三角形中位线与线面平行",
+        "stem": "三棱锥 P—ABC 中，M、N 分别为 PA、PB 的中点。证明 MN∥平面 ABC。",
+        "knowledgeIds": ["G2-01"],
+        "unitIds": ["SG-02"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "写出完整证明过程"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q11",
+        "version": 1,
+        "title": "中点截面的面面平行",
+        "stem": "三棱锥 P—ABC 中，M、N、R 分别为 PA、PB、PC 的中点。证明平面 MNR∥平面 ABC。",
+        "knowledgeIds": ["G2-03"],
+        "unitIds": ["SG-02"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "写出完整证明过程"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q12",
+        "version": 1,
+        "title": "侧棱垂直于底面",
+        "stem": "图 A 中，证明 CC₁⊥平面 ABCD，并说明 CC₁ 与 AB 是否垂直。",
+        "knowledgeIds": ["G3-01", "G3-02"],
+        "unitIds": ["SG-03"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "证明 CC₁⊥平面 ABCD"
+          },
+          {
+            "id": "p2",
+            "prompt": "说明 CC₁ 与 AB 是否垂直，并给出理由"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q13",
+        "version": 1,
+        "title": "体对角线与底面的夹角",
+        "stem": "图 A 中，正方体棱长为 2，设直线 AC₁ 与平面 ABCD 所成角为 θ，求 sin θ＝________。",
+        "knowledgeIds": ["E1"],
+        "unitIds": ["E1"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q14",
+        "version": 1,
+        "title": "中点距离的分类讨论",
+        "stem": "两点 U、V 到平面 α 的距离依次为 5、9，M 是 UV 中点。若未说明 U、V 位于平面哪一侧，M 到 α 的距离可能为________。",
+        "knowledgeIds": ["E2"],
+        "unitIds": ["E2"],
+        "figures": [],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q15",
+        "version": 1,
+        "title": "平行垂直关系中的错误类比",
+        "stem": "判断并给出理由：①α⊥γ、β⊥γ，则 α∥β。②α∥γ、β⊥γ，则 β⊥α。均假设提及的平面互不重合。",
+        "knowledgeIds": ["G3-02", "G3-03"],
+        "unitIds": ["SG-03"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "s1",
+            "prompt": "α⊥γ、β⊥γ，则 α∥β。"
+          },
+          {
+            "id": "s2",
+            "prompt": "α∥γ、β⊥γ，则 β⊥α。均假设提及的平面互不重合。"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q16",
+        "version": 1,
+        "title": "对角截面与底面垂直",
+        "stem": "图 A 中，证明平面 ACC₁A₁⊥平面 ABCD。",
+        "knowledgeIds": ["G3-03"],
+        "unitIds": ["SG-03"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "写出完整证明过程"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q17",
+        "version": 1,
+        "title": "从垂直侧面构造底面高",
+        "stem": "四棱锥 P—ABCD 中，底面 ABCD 是矩形，平面 PAD⊥底面，且 PA＝PD。E 是 AD 的中点。证明 PE⊥底面 ABCD，并推出 PE⊥BC。",
+        "knowledgeIds": ["G3-04"],
+        "unitIds": ["SG-03"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "证明 PE⊥底面 ABCD"
+          },
+          {
+            "id": "p2",
+            "prompt": "推出 PE⊥BC"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q18",
+        "version": 1,
+        "title": "用正确的高计算三棱锥体积",
+        "stem": "图 A 中，正方体棱长为 3，求三棱锥 A₁—ABC 的体积。",
+        "knowledgeIds": ["E2"],
+        "unitIds": ["E2"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q19",
+        "version": 1,
+        "title": "平行截线的反证法",
+        "stem": "设 α∥β，平面 γ 分别与 α、β 相交于 a、b。证明 a∥b，并说明能否去掉“两条交线同属 γ”这一信息。",
+        "knowledgeIds": ["G2-02", "G2-04"],
+        "unitIds": ["SG-02"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "证明 a∥b"
+          },
+          {
+            "id": "p2",
+            "prompt": "说明能否省略两条交线共面的依据"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q20",
+        "version": 1,
+        "title": "三棱锥侧面重心构成的截面",
+        "stem": "在三棱锥 P—ABC 中，G₁、G₂、G₃ 分别是三角形 PAB、PBC、PCA 的重心。证明平面 G₁G₂G₃∥底面 ABC，并求两三角形面积比。",
+        "knowledgeIds": ["G2-03", "E2"],
+        "unitIds": ["SG-02", "E2"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "证明平面 G₁G₂G₃∥底面 ABC"
+          },
+          {
+            "id": "p2",
+            "prompt": "求两三角形面积比并写出推导"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q21",
+        "version": 1,
+        "title": "平移构造异面直线所成角",
+        "stem": "图 A 中，直线 AB₁ 与 BC₁ 所成的角为________度。",
+        "knowledgeIds": ["E1"],
+        "unitIds": ["E1"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q22",
+        "version": 1,
+        "title": "沿底面对角线的二面角",
+        "stem": "图 A 中，求二面角 A—BD—A₁ 的正切值。要求明确找出二面角的平面角。",
+        "knowledgeIds": ["E1"],
+        "unitIds": ["E1"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "找出二面角的平面角并证明"
+          },
+          {
+            "id": "p2",
+            "prompt": "求该二面角的正切值并写出计算"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q23",
+        "version": 1,
+        "title": "动点与线面垂直的条件",
+        "stem": "图 A 中，正方体棱长为 1，E 为 BC 中点，F 在线段 CD 上。确定 F 的位置，使 D₁E⊥平面 AB₁F，并证明。",
+        "knowledgeIds": ["G3-01", "E3"],
+        "unitIds": ["SG-03", "E3"],
+        "figures": [
+          {
+            "id": "cube-a-v1",
+            "src": "/geometry/cube-a-v1.png",
+            "alt": "正方体 ABCD—A₁B₁C₁D₁，下底面沿周界为 A、B、C、D，上底面逐点对应，虚线表示遮挡棱。",
+            "caption": "图 A；线段名称在位置关系问题中指其所在直线。辅助点按各题定义。"
+          }
+        ],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "确定 F 的位置"
+          },
+          {
+            "id": "p2",
+            "prompt": "证明必要性与充分性"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q24",
+        "version": 1,
+        "title": "垂直侧面与二面角综合",
+        "stem": "四棱锥 P—ABCD 的底面是边长为 2 的正方形，平面 PAD⊥底面，PA＝PD＝√5。点 P 位于底面上方。①证明 AB⊥平面 PAD；②求体积；③求面 PAD 与面 PDB 所成锐二面角的正切值。",
+        "knowledgeIds": ["G3-04", "E2", "E3"],
+        "unitIds": ["SG-03", "E2", "E3"],
+        "figures": [],
+        "prompts": [
+          {
+            "id": "p1",
+            "prompt": "证明 AB⊥平面 PAD"
+          },
+          {
+            "id": "p2",
+            "prompt": "求四棱锥体积并写出计算"
+          },
+          {
+            "id": "p3",
+            "prompt": "求锐二面角的正切值并写出推导"
+          }
+        ],
+        "readingOnly": false,
+        "needsReview": false
+      },
+      {
+        "id": "Q25",
+        "version": 1,
+        "title": "几何体命题辨析",
+        "stem": "下列命题中的真命题是（　）",
+        "knowledgeIds": ["G11-01", "G11-03"],
+        "unitIds": ["SG-11"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "底面边长相等的直四棱柱是正四棱柱"
+          },
+          {
+            "id": "B",
+            "text": "有两个等高的几何体，若它们在等高处的截面面积不恒相等，则它们的体积不相等"
+          },
+          {
+            "id": "C",
+            "text": "各条侧棱都相等的棱锥是正棱锥"
+          },
+          {
+            "id": "D",
+            "text": "圆台平行于底面的截面是圆面"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q26",
+        "version": 1,
+        "title": "正棱柱与正棱锥",
+        "stem": "下列说法不正确的是（　）",
+        "knowledgeIds": ["G11-01"],
+        "unitIds": ["SG-11"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "底面是正多边形的直棱柱是正棱柱"
+          },
+          {
+            "id": "B",
+            "text": "斜棱柱的侧面可能是矩形"
+          },
+          {
+            "id": "C",
+            "text": "棱柱的侧棱相互平行"
+          },
+          {
+            "id": "D",
+            "text": "底面是正多边形的棱锥是正棱锥"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q27",
+        "version": 1,
+        "title": "棱台与圆台的截面辨析",
+        "stem": "下列说法正确的是（　）",
+        "knowledgeIds": ["G11-01", "G7-01"],
+        "unitIds": ["SG-11", "SG-07"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "有两个面互相平行且相似，其他各个面都是梯形的多面体是棱台"
+          },
+          {
+            "id": "B",
+            "text": "用一个平面去截三棱锥，必得到一个三棱锥和一个三棱台"
+          },
+          {
+            "id": "C",
+            "text": "圆台的轴截面不可能为直角梯形"
+          },
+          {
+            "id": "D",
+            "text": "用任意一个平面去截球，得到的截面是一个圆"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q28",
+        "version": 1,
+        "title": "圆锥最大截面积对应的周长",
+        "stem": "已知一个圆锥的侧面展开图是半径为 4、弧长为 6π 的扇形，过此圆锥的顶点 P 作圆锥的截面，当截面面积取得最大值时，该截面三角形的周长为（　）",
+        "knowledgeIds": ["G7-02", "G10-01"],
+        "unitIds": ["SG-07", "SG-10"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "8＋4√2"
+          },
+          {
+            "id": "B",
+            "text": "14"
+          },
+          {
+            "id": "C",
+            "text": "8＋2√14"
+          },
+          {
+            "id": "D",
+            "text": "8＋2√10"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q29",
+        "version": 1,
+        "title": "由侧面展开图求圆锥外接球半径",
+        "stem": "已知圆锥的顶点和底面圆周都在球 O 的球面上，该圆锥的底面半径为 2，侧面展开图是一个圆心角为 2π/3 的扇形，则球 O 的半径等于（　）",
+        "knowledgeIds": ["G8-02", "G10-01"],
+        "unitIds": ["SG-08", "SG-10"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "9√2/2"
+          },
+          {
+            "id": "B",
+            "text": "9√2/4"
+          },
+          {
+            "id": "C",
+            "text": "9√3/8"
+          },
+          {
+            "id": "D",
+            "text": "9√5/8"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q30",
+        "version": 1,
+        "title": "球的表面积",
+        "stem": "已知球 O 的半径为 1/√π，则球 O 的表面积为____。",
+        "knowledgeIds": ["G11-02"],
+        "unitIds": ["SG-11"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q31",
+        "version": 1,
+        "title": "圆台熔铸等体积圆柱",
+        "stem": "一个底面直径为 6 cm、高为 12 cm 的实心圆锥工件，沿平行于底面的平面，从顶端切下一个高为 4 cm 的小圆锥。将剩余部分熔铸成相等体积的一个底面直径为 4 cm 的圆柱，不计损耗，则圆柱的高为____ cm。",
+        "knowledgeIds": ["G11-03"],
+        "unitIds": ["SG-11"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q32",
+        "version": 1,
+        "title": "正四棱台体积",
+        "stem": "已知正四棱台的上、下底面边长分别为 2 和 6，侧棱长为 2√5，则该正四棱台的体积为（　）",
+        "knowledgeIds": ["G11-03"],
+        "unitIds": ["SG-11"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "104√2/3"
+          },
+          {
+            "id": "B",
+            "text": "104√3/3"
+          },
+          {
+            "id": "C",
+            "text": "104√5/3"
+          },
+          {
+            "id": "D",
+            "text": "32√3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q33",
+        "version": 1,
+        "title": "正四面体内切球与球体排布",
+        "stem": "现有一块棱长为 6＋2√6 的正四面体金属材料，将其打磨成若干个球形弹珠用于磨机的零件（打磨过程中的磨损忽略不计，不允许熔铸）。若该金属块只打磨成一个最大弹珠，则该弹珠的半径是____；若将该金属块打磨成半径为 1 的弹珠，则最多可以打磨这种弹珠的个数是____。",
+        "knowledgeIds": ["G8-01"],
+        "unitIds": ["SG-08"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": true
+      },
+      {
+        "id": "Q34",
+        "version": 1,
+        "title": "与正方体面对角线异面的棱",
+        "stem": "正方体 ABCD–A₁B₁C₁D₁ 的 12 条棱中，与 A₁B 异面的棱有____条。",
+        "knowledgeIds": ["G1-06"],
+        "unitIds": ["SG-01"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q35",
+        "version": 1,
+        "title": "共线、共面与直线位置关系",
+        "stem": "下列命题中正确的个数为____个。\n①若 △ABC 在平面 α 外，它的三条边所在的直线分别交 α 于 P、Q、R，则 P、Q、R 三点共线；\n②若三条直线 a、b、c 互相平行且分别交直线 l 于 A、B、C 三点，则这四条直线共面；\n③若直线 a、b 异面，b、c 异面，则 a、c 异面；\n④若 a∥c，b∥c，则 a∥b。",
+        "knowledgeIds": ["G1-01", "G1-04", "G1-05", "G1-06"],
+        "unitIds": ["SG-01"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q36",
+        "version": 1,
+        "title": "正方体中四点共面及异面证明",
+        "stem": "如图，已知 E、F 分别是正方体 ABCD–A₁B₁C₁D₁ 的棱 A₁B₁、B₁C₁ 的中点。\n（1）求证：A、E、F、C 在同一个平面上；\n（2）求证：A₁B 与 EC₁ 是异面直线。",
+        "knowledgeIds": ["G1-01", "G1-06"],
+        "unitIds": ["SG-01"],
+        "figures": [
+          {
+            "id": "q36-v1",
+            "src": "/geometry/q36-v1.png",
+            "alt": "正方体中，E 在 A₁B₁ 上，F 在 B₁C₁ 上。",
+            "caption": "题图"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q37",
+        "version": 1,
+        "title": "线面平行判定和性质辨析",
+        "stem": "下列叙述错误的是（　）",
+        "knowledgeIds": ["G2-01", "G2-02", "G1-06"],
+        "unitIds": ["SG-02", "SG-01"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "若直线 a、b 满足 a∥b，则 a 在经过 b 的平面内或 a 平行于 b 所在平面"
+          },
+          {
+            "id": "B",
+            "text": "若直线 a 和平面 α 满足 a∥α，则 a 与 α 内的直线平行或异面"
+          },
+          {
+            "id": "C",
+            "text": "若直线 a、b 和平面 α 满足 a∥α、b∥α，则 a、b 平行或异面"
+          },
+          {
+            "id": "D",
+            "text": "若直线 a、b 和平面 α 满足 a∥b、a∥α、b 不包含于 α，则 b∥α"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q38",
+        "version": 1,
+        "title": "动点正方体的垂直、截面与体积",
+        "stem": "已知正方体 ABCD–A₁B₁C₁D₁，P 是 A₁C₁ 上的一个动点，Q 为棱 AB 的中点，则下列说法中正确的是（　）",
+        "knowledgeIds": ["G3-01", "G3-02", "G7-01", "G11-03", "G2-01"],
+        "unitIds": ["SG-03", "SG-07", "SG-11", "SG-02"],
+        "figures": [
+          {
+            "id": "q38-v1",
+            "src": "/geometry/q38-v1.png",
+            "alt": "正方体中，P 在 A₁C₁ 上，Q 在 AB 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "BD⊥CP"
+          },
+          {
+            "id": "B",
+            "text": "过点 A₁、C、Q 的截面是一个正方形"
+          },
+          {
+            "id": "C",
+            "text": "三棱锥 C–APB₁ 的体积为定值"
+          },
+          {
+            "id": "D",
+            "text": "存在某个点 P，使得 PQ∥平面 ACD₁"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q39",
+        "version": 1,
+        "title": "线面及面面关系辨析一",
+        "stem": "已知 m、n 是两条不同的直线，α、β 是两个不同的平面，则下列命题正确的是（　）",
+        "knowledgeIds": ["G2-02", "G3-02", "G2-03", "G3-04"],
+        "unitIds": ["SG-02", "SG-03"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "若 m∥α、n∥α，则 m∥n"
+          },
+          {
+            "id": "B",
+            "text": "若 m⊥α、n⊥α，则 m∥n"
+          },
+          {
+            "id": "C",
+            "text": "若 m∥α、m∥β，则 α∥β"
+          },
+          {
+            "id": "D",
+            "text": "若 α⊥β、m⊂α、n⊂β，则 m⊥n"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q40",
+        "version": 1,
+        "title": "五面体的交线与底面平行",
+        "stem": "如图，五面体 AB–CDEF 的底面 CDEF 是矩形，AB∥CD，\n设平面 ACF∩平面 BDE＝l，证明：l∥底面 CDEF；",
+        "knowledgeIds": ["G1-04", "G2-01", "G2-02"],
+        "unitIds": ["SG-01", "SG-02"],
+        "figures": [
+          {
+            "id": "q40-v1",
+            "src": "/geometry/q40-v1.png",
+            "alt": "五面体 AB–CDEF，底面为矩形 CDEF。",
+            "caption": "题图"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q41",
+        "version": 1,
+        "title": "四棱锥的平行性质与二面角",
+        "stem": "如图，在四棱锥 P–ABCD 中，PA⊥平面 ABCD，底面 ABCD 是菱形，∠BAD＝120°，点 E 在线段 PD 上，PB∥平面 AEC。\n（1）证明：E 为 PD 的中点；\n（2）若 AB＝2，PA＝1，求二面角 C–AE–D 的余弦值。",
+        "knowledgeIds": ["G2-02", "G6-03"],
+        "unitIds": ["SG-02", "SG-06"],
+        "figures": [
+          {
+            "id": "q41-v1",
+            "src": "/geometry/q41-v1.png",
+            "alt": "四棱锥 P–ABCD，E 在线段 PD 上。",
+            "caption": "题图"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q42",
+        "version": 1,
+        "title": "正方体中线面和面面关系辨析",
+        "stem": "在正方体 ABCD–A₁B₁C₁D₁ 中，E、F 分别为 AB、BC 的中点，则（　）",
+        "knowledgeIds": ["G3-03", "G3-01", "G2-03", "G2-01"],
+        "unitIds": ["SG-03", "SG-02"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "平面 B₁EF⊥平面 BDD₁"
+          },
+          {
+            "id": "B",
+            "text": "直线 A₁B⊥平面 B₁EF"
+          },
+          {
+            "id": "C",
+            "text": "平面 B₁EF∥平面 A₁AC"
+          },
+          {
+            "id": "D",
+            "text": "直线 DC₁∥平面 B₁EF"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q43",
+        "version": 1,
+        "title": "等腰梯形翻折并证明两直线垂直",
+        "stem": "如图所示，等腰梯形 ABCD 中，AB＝BC＝AD＝2，DC＝4，E 为 DC 中点，将 △AED 沿 AE 折起，记 D 的新位置为 D′。\n（1）求证：AE⊥BD′。",
+        "knowledgeIds": ["E5-01", "G3-01"],
+        "unitIds": ["E5", "SG-03"],
+        "figures": [
+          {
+            "id": "q43-v1",
+            "src": "/geometry/q43-v1.png",
+            "alt": "等腰梯形沿 AE 翻折，D 转到 D′。",
+            "caption": "翻折前与翻折后"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q44",
+        "version": 1,
+        "title": "正三棱柱的垂直、体积和外接球",
+        "stem": "在正三棱柱 ABC–A₁B₁C₁ 中，各棱长均为 1，D 为 BC 的中点，则下列选项正确的是（　）",
+        "knowledgeIds": ["G3-01", "G3-02", "G11-03", "G8-02"],
+        "unitIds": ["SG-03", "SG-11", "SG-08"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "AD⊥C₁D"
+          },
+          {
+            "id": "B",
+            "text": "三棱锥 B₁–ADB 的体积为 √3/24"
+          },
+          {
+            "id": "C",
+            "text": "BC₁⊥平面 AB₁C"
+          },
+          {
+            "id": "D",
+            "text": "三棱锥 B₁–ABC 的外接球表面积为 7π/3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q45",
+        "version": 1,
+        "title": "两平面平行的必要条件",
+        "stem": "设 a、b 是两条直线，α、β、γ 是不同的平面，a∥β，α∩γ＝m，β∩γ＝n，b⊥α，则下列选项中是“α∥β”的必要条件的是（　）",
+        "knowledgeIds": ["G2-04", "G3-02"],
+        "unitIds": ["SG-02", "SG-03"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "a⊂α"
+          },
+          {
+            "id": "B",
+            "text": "m∥n"
+          },
+          {
+            "id": "C",
+            "text": "a∥α"
+          },
+          {
+            "id": "D",
+            "text": "b⊥a"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q46",
+        "version": 1,
+        "title": "四棱锥的平行交线与线线垂直",
+        "stem": "如图，在四棱锥 P–ABCD 中，底面 ABCD 是矩形，AB＝2，AD＝5，点 H 在线段 AD 上，AH＝1，且 PH⊥平面 ABCD，平面 PAB∩平面 PCD＝l。\n（1）证明：AB∥l；\n（2）证明：BH⊥PC；",
+        "knowledgeIds": ["G2-02", "G3-01", "G3-02"],
+        "unitIds": ["SG-02", "SG-03"],
+        "figures": [
+          {
+            "id": "q46-v1",
+            "src": "/geometry/q46-v1.png",
+            "alt": "矩形底面的四棱锥，H 在 AD 上。",
+            "caption": "题图"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q47",
+        "version": 1,
+        "title": "两平面平行的充分条件",
+        "stem": "设 α、β、γ 为不同的平面，a、b 为直线，给出下列条件：\n①a⊂α，b⊂β，a∥β，b∥α；\n②α∥γ，β∥γ；\n③α⊥γ，β⊥γ；\n④a⊥α，b⊥β，a∥b。\n其中能推出 α∥β 的条件是（　）",
+        "knowledgeIds": ["G2-03", "G3-02"],
+        "unitIds": ["SG-02", "SG-03"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "①②"
+          },
+          {
+            "id": "B",
+            "text": "②③"
+          },
+          {
+            "id": "C",
+            "text": "②④"
+          },
+          {
+            "id": "D",
+            "text": "③④"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q48",
+        "version": 1,
+        "title": "四棱锥的面面垂直证明",
+        "stem": "已知四棱锥 P–ABCD 的底面四边形 ABCD 的四个顶点在以 AC 为直径的圆上，AD＝CD＝2√2，PA⊥平面 PCD。\n（1）证明：平面 PAD⊥平面 ABCD；",
+        "knowledgeIds": ["G3-01", "G3-03"],
+        "unitIds": ["SG-03"],
+        "figures": [
+          {
+            "id": "q48-v1",
+            "src": "/geometry/q48-v1.png",
+            "alt": "四棱锥的底面四个顶点在以 AC 为直径的圆上。",
+            "caption": "题图"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q49",
+        "version": 1,
+        "title": "线面及面面关系辨析二",
+        "stem": "已知 m、n 是两条不同的直线，α、β、γ 是三个不同的平面，则下列正确的是（　）",
+        "knowledgeIds": ["G2-02", "G3-02", "G2-03", "G3-03"],
+        "unitIds": ["SG-02", "SG-03"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "若 m∥α、n∥α，则 m∥n"
+          },
+          {
+            "id": "B",
+            "text": "若 α⊥γ、β⊥γ，则 α∥β"
+          },
+          {
+            "id": "C",
+            "text": "若 m⊥α、n⊥α，则 m∥n"
+          },
+          {
+            "id": "D",
+            "text": "若 m∥α、m∥β，则 α∥β"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q50",
+        "version": 1,
+        "title": "两垂直平面的性质",
+        "stem": "已知两个平面互相垂直。下列命题中\n①一个平面内的已知直线必垂直于另一个平面内的任意一条直线；\n②一个平面内的已知直线必垂直于另一个平面内的无数条直线；\n③过一个任意点作交线的垂线，则此直线必垂直于另一个平面\n正确命题的个数是（　）",
+        "knowledgeIds": ["G3-04"],
+        "unitIds": ["SG-03"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "3"
+          },
+          {
+            "id": "B",
+            "text": "2"
+          },
+          {
+            "id": "C",
+            "text": "1"
+          },
+          {
+            "id": "D",
+            "text": "0"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q51",
+        "version": 1,
+        "title": "已知点面距离求夹角余弦最小值",
+        "stem": "已知点 P 到平面 α 的距离是 2，A、B∈α，且 PA＝PB＝3，则 cos∠APB 的最小值是（　）",
+        "knowledgeIds": ["G5-02"],
+        "unitIds": ["SG-05"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "1/9"
+          },
+          {
+            "id": "B",
+            "text": "−1/9"
+          },
+          {
+            "id": "C",
+            "text": "7/9"
+          },
+          {
+            "id": "D",
+            "text": "−7/9"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q52",
+        "version": 1,
+        "title": "满足点面距离比例的平面个数",
+        "stem": "已知四面体 A–BCD，若点 A、B、C、D 到平面 α 的距离 d_A、d_B、d_C、d_D 满足 d_A＝2d_B＝2d_C＝2d_D，则这样的平面 α 的个数为（　）",
+        "knowledgeIds": ["G5-02"],
+        "unitIds": ["SG-05"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "1"
+          },
+          {
+            "id": "B",
+            "text": "2"
+          },
+          {
+            "id": "C",
+            "text": "5"
+          },
+          {
+            "id": "D",
+            "text": "8"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q53",
+        "version": 1,
+        "title": "正方体内点到平面 BED 的距离",
+        "stem": "如图，正方体 ABCD–EFGH 的棱长为 1。若点 P 在正方体的内部，且满足 AP⃗＝(2/3)AB⃗＋(1/2)AD⃗＋(1/3)AE⃗，则点 P 到平面 BED 的距离为（　）",
+        "knowledgeIds": ["G5-02"],
+        "unitIds": ["SG-05"],
+        "figures": [
+          {
+            "id": "q53-v1",
+            "src": "/geometry/q53-v1.png",
+            "alt": "正方体 ABCD–EFGH 中的点 P 及从 A 出发的向量。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "√3/6"
+          },
+          {
+            "id": "B",
+            "text": "√3/3"
+          },
+          {
+            "id": "C",
+            "text": "√6/6"
+          },
+          {
+            "id": "D",
+            "text": "√2/3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q54",
+        "version": 1,
+        "title": "长方体中的距离和体积辨析",
+        "stem": "如图，在长方体 ABCD–A₁B₁C₁D₁ 中，AD＝AA₁＝1，AB＝2，若 E 为 AB 的中点，则以下说法中正确的是（　）",
+        "knowledgeIds": ["G5-01", "G5-03", "G11-03"],
+        "unitIds": ["SG-05", "SG-11"],
+        "figures": [
+          {
+            "id": "q54-v1",
+            "src": "/geometry/q54-v1.png",
+            "alt": "长方体中 E 在 AB 上，图中标出 D₁E 和 EC。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "线段 ED₁ 的长度为 8"
+          },
+          {
+            "id": "B",
+            "text": "直线 B₁E 到平面 DCC₁D₁ 的距离等于 2"
+          },
+          {
+            "id": "C",
+            "text": "点 B 到直线 D₁E 的距离为 √6/3"
+          },
+          {
+            "id": "D",
+            "text": "三棱锥 B–D₁EC 的体积为 1/2"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q55",
+        "version": 1,
+        "title": "直三棱柱中直线到平行平面的距离",
+        "stem": "如图，在直三棱柱 ABC–A₁B₁C₁ 中，∠ABC＝π/2，D 是棱 AC 的中点，且 AB＝BC＝BB₁＝2，则直线 AB₁ 到平面 BC₁D 的距离为（　）",
+        "knowledgeIds": ["G5-03"],
+        "unitIds": ["SG-05"],
+        "figures": [
+          {
+            "id": "q55-v1",
+            "src": "/geometry/q55-v1.png",
+            "alt": "直三棱柱 ABC–A₁B₁C₁，D 在 AC 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "√2/2"
+          },
+          {
+            "id": "B",
+            "text": "2√2/3"
+          },
+          {
+            "id": "C",
+            "text": "√3/3"
+          },
+          {
+            "id": "D",
+            "text": "2√3/3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q56",
+        "version": 1,
+        "title": "正方体中平行平面之间的距离",
+        "stem": "正方体 ABCD–A₁B₁C₁D₁ 的棱长为 2√3，则平面 A₁BC₁ 到平面 AD₁C 的距离为（　）",
+        "knowledgeIds": ["G5-05"],
+        "unitIds": ["SG-05"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q57",
+        "version": 1,
+        "title": "比较四种空间距离",
+        "stem": "在棱长为 1 的正方体 ABCD–A₁B₁C₁D₁ 中，点 A 到直线 B₁D₁ 的距离为 a，点 A₁ 到平面 BDD₁B₁ 的距离为 b，B₁C 到平面 A₁D₁CB 的距离为 c，平面 AA₁B₁B 到平面 DD₁C₁C 的距离为 d。其中最长距离是（　）",
+        "knowledgeIds": ["G5-01", "G5-02", "G5-03", "G5-05"],
+        "unitIds": ["SG-05"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "a"
+          },
+          {
+            "id": "B",
+            "text": "b"
+          },
+          {
+            "id": "C",
+            "text": "c"
+          },
+          {
+            "id": "D",
+            "text": "d"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q58",
+        "version": 1,
+        "title": "正方体中异面直线之间的最短距离",
+        "stem": "如图，在棱长为 2 的正方体 ABCD–A₁B₁C₁D₁ 中，点 E 为 B₁C₁ 的中点，点 F 为 C₁C 的中点，点 P 在直线 A₁B 上，点 Q 在直线 EF 上，则线段 PQ 长度的最小值是（　）",
+        "knowledgeIds": ["G5-04"],
+        "unitIds": ["SG-05"],
+        "figures": [
+          {
+            "id": "q58-v1",
+            "src": "/geometry/q58-v1.png",
+            "alt": "正方体中，E 在 B₁C₁ 上，F 在 C₁C 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "√3/3"
+          },
+          {
+            "id": "B",
+            "text": "√3/2"
+          },
+          {
+            "id": "C",
+            "text": "√3"
+          },
+          {
+            "id": "D",
+            "text": "2√3/3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q59",
+        "version": 1,
+        "title": "拼接三角板中异面直线的距离",
+        "stem": "一副三角板如图拼接，使两个三角板所在的平面互相垂直。如果公共边 AC＝a，则异面直线 AB 与 CD 的距离是（　）",
+        "knowledgeIds": ["G5-04"],
+        "unitIds": ["SG-05"],
+        "figures": [
+          {
+            "id": "q59-v1",
+            "src": "/geometry/q59-v1.png",
+            "alt": "两个三角板沿公共边 AC 拼接，标有直角、45° 和 60°。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "a/2"
+          },
+          {
+            "id": "B",
+            "text": "a"
+          },
+          {
+            "id": "C",
+            "text": "a√2/2"
+          },
+          {
+            "id": "D",
+            "text": "a√30/6"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q60",
+        "version": 1,
+        "title": "圆柱内两截面夹角的余弦",
+        "stem": "如图，圆柱 O₁O₂ 的轴截面为 ABCD，其中 AB 为 ⊙O₁ 的直径，且 AB＝√3，BC＝1，记经过 AC 的平面 α 与 ⊙O₁、⊙O₂ 交于除 A、C 外的另两点为 E、F，若四棱锥 D–AECF 与 E–ABCD 的表面积相等，则平面 α 与平面 ABCD 的夹角的余弦值等于（　）",
+        "knowledgeIds": ["G6-03"],
+        "unitIds": ["SG-06"],
+        "figures": [
+          {
+            "id": "q60-v1",
+            "src": "/geometry/q60-v1.png",
+            "alt": "圆柱的两底面分别标有 A、B、E 和 C、D、F，AC 位于截平面上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "1/3"
+          },
+          {
+            "id": "B",
+            "text": "2√2/3"
+          },
+          {
+            "id": "C",
+            "text": "1/2"
+          },
+          {
+            "id": "D",
+            "text": "√3/2"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q61",
+        "version": 1,
+        "title": "球中线线角、线面角和二面角",
+        "stem": "如图，已知点 A、B、C、D 在体积为 4√3π 的球 O 的球面上，且 O∈BD，OA⊥平面 BCD，点 E 为 BC 中点，当二面角 A–BC–D 的大小为 π/3 时，则有（　）。",
+        "knowledgeIds": ["G6-01", "G6-02", "G6-03"],
+        "unitIds": ["SG-06"],
+        "figures": [
+          {
+            "id": "q61-v1",
+            "src": "/geometry/q61-v1.png",
+            "alt": "球 O 上的 A、B、C、D 四点，E 在弦 BC 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "异面直线 AE 和 CD 所成角的大小为 π/6"
+          },
+          {
+            "id": "B",
+            "text": "直线 EA 与平面 ABD 所成角的大小为 π/6"
+          },
+          {
+            "id": "C",
+            "text": "sin(2∠ABE)＝√2/3"
+          },
+          {
+            "id": "D",
+            "text": "△BED 的面积为 √2"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q62",
+        "version": 1,
+        "title": "正方体动点线面角余弦范围",
+        "stem": "如图所示，正方体 ABCD–A₁B₁C₁D₁ 中，E、F 分别为线段 A₁C₁ 与线段 BC₁ 上的动点，则直线 EF 与平面 ACC₁A₁ 所成角的余弦值的取值范围是（　）",
+        "knowledgeIds": ["G6-02"],
+        "unitIds": ["SG-06"],
+        "figures": [
+          {
+            "id": "q62-v1",
+            "src": "/geometry/q62-v1.png",
+            "alt": "正方体中，E 在 A₁C₁ 上，F 在 BC₁ 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "[√2/2，1]"
+          },
+          {
+            "id": "B",
+            "text": "[√6/3，√3/2]"
+          },
+          {
+            "id": "C",
+            "text": "[√3/2，1]"
+          },
+          {
+            "id": "D",
+            "text": "[√6/3，1]"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q63",
+        "version": 1,
+        "title": "由侧棱线面角求正四棱台体积",
+        "stem": "在正四棱台 ABCD–A₁B₁C₁D₁ 中，AB＝2A₁B₁＝2，直线 AA₁ 与底面 ABCD 所成的角为 45°，则该棱台的体积为（　）",
+        "knowledgeIds": ["G6-02", "G11-03"],
+        "unitIds": ["SG-06", "SG-11"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "7√2/8"
+          },
+          {
+            "id": "B",
+            "text": "7√2/6"
+          },
+          {
+            "id": "C",
+            "text": "7√2/4"
+          },
+          {
+            "id": "D",
+            "text": "7√2/2"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q64",
+        "version": 1,
+        "title": "用线面角约束垂直线段长度",
+        "stem": "已知平面 α、β 满足 α∥β，AB 和 CD 是夹在 α 与 β 之间的线段，AB⊥CD，且 AB＝2，如果直线 AB 与 α 所成的角为 30°，那么线段 CD 长的取值范围是（　）",
+        "knowledgeIds": ["G6-02", "G5-05"],
+        "unitIds": ["SG-06", "SG-05"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "(2√3/3，4√3/3]"
+          },
+          {
+            "id": "B",
+            "text": "[1，＋∞)"
+          },
+          {
+            "id": "C",
+            "text": "[1，2√3/3]"
+          },
+          {
+            "id": "D",
+            "text": "[2√3/3，＋∞)"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q65",
+        "version": 1,
+        "title": "二面角与两个线面角的平方和",
+        "stem": "如图，已知二面角 α–l–β 的大小为 π/3，B、C 在直线 l 上，A 在 α 内，且 AB⊥AC，设 AB、AC 与 β 所成角分别为 θ₁、θ₂，则 sin²θ₁＋sin²θ₂ 的值为（　）",
+        "knowledgeIds": ["G6-02", "G6-03"],
+        "unitIds": ["SG-06"],
+        "figures": [
+          {
+            "id": "q65-v1",
+            "src": "/geometry/q65-v1.png",
+            "alt": "平面 α 和 β 的交线为 l，B、C 在 l 上，A 在 α 内。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "1/4"
+          },
+          {
+            "id": "B",
+            "text": "1/2"
+          },
+          {
+            "id": "C",
+            "text": "3/4"
+          },
+          {
+            "id": "D",
+            "text": "1"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q66",
+        "version": 1,
+        "title": "正方体动点截面的最大面积",
+        "stem": "如图，在棱长为2的正方体ABCD–A₁B₁C₁D₁中，M、N、P分别是AA₁、CC₁、C₁D₁的中点，Q是线段D₁A₁上的动点（不包含端点），下列命题正确的个数是（　）\n①对于任意点Q，都有BQ⊥AB₁\n②对于任意点Q，不存在BQ∥平面MNP\n③过点Q且与BN垂直的平面截正方体ABCD–A₁B₁C₁D₁所得截面面积的最大值为2√5\n④存在点Q，使得三棱锥A₁–BDQ体积为4/3",
+        "knowledgeIds": ["G7-02", "G3-01", "G2-01", "G11-03"],
+        "unitIds": ["SG-07", "SG-03", "SG-02", "SG-11"],
+        "figures": [
+          {
+            "id": "q66-v1",
+            "src": "/geometry/q66-v1.png",
+            "alt": "正方体中，M 在 AA₁ 上，N 在 CC₁ 上，P 在 C₁D₁ 上，Q 在 D₁A₁ 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "1"
+          },
+          {
+            "id": "B",
+            "text": "2"
+          },
+          {
+            "id": "C",
+            "text": "3"
+          },
+          {
+            "id": "D",
+            "text": "4"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q67",
+        "version": 1,
+        "title": "过三条棱中点的正方体截面积",
+        "stem": "如图，在棱长为2的正方体ABCD–A₁B₁C₁D₁中，E、F、G分别为棱AA₁、BC、D₁C₁的中点，则过E、F、G三点的截面的面积为（　）",
+        "knowledgeIds": ["G7-01", "G7-02"],
+        "unitIds": ["SG-07"],
+        "figures": [
+          {
+            "id": "q67-v1",
+            "src": "/geometry/q67-v1.png",
+            "alt": "正方体中，E、F、G 分别位于 AA₁、BC、D₁C₁ 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "√5"
+          },
+          {
+            "id": "B",
+            "text": "2√5"
+          },
+          {
+            "id": "C",
+            "text": "√3"
+          },
+          {
+            "id": "D",
+            "text": "3√3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q68",
+        "version": 1,
+        "title": "正方体截面周长、点面距离及体积",
+        "stem": "正方体ABCD–A₁B₁C₁D₁的棱长为2，E、F、G分别为BC、CC₁、BB₁的中点，点P为线段A₁G上的动点，则以下列结论正确的个数是（　）\n①直线D₁D与直线AP垂直\n②直线A₁G与平面AEF平行\n③点G与点C到平面AEF的距离相等\n④平面AEF截正方体所得的截面周长为3√2＋2√5\n⑤三棱锥P–AEF的体积为定值",
+        "knowledgeIds": ["G7-02", "G2-01", "G3-01", "G5-02", "G11-03"],
+        "unitIds": ["SG-07", "SG-02", "SG-03", "SG-05", "SG-11"],
+        "figures": [
+          {
+            "id": "q68-v1",
+            "src": "/geometry/q68-v1.png",
+            "alt": "正方体中，E、F、G 分别位于 BC、CC₁、BB₁ 上，并连出 A₁G 和截面相关线段。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "1"
+          },
+          {
+            "id": "B",
+            "text": "2"
+          },
+          {
+            "id": "C",
+            "text": "3"
+          },
+          {
+            "id": "D",
+            "text": "4"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q69",
+        "version": 1,
+        "title": "正方体动点截面的形状与周长",
+        "stem": "如图，在棱长为3的正方体ABCD–A₁B₁C₁D₁中，点M、N分别在线段AD₁和B₁C₁上，下面结论中正确的是（　）",
+        "knowledgeIds": ["G7-01", "G7-02"],
+        "unitIds": ["SG-07"],
+        "figures": [
+          {
+            "id": "q69-v1",
+            "src": "/geometry/q69-v1.png",
+            "alt": "正方体中，M 在 AD₁ 上，N 在 B₁C₁ 上。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "N 为中点时，过 B、N、D₁ 三点的正方体截面是正方形"
+          },
+          {
+            "id": "B",
+            "text": "B₁N＝2NC₁ 时，过 N、A、D₁ 三点的正方体截面周长是 4√2＋2√10"
+          },
+          {
+            "id": "C",
+            "text": "过 B、M、N 三点的正方体截面一定是平行四边形"
+          },
+          {
+            "id": "D",
+            "text": "过 M、B₁、C 三点的正方体截面不可能是平行四边形"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q70",
+        "version": 1,
+        "title": "四面体外接球过棱中点的最小截面积",
+        "stem": "已知在四面体ABCD中，AB＝CD＝2√2，AC＝BD＝√10，AD＝BC＝√14，设该四面体的外接球球心为O，AB的中点为E，过点E作球O的截面，则截面面积的最小值为（　）",
+        "knowledgeIds": ["G8-02", "G7-02"],
+        "unitIds": ["SG-08", "SG-07"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "π/2"
+          },
+          {
+            "id": "B",
+            "text": "π"
+          },
+          {
+            "id": "C",
+            "text": "3π/2"
+          },
+          {
+            "id": "D",
+            "text": "2π"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q71",
+        "version": 1,
+        "title": "同时与截面相切的三棱锥内切球",
+        "stem": "如图，在三棱锥P–ABC中，PA＝PB＝CA＝CB＝2，∠APB＝∠ACB＝π/2，E、F、G分别为PA、PB、PC上靠近点P的三等分点，若此时恰好存在一个小球与三棱锥P–ABC的四个面均相切，且小球同时还与平面EFG相切，则PC＝（　）",
+        "knowledgeIds": ["G8-01"],
+        "unitIds": ["SG-08"],
+        "figures": [
+          {
+            "id": "q71-v1",
+            "src": "/geometry/q71-v1.png",
+            "alt": "三棱锥 P–ABC 内的小球及三等分点 E、F、G。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "√2"
+          },
+          {
+            "id": "B",
+            "text": "√6−√2"
+          },
+          {
+            "id": "C",
+            "text": "2√2−2"
+          },
+          {
+            "id": "D",
+            "text": "2−√2"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q72",
+        "version": 1,
+        "title": "侧面展开为半圆的圆锥的内切球",
+        "stem": "已知圆锥的侧面积是4π，且它的侧面展开图是一个半圆，则这个圆锥的内切球半径为（　）",
+        "knowledgeIds": ["G8-01", "G10-01", "G11-02"],
+        "unitIds": ["SG-08", "SG-10", "SG-11"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "2√6/3"
+          },
+          {
+            "id": "B",
+            "text": "√3/3"
+          },
+          {
+            "id": "C",
+            "text": "2√3/3"
+          },
+          {
+            "id": "D",
+            "text": "√6/3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q73",
+        "version": 1,
+        "title": "沿对角线翻折后的外接球截弦",
+        "stem": "如图，已知正方形ABCD的边长为4，若将ABD沿BD翻折到A′BD的位置，使得平面A′BD⊥平面BCD，M、N分别为AB和CD的中点，则直线MN被四面体A′–BCD的外接球所截得的线段长为（　）",
+        "knowledgeIds": ["E5-01", "G8-02"],
+        "unitIds": ["E5", "SG-08"],
+        "figures": [
+          {
+            "id": "q73-v1",
+            "src": "/geometry/q73-v1.png",
+            "alt": "正方形沿 BD 翻折，图中标出翻折后的 A′ 以及 M、N。",
+            "caption": "翻折前与翻折后"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "√5"
+          },
+          {
+            "id": "B",
+            "text": "2√5"
+          },
+          {
+            "id": "C",
+            "text": "√7"
+          },
+          {
+            "id": "D",
+            "text": "2√7"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q74",
+        "version": 1,
+        "title": "给定二面角的四面体外接球表面积",
+        "stem": "在四面体S–ABC中，AB⊥BC，AB＝BC＝1，△SAC为正三角形，二面角S–AC–B的余弦值为−√3/3，则四面体S–ABC的外接球表面积为（　）",
+        "knowledgeIds": ["G8-02", "G6-03"],
+        "unitIds": ["SG-08", "SG-06"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "3π"
+          },
+          {
+            "id": "B",
+            "text": "4π"
+          },
+          {
+            "id": "C",
+            "text": "5π"
+          },
+          {
+            "id": "D",
+            "text": "6π"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q75",
+        "version": 1,
+        "title": "侧棱垂直底面的四面体外接球",
+        "stem": "已知∠ABC＝120°，PA⊥平面ABC，若PA＝2，AB＝BC＝√3，则四面体P–ABC的外接球（顶点都在球面上）的表面积为____",
+        "knowledgeIds": ["G8-02"],
+        "unitIds": ["SG-08"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q76",
+        "version": 1,
+        "title": "利用棱切球求四面体对棱",
+        "stem": "与多面体的每条棱都相切的球称为该多面体的棱切球。已知四面体ABCD满足AB＝BC＝CD＝DA＝6，BD＝8，且四面体ABCD有棱切球，则AC的长为____。",
+        "knowledgeIds": ["G8-03"],
+        "unitIds": ["SG-08"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q77",
+        "version": 1,
+        "title": "四面体的体积与棱切球半径",
+        "stem": "称四面体的棱切球为与该四面体的每条棱内部都相切的球。已知四面体ABCD存在棱切球，且AB＝AD＝6，AC＝CD＝8，则该四面体的体积为____，棱切球的半径为____。",
+        "knowledgeIds": ["G8-03", "G11-03"],
+        "unitIds": ["SG-08", "SG-11"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q78",
+        "version": 1,
+        "title": "由斜二测直观图还原梯形面积",
+        "stem": "如图，四边形O′A′B′C′是利用斜二测画法画出的水平放置的四边形OABC的直观图，其中O′A′∥B′C′，O′A′＝2，O′C′＝1，B′C′＝1，则四边形OABC的面积是____。",
+        "knowledgeIds": ["G9-02"],
+        "unitIds": ["SG-09"],
+        "figures": [
+          {
+            "id": "q78-v1",
+            "src": "/geometry/q78-v1.png",
+            "alt": "斜二测直观图中的四边形及 x′、y′ 轴。",
+            "caption": "图中 O 对应题干中的 O′。"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q79",
+        "version": 1,
+        "title": "结合斜二测还原圆台侧面积",
+        "stem": "一个圆台的上底面圆采用斜二测画法绘制的直观图面积为2√2π，已知圆台下底面半径为5，圆台母线与底面所成的角为π/3，则该圆台的侧面积为____。",
+        "knowledgeIds": ["G9-02", "G11-02"],
+        "unitIds": ["SG-09", "SG-11"],
+        "figures": [],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q80",
+        "version": 1,
+        "title": "斜二测画法保留的图形性质",
+        "stem": "用斜二测画法画水平放置的平面图形的直观图时，则（　）",
+        "knowledgeIds": ["G9-01"],
+        "unitIds": ["SG-09"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "相等的角在直观图中仍然相等"
+          },
+          {
+            "id": "B",
+            "text": "相等的线段在直观图中仍然相等"
+          },
+          {
+            "id": "C",
+            "text": "菱形的直观图是菱形"
+          },
+          {
+            "id": "D",
+            "text": "三角形的直观图是三角形"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q81",
+        "version": 1,
+        "title": "正方体中的角、最短路径和双球综合",
+        "stem": "在棱长为1的正方体ABCD–A₁B₁C₁D₁中，下列结论正确的是（　）",
+        "knowledgeIds": ["G6-01", "G10-02", "G6-03", "G8-01"],
+        "unitIds": ["SG-06", "SG-10", "SG-08"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "异面直线 BD₁ 与 B₁C 所成的角为 π/2"
+          },
+          {
+            "id": "B",
+            "text": "若 M 为棱 BB₁ 上的动点，则 AM＋MD₁ 的最小值为 1＋√3"
+          },
+          {
+            "id": "C",
+            "text": "若平面 α 与正方体的六个面的夹角相等且为 θ，则 cosθ＝√3/3"
+          },
+          {
+            "id": "D",
+            "text": "在该正方体内放置两个半径相等的球，则这两个球的半径的最大值为 (3−√3)/4"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q82",
+        "version": 1,
+        "title": "长方体经面对角线的最短折线",
+        "stem": "如图所示，长方体ABCD–A₁B₁C₁D₁中，AB＝4，BC＝15，AA₁＝3，P为A₁B上的一个动点，则AP＋PC的最小值为____。",
+        "knowledgeIds": ["G10-02"],
+        "unitIds": ["SG-10"],
+        "figures": [
+          {
+            "id": "q82-v1",
+            "src": "/geometry/q82-v1.png",
+            "alt": "长方体中 P 位于面对角线 A₁B 上，连出 AP 和 PC。",
+            "caption": "题图"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q83",
+        "version": 1,
+        "title": "正四棱台经侧棱的最短折线",
+        "stem": "在正四棱台ABCD–A₁B₁C₁D₁中，AB＝3A₁B₁＝6，AA₁＝4，点P为棱BB₁上的动点（含端点），则AP＋PC的最小值是（　）",
+        "knowledgeIds": ["G10-02"],
+        "unitIds": ["SG-10"],
+        "figures": [],
+        "options": [
+          {
+            "id": "A",
+            "text": "6"
+          },
+          {
+            "id": "B",
+            "text": "6√3"
+          },
+          {
+            "id": "C",
+            "text": "8"
+          },
+          {
+            "id": "D",
+            "text": "8√3"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q84",
+        "version": 1,
+        "title": "矩形翻折中的体积和距离",
+        "stem": "如图，在长方形ABCD中，AB＝2，BC＝1，E为CD的中点，F为线段CE上的动点，将△ADF沿AF翻折形成一个棱锥，在此过程中（　）",
+        "knowledgeIds": ["E5-01", "G11-03", "G5-01", "G5-02"],
+        "unitIds": ["E5", "SG-11", "SG-05"],
+        "figures": [
+          {
+            "id": "q84-v1",
+            "src": "/geometry/q84-v1.png",
+            "alt": "长方形沿 AF 翻折，左侧为折前平面图，右侧为折后棱锥。",
+            "caption": "翻折前与翻折后"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "存在某时刻使得 AD⊥BF"
+          },
+          {
+            "id": "B",
+            "text": "三棱锥 D–ABF 的体积最大值为 2√5/15"
+          },
+          {
+            "id": "C",
+            "text": "当 F 与 E 重合且平面 DAF⊥平面 ABCF 时，四边形 ABCF 内到直线 AD 的距离为 1 的点的轨迹是一段圆弧"
+          },
+          {
+            "id": "D",
+            "text": "若平面 ABD⊥平面 ABCF，则 D 到平面 ABCF 的距离的取值范围为 (0，√3/2]"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q85",
+        "version": 1,
+        "title": "正三角形直角翻折后的线面平行与点面距离",
+        "stem": "如图①所示，正三角形ABC的边长为2a，CD是AB边上的高，E、F分别为AC和BC边上的中点，现将△ABC沿CD翻折成直二面角A–DC–B，如图②所示。\n（1）试判断翻折后的直线AB与平面DEF的位置关系，并说明理由；\n（2）求点C到平面DEF的距离。",
+        "knowledgeIds": ["E5-01", "G2-01", "G5-02"],
+        "unitIds": ["E5", "SG-02", "SG-05"],
+        "figures": [
+          {
+            "id": "q85-v1",
+            "src": "/geometry/q85-v1.png",
+            "alt": "正三角形沿 CD 翻折，图①为折前，图②为折后，E、F 为对应中点。",
+            "caption": "图①与图②"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      },
+      {
+        "id": "Q86",
+        "version": 1,
+        "title": "四边形翻折中的垂直、点线距离与外接球",
+        "stem": "如图，在平面四边形ABCD中，AB＝AC＝CD＝1，∠ADC＝30°，∠DAB＝120°，将△ACD沿对角线AC翻折至△ACP，在翻折过程中（　）",
+        "knowledgeIds": ["E5-01", "G3-03", "G5-01", "G11-03", "G8-02"],
+        "unitIds": ["E5", "SG-03", "SG-05", "SG-11", "SG-08"],
+        "figures": [
+          {
+            "id": "q86-v1",
+            "src": "/geometry/q86-v1.png",
+            "alt": "沿 AC 翻折前的四边形 ABCD。",
+            "caption": "题图"
+          }
+        ],
+        "options": [
+          {
+            "id": "A",
+            "text": "存在某个位置，使得 AP⊥BC"
+          },
+          {
+            "id": "B",
+            "text": "存在某个位置，使得平面 PBC⊥平面 ABC"
+          },
+          {
+            "id": "C",
+            "text": "存在某个位置，使得点 B 到直线 PC 的距离为 1"
+          },
+          {
+            "id": "D",
+            "text": "当三棱锥 P–ABC 体积最大时，该三棱锥的外接球表面积为 5π"
+          }
+        ],
+        "readingOnly": true,
+        "needsReview": false
+      }
+    ]
+  },
+  "error": null
+}

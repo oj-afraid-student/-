@@ -65,7 +65,10 @@ export async function request<T>(
 }
 
 export function safeReturnPath(value: string | null | undefined): string {
-  if (!value || !/^\/(learn(?:\/|\?|$)|practice\/|results\/|history(?:\?|$))/.test(value))
+  if (
+    !value ||
+    !/^\/(learn(?:\/|\?|$)|practice\/|results\/|history(?:\?|$)|knowledge-map(?:\?|$))/.test(value)
+  )
     return '/learn';
   if (value.includes('\\') || /[\r\n]/.test(value)) return '/learn';
   return value;

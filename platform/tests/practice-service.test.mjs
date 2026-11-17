@@ -15,11 +15,170 @@ const { readAnswer, evaluate, canonical, selection } =
   await import('../src/server/practice/rules.ts');
 const { publicQuestion } = await import('../src/server/practice/catalog.ts');
 const { readJson } = await import('../src/server/practice/request.ts');
+const { generateCandidate, requestHint } = await import('../src/server/ai/learning.ts');
+const { candidateScopes } = await import('../src/server/ai/scope.ts');
+const { publishCandidate } = await import('../src/server/ai/publish.ts');
 import { NextRequest } from 'next/server.js';
 const read = async (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const bank = JSON.parse(await read('fixtures/server/question-bank.json'));
 const expected = JSON.parse(await read('fixtures/api/practice/result-response.json')).data;
 const error = (status) => (e) => e.status === status;
+
+test('在线复核发布校验权限与知识点，重复请求不重复入库', async (t) => {
+  await setup(t);
+  const prior = process.env.ZHIXU_QUESTION_REVIEWER_IDS;
+  process.env.ZHIXU_QUESTION_REVIEWER_IDS = users[0];
+  t.after(() => {
+    if (prior === undefined) delete process.env.ZHIXU_QUESTION_REVIEWER_IDS;
+    else process.env.ZHIXU_QUESTION_REVIEWER_IDS = prior;
+  });
+  await db.query(
+    "INSERT INTO knowledge_point (id,title,sort_order,content) VALUES ('SG-01','空间关系',1,$1)",
+    [{ sections: [], knowledgeIds: ['G1-01'] }],
+  );
+  const input = {
+    requestId: 'e725ed13-ac40-490a-b289-f3802cfa3161',
+    confirmed: true,
+    title: '复核后标题',
+    stem: '选择正确的说法。',
+    fields: ['甲', '乙'],
+    answers: ['2'],
+    explanation: '乙符合条件。',
+    knowledgeId: 'G1-01',
+    type: 'SINGLE_CHOICE',
+    difficulty: 'BASIC',
+  };
+  await assert.rejects(publishCandidate(users[1], input), error(403));
+  await assert.rejects(publishCandidate(users[0], { ...input, confirmed: false }), error(400));
+  await assert.rejects(publishCandidate(users[0], { ...input, knowledgeId: 'G8-02' }), error(400));
+  await assert.rejects(publishCandidate(users[0], { ...input, answers: ['3'] }), error(400));
+  const result = await publishCandidate(users[0], input);
+  assert.deepEqual(await publishCandidate(users[0], input), result);
+  await assert.rejects(publishCandidate(users[0], { ...input, title: '重复请求改题' }), error(409));
+  const paper = await createPractice(users[1], { mode: 'EXPLICIT', questionIds: [result.id] });
+  assert.equal(paper.items[0].question.title, input.title);
+  assert.equal('reference' in paper.items[0].question, false);
+  const item = paper.items[0];
+  const submission = await submitPractice(users[1], paper.id, {
+    answers: [
+      { practiceItemId: item.id, answer: { type: 'SINGLE_CHOICE', selectedOptionId: 'B' } },
+    ],
+  });
+  const detail = await getSubmission(users[1], submission.data.submissionId);
+  assert.equal(detail.items[0].evaluation.status, 'CORRECT');
+  assert.equal(detail.items[0].reference.explanation, input.explanation);
+});
+
+test('扩充知识点可用于候选出题，组卷仅取已发布且匹配细分标签的题', async (t) => {
+  await setup(t);
+  const scopes = await candidateScopes();
+  assert.equal(scopes.length, 15);
+  assert.equal(scopes.flatMap((unit) => unit.points).length, 39);
+  const expanded = scopes.find((unit) => unit.id === 'SG-11');
+  assert.ok(expanded.points.every((point) => point.preview));
+  await assert.rejects(
+    generateCandidate({
+      knowledgeId: 'UNKNOWN',
+      difficulty: 'BASIC',
+      type: 'SINGLE_CHOICE',
+    }),
+    error(400),
+  );
+  const entry = bank[0];
+  const knowledgePointId = entry.question.knowledgeIds[0];
+  await assert.rejects(
+    createPractice(users[0], {
+      mode: 'FILTERED',
+      knowledgePointId,
+      count: 1,
+    }),
+    /只有 0 道/,
+  );
+  await db.query('UPDATE question_version SET is_published=true WHERE question_key=$1', [
+    entry.question.id,
+  ]);
+  const paper = await createPractice(users[0], { mode: 'FILTERED', knowledgePointId, count: 1 });
+  assert.equal(paper.items[0].question.id, entry.question.id);
+});
+
+test('解题提示只读取本人练习的固定题目版本，不发送参考答案', async (t) => {
+  await setup(t);
+  await db.query("UPDATE question_version SET is_published=true WHERE question_key='Q01'");
+  const practice = await createPractice(users[0], { mode: 'EXPLICIT', questionIds: ['Q01'] });
+  const item = practice.items[0];
+  const config = {
+    ZHIXU_AI_BASE_URL: 'https://model.invalid/v1',
+    ZHIXU_AI_API_KEY: 'test-key',
+    ZHIXU_AI_MODEL: 'test-model',
+  };
+  for (const [key, value] of Object.entries(config)) {
+    const prior = process.env[key];
+    process.env[key] = value;
+    t.after(() => {
+      if (prior === undefined) delete process.env[key];
+      else process.env[key] = prior;
+    });
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async (_url, options) => {
+    const prompt = JSON.parse(options.body).messages[1];
+    assert.deepEqual(JSON.parse(prompt.content), item.question);
+    return Response.json({
+      choices: [
+        { finish_reason: 'stop', message: { content: '{"hint":"先观察两条直线是否共面。"}' } },
+      ],
+    });
+  });
+  await assert.rejects(requestHint(users[1], practice.id, { itemId: item.id }), error(404));
+  assert.equal(fetch.mock.callCount(), 0);
+  assert.deepEqual(await requestHint(users[0], practice.id, { itemId: item.id }), {
+    hint: '先观察两条直线是否共面。',
+    version: item.question.version,
+  });
+
+  await db.query("UPDATE question_version SET is_published=true WHERE question_key='Q24'");
+  const written = await createPractice(users[0], { mode: 'EXPLICIT', questionIds: ['Q24'] });
+  const question = written.items[0].question;
+  const itemId = written.items[0].id;
+  const target = question.parts[1];
+  const progress = '第一问已证线面垂直，第二问已求底面积。';
+  await assert.rejects(requestHint(users[0], written.id, { itemId }), error(400));
+  await assert.rejects(
+    requestHint(users[0], written.id, { itemId, partId: 'unknown' }),
+    error(400),
+  );
+  await assert.rejects(
+    requestHint(users[0], written.id, { itemId, partId: target.id, photo: 'bad' }),
+    error(400),
+  );
+  fetch.mock.mockImplementationOnce(async (_url, options) => {
+    const prompt = JSON.parse(options.body).messages[1];
+    assert.deepEqual(JSON.parse(prompt.content), { question, target, studentProgress: progress });
+    return Response.json({
+      choices: [
+        { finish_reason: 'stop', message: { content: '{"hint":"用垂直关系找到棱锥的高。"}' } },
+      ],
+    });
+  });
+  assert.equal(
+    (await requestHint(users[0], written.id, { itemId, partId: target.id, progress })).hint,
+    '用垂直关系找到棱锥的高。',
+  );
+  fetch.mock.mockImplementationOnce(async (_url, options) => {
+    const content = JSON.parse(options.body).messages[1].content;
+    assert.equal(content[1].type, 'image_url');
+    return Response.json({
+      choices: [{ finish_reason: 'stop', message: { content: '{"text":"底面积等于4。"}' } }],
+    });
+  });
+  assert.deepEqual(
+    await requestHint(users[0], written.id, {
+      itemId,
+      partId: target.id,
+      photo: 'data:image/jpeg;base64,/9j/AA==',
+    }),
+    { text: '底面积等于4。' },
+  );
+});
 
 // One PGlite connection needs transaction serialization. This exercises persisted state and
 // rollback, but real PostgreSQL row-lock races require the separate PostgreSQL integration run.

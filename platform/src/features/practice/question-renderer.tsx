@@ -1,6 +1,7 @@
 'use client';
 
 import type { PublicQuestion } from '@/shared/contracts';
+import type { ReactNode } from 'react';
 import { difficultyLabels, GeometryFigure, MathText, questionTypeLabels } from '@/shared/ui/common';
 import type { AnswerDraft, AnswerIssue } from './answer-model';
 
@@ -58,6 +59,7 @@ export function QuestionRenderer({
   disabled = false,
   issues = [],
   prefix,
+  partTools,
 }: {
   question: PublicQuestion;
   draft: AnswerDraft;
@@ -65,6 +67,7 @@ export function QuestionRenderer({
   disabled?: boolean;
   issues?: AnswerIssue[];
   prefix: string;
+  partTools?: (partId: string, applyPhoto?: (text: string) => void) => ReactNode;
 }) {
   const errorFor = (field: string) => issues.find((issue) => issue.field === field)?.message;
   const error = (field: string) =>
@@ -230,6 +233,7 @@ export function QuestionRenderer({
                 />
               </label>
               {error(`${statement.id}-reason`)}
+              {partTools?.(statement.id)}
             </fieldset>
           );
         })}
@@ -264,6 +268,14 @@ export function QuestionRenderer({
               />
             </label>
             {error(part.id)}
+            {partTools?.(part.id, (text) =>
+              onChange({
+                ...draft,
+                parts: draft.parts.map((entry) =>
+                  entry.partId === part.id ? { ...entry, text } : entry,
+                ),
+              }),
+            )}
           </div>
         ))}
         <p className="field-hint">每问最多 10000 个字符。提交后保存过程并进入复核。</p>

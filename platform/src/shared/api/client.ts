@@ -22,23 +22,28 @@ export function errorMessage(error: unknown): string {
 export async function request<T>(
   base: string,
   path: string,
-  options: { method?: 'GET' | 'POST'; body?: unknown; signal?: AbortSignal } = {},
+  options: {
+    method?: 'GET' | 'POST';
+    body?: unknown;
+    signal?: AbortSignal;
+    timeoutMs?: number;
+  } = {},
 ): Promise<T> {
   let response: Response;
+  const timeout = AbortSignal.timeout(options.timeoutMs ?? 30000);
   try {
     response = await fetch(`${base}${path}`, {
       method: options.method ?? 'GET',
       credentials: 'same-origin',
       cache: 'no-store',
-      signal: options.signal
-        ? AbortSignal.any([options.signal, AbortSignal.timeout(30000)])
-        : AbortSignal.timeout(30000),
+      signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
       headers: options.body === undefined ? undefined : { 'Content-Type': 'application/json' },
       ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
     });
   } catch (error) {
     if (options.signal?.aborted || (error instanceof Error && error.name === 'AbortError'))
       throw error;
+    if (timeout.aborted) throw new ApiClientError('NETWORK_ERROR', 0, '请求等待超时，请稍后重试。');
     throw new ApiClientError(
       'NETWORK_ERROR',
       0,

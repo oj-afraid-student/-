@@ -1,0 +1,2 @@
+export const MODEL_TIMEOUT_MS = 45000;
+export const AI_REQUEST_TIMEOUT_MS = MODEL_TIMEOUT_MS + 10000;

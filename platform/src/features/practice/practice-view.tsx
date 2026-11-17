@@ -18,6 +18,31 @@ import {
 } from './answer-model';
 import { draftKey, loadDraft, saveDraft } from './draft-storage';
 import { QuestionContent, QuestionRenderer } from './question-renderer';
+import { NextStepHint } from './next-step-hint';
+import { AnswerPhoto } from './answer-photo';
+
+function hintProgress(draft: Drafts[string] | undefined, partId: string) {
+  const entries =
+    draft && 'parts' in draft
+      ? draft.parts.map(({ partId, text }) => ({ id: partId, text }))
+      : draft && 'judgments' in draft
+        ? draft.judgments.map(({ statementId, value, reason }) => ({
+            id: statementId,
+            text: value === null ? reason : `${value ? '判断为正确' : '判断为错误'}。 ${reason}`,
+          }))
+        : [];
+  const index = entries.findIndex((entry) => entry.id === partId);
+  if (index < 0) return undefined;
+  const context = [
+    `当前第 ${index + 1} 问作答：\n${entries[index].text.slice(0, 10000)}`,
+    ...entries
+      .slice(0, index)
+      .flatMap((entry, i) =>
+        entry.text.trim() ? [`前面第 ${i + 1} 问作答：\n${entry.text.slice(0, 2500)}`] : [],
+      ),
+  ];
+  return context.join('\n\n').slice(0, 16000);
+}
 
 export function PracticeView({ id }: { id: string }) {
   const { api, user } = useSession();
@@ -253,6 +278,14 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
             第 {item.position} 题
           </h2>
           <QuestionContent question={item.question} />
+          {!locked && !('parts' in item.question) && !('statements' in item.question) && (
+            <NextStepHint
+              key={`hint:${item.id}`}
+              practiceId={practice.id}
+              itemId={item.id}
+              progress={JSON.stringify(drafts[item.id])?.slice(0, 16000)}
+            />
+          )}
           <QuestionRenderer
             key={item.id}
             prefix={item.id}
@@ -261,6 +294,28 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
             disabled={locked || busy}
             issues={issues.filter((issue) => issue.itemId === item.id)}
             onChange={changeAnswer}
+            partTools={
+              locked
+                ? undefined
+                : (partId, applyPhoto) => (
+                    <>
+                      <NextStepHint
+                        practiceId={practice.id}
+                        itemId={item.id}
+                        partId={partId}
+                        progress={hintProgress(drafts[item.id], partId)}
+                      />
+                      {applyPhoto && (
+                        <AnswerPhoto
+                          practiceId={practice.id}
+                          itemId={item.id}
+                          partId={partId}
+                          onApply={applyPhoto}
+                        />
+                      )}
+                    </>
+                  )
+            }
           />
           <div className="quiz-footer">
             <button className="btn" disabled={index === 0} onClick={() => navigate(index - 1)}>

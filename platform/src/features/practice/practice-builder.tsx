@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useSession } from '@/features/auth/session';
 import type { CreatePracticeRequest, Difficulty, QuestionType } from '@/shared/contracts';
 import { ApiClientError, errorMessage } from '@/shared/api/client';
@@ -9,18 +10,24 @@ import { useResource } from '@/shared/api/use-resource';
 import { difficultyLabels, PageHead, questionTypeLabels } from '@/shared/ui/common';
 import { GeometryArt, Icon } from '@/shared/ui/icons';
 
-export function PracticeBuilder({ initialUnit = '' }: { initialUnit?: string }) {
+export function PracticeBuilder({
+  initialUnit = '',
+  paper = false,
+}: {
+  initialUnit?: string;
+  paper?: boolean;
+}) {
   const { api, expire } = useSession();
   const router = useRouter();
   const loader = useCallback((signal: AbortSignal) => api.knowledgePoints(signal), [api]);
   const state = useResource(loader);
   const [mode, setMode] = useState<'ALL' | 'FILTERED' | 'EXPLICIT'>(
-    initialUnit ? 'FILTERED' : 'ALL',
+    initialUnit || paper ? 'FILTERED' : 'ALL',
   );
   const [unit, setUnit] = useState(initialUnit);
   const [difficulty, setDifficulty] = useState<Difficulty | ''>('');
   const [types, setTypes] = useState<QuestionType[]>([]);
-  const [count, setCount] = useState('');
+  const [count, setCount] = useState(paper ? '5' : '');
   const [ids, setIds] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -31,8 +38,10 @@ export function PracticeBuilder({ initialUnit = '' }: { initialUnit?: string }) 
     setError('');
     let selection: CreatePracticeRequest = { mode: 'ALL' };
     if (mode === 'FILTERED') {
-      if (count && (!/^\d+$/.test(count) || +count < 1 || +count > 100)) {
-        setError('题量需为 1—100 的整数，或留空选择全部匹配题。');
+      if ((paper || count) && (!/^\d+$/.test(count) || +count < 1 || +count > 100)) {
+        setError(
+          paper ? '请输入 1—100 的整数题量。' : '题量需为 1—100 的整数，或留空选择全部匹配题。',
+        );
         return;
       }
       selection = {
@@ -75,12 +84,26 @@ export function PracticeBuilder({ initialUnit = '' }: { initialUnit?: string }) 
     <>
       <PageHead
         eyebrow="PRACTICE / 自主练习"
-        title="把理解，写成自己的答案"
-        description="选择学习范围与题型，按自己的节奏完成一组练习。"
+        title={paper ? '模拟组卷' : '把理解，写成自己的答案'}
+        description={
+          paper
+            ? '按知识范围、难度和题量从已发布题库组卷。'
+            : '选择学习范围与题型，按自己的节奏完成一组练习。'
+        }
       />
       <div className="builder-layout">
         <section className="panel">
-          <h2>创建练习</h2>
+          <h2>{paper ? '设置试卷条件' : '创建练习'}</h2>
+          {!paper && (
+            <p>
+              <Link className="btn" href="/practice/paper">
+                模拟组卷
+              </Link>{' '}
+              <Link className="btn" href="/practice/candidates">
+                AI 候选练习
+              </Link>
+            </p>
+          )}
           {state.loading && (
             <p className="field-hint" role="status">
               正在读取单元目录，仍可先选择全部题目或指定题号。
@@ -97,32 +120,34 @@ export function PracticeBuilder({ initialUnit = '' }: { initialUnit?: string }) 
           <form onSubmit={submit} aria-busy={busy}>
             <fieldset className="answer-fieldset" disabled={busy}>
               <legend>选择题组方式</legend>
-              <div className="builder-modes">
-                {(
-                  [
-                    { id: 'ALL', title: '全部题目', description: '按题号顺序完成当前题库' },
-                    { id: 'FILTERED', title: '按条件选题', description: '选择单元、难度或题型' },
-                    { id: 'EXPLICIT', title: '指定题号', description: '按输入顺序组成题组' },
-                  ] as const
-                ).map((option) => (
-                  <label
-                    className={`mode-card ${mode === option.id ? 'selected' : ''}`}
-                    key={option.id}
-                  >
-                    <input
-                      type="radio"
-                      name="selection-mode"
-                      value={option.id}
-                      checked={mode === option.id}
-                      onChange={() => setMode(option.id)}
-                    />
-                    <span>
-                      <strong>{option.title}</strong>
-                      <small>{option.description}</small>
-                    </span>
-                  </label>
-                ))}
-              </div>
+              {!paper && (
+                <div className="builder-modes">
+                  {(
+                    [
+                      { id: 'ALL', title: '全部题目', description: '按题号顺序完成当前题库' },
+                      { id: 'FILTERED', title: '按条件选题', description: '选择单元、难度或题型' },
+                      { id: 'EXPLICIT', title: '指定题号', description: '按输入顺序组成题组' },
+                    ] as const
+                  ).map((option) => (
+                    <label
+                      className={`mode-card ${mode === option.id ? 'selected' : ''}`}
+                      key={option.id}
+                    >
+                      <input
+                        type="radio"
+                        name="selection-mode"
+                        value={option.id}
+                        checked={mode === option.id}
+                        onChange={() => setMode(option.id)}
+                      />
+                      <span>
+                        <strong>{option.title}</strong>
+                        <small>{option.description}</small>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
               {mode === 'ALL' && (
                 <p className="notice">
                   选择当前题库中的全部题目，含选择、填空、判断说明和推理过程等题型。题量以创建后的题组为准。
@@ -132,21 +157,34 @@ export function PracticeBuilder({ initialUnit = '' }: { initialUnit?: string }) 
                 <div className="filter-fields">
                   <div className="grid-two">
                     <label className="field">
-                      <span>学习单元</span>
+                      <span>{paper ? '知识范围' : '学习单元'}</span>
                       <select
                         disabled={!state.data}
                         value={unit}
                         onChange={(event) => setUnit(event.target.value)}
                       >
                         <option value="">{state.data ? '全部单元' : '单元目录暂不可用'}</option>
-                        {unit && !state.data?.some((entry) => entry.id === unit) && (
-                          <option value={unit}>当前单元（{unit}）</option>
-                        )}
-                        {state.data?.map((unit) => (
-                          <option key={unit.id} value={unit.id}>
-                            {unit.title}
-                          </option>
-                        ))}
+                        {unit &&
+                          !state.data?.some(
+                            (entry) =>
+                              entry.id === unit || (paper && entry.knowledgeIds.includes(unit)),
+                          ) && <option value={unit}>当前单元（{unit}）</option>}
+                        {paper
+                          ? state.data?.map((entry) => (
+                              <optgroup key={entry.id} label={entry.title}>
+                                <option value={entry.id}>整个单元：{entry.title}</option>
+                                {entry.knowledgeIds.map((id) => (
+                                  <option key={id} value={id}>
+                                    {id}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            ))
+                          : state.data?.map((unit) => (
+                              <option key={unit.id} value={unit.id}>
+                                {unit.title}
+                              </option>
+                            ))}
                       </select>
                     </label>
                     <label className="field">
@@ -186,12 +224,13 @@ export function PracticeBuilder({ initialUnit = '' }: { initialUnit?: string }) 
                     </div>
                   </fieldset>
                   <label className="field">
-                    <span>题量（可选）</span>
+                    <span>{paper ? '试卷题量' : '题量（可选）'}</span>
                     <input
                       type="number"
                       min={1}
                       max={100}
                       step={1}
+                      required={paper}
                       value={count}
                       onChange={(event) => setCount(event.target.value)}
                       placeholder="留空选择全部匹配题"

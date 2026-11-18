@@ -42,3 +42,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+.study-photo-preview {
+  padding: 16px;
+  border: 1px solid #7b9b87;
+  border-radius: 12px;
+  background: #f1f6ed;
+  overflow-wrap: anywhere;
+}
+.study-photo-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  margin: 12px 0;
+  background: white;
+  border-radius: 8px;
+}

@@ -96,15 +96,24 @@ function ProjectLabels({
 }) {
   const projected = useMemo(() => new Vector3(), []);
   useFrame(({ camera, size }) => {
+    const occupied: { x: number; y: number; width: number }[] = [];
     for (const [id, point] of Object.entries(positions)) {
       const element = elements.current[id];
       if (!element) continue;
       projected.set(...point).project(camera);
       element.style.setProperty('visibility', Math.abs(projected.z) <= 1 ? 'visible' : 'hidden');
-      element.style.setProperty(
-        'transform',
-        `translate(-50%, -100%) translate(${((projected.x + 1) * size.width) / 2}px, ${((1 - projected.y) * size.height) / 2 - 8}px)`,
-      );
+      const x = ((projected.x + 1) * size.width) / 2;
+      let y = ((1 - projected.y) * size.height) / 2 - 8;
+      const width = element.offsetWidth;
+      // Coincident endpoints (P=F, P=A) must retain both point names.
+      while (
+        occupied.some(
+          (p) => Math.abs(p.x - x) < (p.width + width) / 2 + 3 && Math.abs(p.y - y) < 28,
+        )
+      )
+        y -= 28;
+      occupied.push({ x, y, width });
+      element.style.setProperty('transform', `translate(-50%, -100%) translate(${x}px, ${y}px)`);
     }
   });
   return null;
@@ -133,6 +142,7 @@ function CameraRig({ view, version }: { view: 'iso' | 'top' | 'front'; version: 
   );
 }
 type Props = {
+  traces?: Vec3[][];
   scene: GeometryScene;
   positions: Positions;
   constructions: Construction[];
@@ -163,7 +173,7 @@ export default function SceneRenderer(props: Props) {
   } = props;
   const elements = useRef<Record<string, HTMLElement | null>>({});
   const initial = initialPositions(scene);
-  const h = projectToPlane(p.A, p.B, p.C, p.D);
+  const h = scene.id === 'square-fold' ? projectToPlane(p.A, p.B, p.C, p.D) : null;
   return (
     <div className="geo-renderer">
       <Canvas
@@ -179,6 +189,9 @@ export default function SceneRenderer(props: Props) {
       >
         <color attach="background" args={['#f5f7f3']} />
         <CameraRig view={view} version={cameraVersion} />
+        {props.traces?.map((points, i) => (
+          <Line key={'trace' + i} points={points} color="#b7518d" lineWidth={2} />
+        ))}
         {scene.faces
           .filter((f) => showBase || f.id !== 'base')
           .map((f) => (
@@ -186,10 +199,10 @@ export default function SceneRenderer(props: Props) {
               key={f.id}
               vertices={f.vertices.map((id) => p[id])}
               color={f.color}
-              opacity={f.id === 'panel' ? opacity : 0.28}
+              opacity={opacity}
             />
           ))}
-        {showGhost && (
+        {showGhost && scene.id === 'square-fold' && (
           <Line
             points={['A', 'E', 'D', 'A'].map((id) => initial[id])}
             color="#85958d"
@@ -218,14 +231,16 @@ export default function SceneRenderer(props: Props) {
             onSelect={() => onLine(s.id)}
           />
         ))}
-        <Line
-          points={[p.A, h]}
-          color="#657ab2"
-          dashed
-          dashSize={0.1}
-          gapSize={0.07}
-          depthTest={false}
-        />
+        {h && (
+          <Line
+            points={[p.A, h]}
+            color="#657ab2"
+            dashed
+            dashSize={0.1}
+            gapSize={0.07}
+            depthTest={false}
+          />
+        )}
         {scene.points.map((point) => (
           <group key={point.id} position={p[point.id]}>
             <mesh
@@ -244,7 +259,10 @@ export default function SceneRenderer(props: Props) {
             </mesh>
           </group>
         ))}
-        <ProjectLabels positions={{ ...p, ghost: initial.A, foot: h }} elements={elements} />
+        <ProjectLabels
+          positions={{ ...p, ...(h ? { ghost: initial.A, foot: h } : {}) }}
+          elements={elements}
+        />
       </Canvas>
       <div className="geo-label-layer">
         {scene.points.map((point) => (
@@ -266,7 +284,7 @@ export default function SceneRenderer(props: Props) {
             {point.label}
           </button>
         ))}
-        {showGhost && (
+        {showGhost && scene.id === 'square-fold' && (
           <span
             ref={(element) => {
               elements.current.ghost = element;
@@ -276,14 +294,16 @@ export default function SceneRenderer(props: Props) {
             A₀
           </span>
         )}
-        <span
-          ref={(element) => {
-            elements.current.foot = element;
-          }}
-          className="geo-ghost-label"
-        >
-          H
-        </span>
+        {h && (
+          <span
+            ref={(element) => {
+              elements.current.foot = element;
+            }}
+            className="geo-ghost-label"
+          >
+            H
+          </span>
+        )}
       </div>
     </div>
   );

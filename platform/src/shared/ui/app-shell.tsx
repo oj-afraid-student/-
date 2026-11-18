@@ -64,17 +64,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <strong>知序</strong>
           </Link>
           <nav aria-label="主要导航">
-            {[navigation[0], navigation[3], navigation[4], navigation[1], navigation[2]].map(
-              (item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={item.href === pathname ? 'page' : undefined}
-                >
-                  {item.text}
-                </Link>
-              ),
-            )}
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={item.href === pathname ? 'page' : undefined}
+              >
+                {item.text}
+              </Link>
+            ))}
           </nav>
           <div className="graph-user">
             <span className="avatar">{user?.username.slice(0, 1).toUpperCase() ?? '同'}</span>
@@ -112,13 +110,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     );
-  const current = pathname.startsWith('/geometry')
-    ? navigation[4]
+  const currentPath = pathname.startsWith('/results')
+    ? '/history'
     : pathname.startsWith('/practice')
-      ? navigation[1]
-      : pathname.startsWith('/results') || pathname.startsWith('/history')
-        ? navigation[2]
-        : navigation[0];
+      ? '/practice/new'
+      : pathname;
+  const current =
+    navigation.find(
+      (item) => currentPath === item.href || currentPath.startsWith(item.href + '/'),
+    ) ?? navigation.find((item) => item.href === '/learn')!;
+
   return (
     <>
       <a className="skip-link" href="#main-content">

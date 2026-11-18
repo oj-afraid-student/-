@@ -1,4 +1,8 @@
 import { z } from 'zod';
+export const photoSchema = z
+  .string()
+  .max(950000)
+  .regex(/^data:image\/jpeg;base64,\/9j\/[A-Za-z0-9+/]+={0,2}$/);
 const text = z.string().trim().min(1).max(10000);
 export const problemSchema = z
   .object({
@@ -6,6 +10,22 @@ export const problemSchema = z
     text,
     conditions: z.array(z.string().max(1000)).max(30),
     questions: z.array(z.string().trim().min(1).max(2000)).min(1).max(15),
+    diagram: z
+      .array(
+        z
+          .object({
+            claim: z.string().max(1000),
+            source: z.enum(['label', 'mark', 'incidence', 'uncertain']),
+            evidence: z.string().max(1000),
+          })
+          .strict(),
+      )
+      .max(30)
+      .optional(),
+    supplements: z
+      .array(z.object({ text: z.string().max(1000), evidence: z.string().max(1000) }).strict())
+      .max(15)
+      .optional(),
     uncertainties: z.array(z.string().max(1000)).max(20),
   })
   .strict();

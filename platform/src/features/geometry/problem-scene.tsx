@@ -9,14 +9,25 @@ import { evaluateScene } from './constraints';
 import type { GeometryScene } from './scene';
 import './workbench.css';
 const Renderer = dynamic(() => import('./scene-renderer'), { ssr: false });
-export function ProblemScene({ problem }: { problem: StudyProblem }) {
+export function ProblemScene({
+  problem,
+  initialQuestion = 0,
+  initialProgress = '',
+}: {
+  problem: StudyProblem;
+  initialQuestion?: number;
+  initialProgress?: string;
+}) {
   const [plan, setPlan] = useState<GeometryPlan | null>(null),
     [scene, setScene] = useState<GeometryScene | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [theta, setTheta] = useState(0),
     [point, setPoint] = useState(''),
-    [line, setLine] = useState('');
+    [line, setLine] = useState(''),
+    [question, setQuestion] = useState(initialQuestion),
+    [progress, setProgress] = useState(initialProgress),
+    [hint, setHint] = useState('');
   async function generate() {
     setBusy(true);
     setError('');
@@ -36,6 +47,24 @@ export function ProblemScene({ problem }: { problem: StudyProblem }) {
       setBusy(false);
     }
   }
+  async function ask() {
+    if (!plan) return;
+    setBusy(true);
+    setHint('');
+    setError('');
+    try {
+      const result = await request<{ hint: string }>('/api/v1', '/ai/geometry-hint', {
+        method: 'POST',
+        body: { problem, plan, theta, point, line, question, progress },
+        timeoutMs: AI_REQUEST_TIMEOUT_MS,
+      });
+      setHint(result.hint);
+    } catch (e) {
+      setError(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  }
   const evaluated = scene ? evaluateScene(scene, theta) : null;
   return (
     <section className="panel">
@@ -46,44 +75,68 @@ export function ProblemScene({ problem }: { problem: StudyProblem }) {
       </button>
       {error && <p role="alert">{error}</p>}
       {plan && (
-        <>
-          <p>{plan.reason}</p>
-          <p>
-            模板：{plan.template}；尺寸：{plan.dimensions.join(' × ')}
-          </p>
-          <ul>
-            {[...plan.evidence, ...plan.missing].map((v, i) => (
-              <li key={i}>{v}</li>
-            ))}
-          </ul>
-          {plan.template === 'box' && (
-            <p>请确认点名对应：底面 ABCD，上面 PQRS，AP、BQ、CR、DS 为竖棱。</p>
-          )}
-          {plan.template === 'square_fold' && (
-            <p>
-              请确认 ABCD 为正方形、E 为 AB 中点、ADE 沿 DE 翻折且 EBCD 固定；角度探索范围 0°–90°。
-            </p>
-          )}
-          {plan.template === 'unsupported' || plan.missing.length > 0 ? (
-            <p>当前模板不足以表达本题，保留文字学习，不生成替代示例。</p>
+        <div className="geo-plan-result" role="status">
+          {plan.template === 'unsupported' ? (
+            <>
+              <h3>这道题暂时无法生成交互模型</h3>
+              <p>
+                当前建模能力尚不能表达本题的全部几何关系。这不是图片上传失败，也不代表题目有错。
+              </p>
+              <p>
+                可继续使用已有的文字提示。若上方题干或条件识别不完整，请先修正；补全条件后仍可能需要新增对应的几何构造支持。
+              </p>
+            </>
+          ) : plan.missing.length > 0 ? (
+            <>
+              <h3>生成前还需要核对条件</h3>
+              <p>部分条件或点名尚未可靠对应到模型。请核对上方原题和条件后重新规划。</p>
+              <ul>
+                {[...new Set(plan.missing)].slice(0, 5).map((m, i) => (
+                  <li key={i}>{m}</li>
+                ))}
+              </ul>
+            </>
           ) : (
-            <button
-              className="btn"
-              onClick={() => {
-                try {
-                  setScene(compilePlan(plan));
-                  setTheta(0);
-                  setPoint('');
-                  setLine('');
-                } catch (e) {
-                  setError(errorMessage(e));
-                }
-              }}
-            >
-              以上模板与本题一致，生成可交互模型
-            </button>
+            <>
+              <h3>{plan.template === 'box' ? '长方体模型' : '正方形折叠模型'}</h3>
+              <p>尺寸：{plan.dimensions.join(' × ')}</p>
+              <p>请核对模型点名与原题的对应关系：</p>
+              <ul>
+                {Object.entries(plan.labels ?? {}).map(([id, label]) => (
+                  <li key={id}>
+                    {id} → {label}
+                  </li>
+                ))}
+              </ul>
+              <button
+                className="btn"
+                onClick={() => {
+                  try {
+                    setScene(compilePlan(plan));
+                    setTheta(0);
+                    setPoint('');
+                    setLine('');
+                  } catch (e) {
+                    setError(errorMessage(e));
+                  }
+                }}
+              >
+                对应关系正确，生成可交互模型
+              </button>
+            </>
           )}
-        </>
+          <details>
+            <summary>查看条件核对详情</summary>
+            <p>{plan.reason}</p>
+            <ul>
+              {plan.coverage?.map((c) => (
+                <li key={c.index}>
+                  {c.quote}：{c.explanation}（{c.status === 'represented' ? '已对应' : '未对应'}）
+                </li>
+              ))}
+            </ul>
+          </details>
+        </div>
       )}
       {scene && evaluated && (
         <>
@@ -98,8 +151,16 @@ export function ProblemScene({ problem }: { problem: StudyProblem }) {
               constructions={[]}
               selectedPoints={point ? [point] : []}
               selectedLine={line}
-              onPoint={setPoint}
-              onLine={setLine}
+              onPoint={(id) => {
+                if (busy) return;
+                setPoint(id);
+                setHint('');
+              }}
+              onLine={(id) => {
+                if (busy) return;
+                setLine(id);
+                setHint('');
+              }}
               showBase={true}
               showGhost={false}
               opacity={0.5}
@@ -112,11 +173,15 @@ export function ProblemScene({ problem }: { problem: StudyProblem }) {
               折叠角 {Math.round((theta * 180) / Math.PI)}°
               <input
                 aria-label="本题折叠角"
+                disabled={busy}
                 type="range"
                 min={0}
                 max={90}
                 value={(theta * 180) / Math.PI}
-                onChange={(e) => setTheta((Number(e.target.value) * Math.PI) / 180)}
+                onChange={(e) => {
+                  setTheta((Number(e.target.value) * Math.PI) / 180);
+                  setHint('');
+                }}
               />
             </label>
           )}
@@ -126,6 +191,43 @@ export function ProblemScene({ problem }: { problem: StudyProblem }) {
               {m.label}：{evaluated.metrics[m.id].value?.toFixed(4) ?? '未定义'}
             </p>
           ))}
+          <label className="field">
+            <span>探索哪一问</span>
+            <select
+              disabled={busy}
+              value={question}
+              onChange={(e) => {
+                setQuestion(Number(e.target.value));
+                setHint('');
+              }}
+            >
+              {problem.questions.map((q, i) => (
+                <option key={i} value={i}>
+                  {q}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>我的观察、思路或追问</span>
+            <textarea
+              disabled={busy}
+              maxLength={6000}
+              value={progress}
+              onChange={(e) => {
+                setProgress(e.target.value);
+                setHint('');
+              }}
+            />
+          </label>
+          <button className="btn" disabled={busy} onClick={() => void ask()}>
+            结合当前模型给我提示
+          </button>
+          {hint && (
+            <p aria-live="polite" style={{ whiteSpace: 'pre-wrap' }}>
+              {hint}
+            </p>
+          )}
           {scene.assumptions.map((s, i) => (
             <p key={i}>{s}</p>
           ))}

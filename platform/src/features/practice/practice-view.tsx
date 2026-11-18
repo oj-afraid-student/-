@@ -280,6 +280,7 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
           <QuestionContent question={item.question} />
           {!locked && !('parts' in item.question) && !('statements' in item.question) && (
             <NextStepHint
+              question={item.question}
               key={`hint:${item.id}`}
               practiceId={practice.id}
               itemId={item.id}
@@ -300,6 +301,7 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
                 : (partId, applyPhoto) => (
                     <>
                       <NextStepHint
+                        question={item.question}
                         practiceId={practice.id}
                         itemId={item.id}
                         partId={partId}

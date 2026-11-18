@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { PageHead } from '@/shared/ui/common';
 import { request, errorMessage } from '@/shared/api/client';
@@ -6,10 +7,13 @@ import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { preparePhoto } from '@/shared/prepare-photo';
 import type { StudyProblem, StudyGuidance } from '@/shared/study-contract';
 import './workbench.css';
-import { ProblemScene } from '@/features/geometry/problem-scene';
+import { VisualizeButton } from '@/features/geometry/visualize-button';
 export function StudyWorkbench() {
   const [text, setText] = useState(''),
     [photo, setPhoto] = useState(''),
+    [photoName, setPhotoName] = useState(''),
+    [preparingPhoto, setPreparingPhoto] = useState(false),
+    [photoError, setPhotoError] = useState(''),
     [problem, setProblem] = useState<StudyProblem | null>(null),
     [confirmed, setConfirmed] = useState(false),
     [selected, setSelected] = useState(0),
@@ -22,15 +26,19 @@ export function StudyWorkbench() {
   useEffect(() => () => pending.current?.abort(), []);
   async function choose(file: File) {
     setBusy(true);
+    setPreparingPhoto(true);
+    setPhotoError('');
     setError('');
     try {
       setPhoto(await preparePhoto(file));
+      setPhotoName(file.name);
       setProblem(null);
       setConfirmed(false);
       setGuidance(null);
     } catch (e) {
-      setError(errorMessage(e));
+      setPhotoError(errorMessage(e) + (photo ? ' 原先选好的图片仍保留。' : ''));
     } finally {
+      setPreparingPhoto(false);
       setBusy(false);
     }
   }
@@ -47,7 +55,7 @@ export function StudyWorkbench() {
           method: 'POST',
           body: { action, text, ...(photo ? { photo } : {}) },
           signal: controller.signal,
-          timeoutMs: AI_REQUEST_TIMEOUT_MS,
+          timeoutMs: AI_REQUEST_TIMEOUT_MS * 2,
         });
         setProblem(result);
         setConfirmed(false);
@@ -139,22 +147,43 @@ export function StudyWorkbench() {
           <p className="field-hint">
             支持 JPG / PNG / WebP，最大 15 MB。照片将发送给模型识别；本页内容尚不保存，刷新会清空。
           </p>
+          {preparingPhoto && <p role="status">正在处理图片，请稍候…</p>}
+          {photoError && (
+            <p role="alert" className="field-error">
+              {photoError}
+            </p>
+          )}
           {photo && (
-            <>
-              <a href={photo} target="_blank" rel="noreferrer">
-                查看原始题图
-              </a>
+            <div className="study-photo-preview">
+              <p role="status">
+                <strong>图片已选择，可以识别</strong>
+                <br />
+                <span>{photoName}</span>
+              </p>
+              <Image
+                src={photo}
+                alt={'待识别题图：' + photoName}
+                width={600}
+                height={400}
+                unoptimized
+                className="study-photo-image"
+              />
+              <p className="field-hint">点击下方「识别并整理题目」后，图片才会发送给 AI。</p>
               <button
                 className="btn"
                 disabled={busy}
                 onClick={() => {
                   setPhoto('');
+                  setPhotoName('');
+                  setPhotoError('');
+                  setProblem(null);
+                  setGuidance(null);
                   setConfirmed(false);
                 }}
               >
                 移除照片
               </button>
-            </>
+            </div>
           )}
           <button
             className="btn primary"
@@ -163,9 +192,29 @@ export function StudyWorkbench() {
           >
             识别并整理题目
           </button>
+          {error && !problem && (
+            <p role="alert" className="field-error">
+              {error} 已选择的图片和文字会保留，可直接重新识别。
+            </p>
+          )}
           {problem && (
             <>
               <h2>2 · 核对题目</h2>
+              {!!problem.supplements?.length && (
+                <div className="study-guidance">
+                  <h3>AI 对照题图补充的条件</h3>
+                  <p>以下条件已加入下方已知条件；请核对图像依据，错误时可直接编辑。</p>
+                  <ul>
+                    {problem.supplements.map((a, i) => (
+                      <li key={i}>
+                        <strong>{a.text}</strong>
+                        <br />
+                        {a.evidence}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <p>请对照原题修改识别结果，尤其是符号、图示关系和分问。AI 整理结果尚未经数学验证。</p>
               <label className="field">
                 <span>完整题干</span>
@@ -199,6 +248,16 @@ export function StudyWorkbench() {
                   }}
                 />
               </label>
+              <label className="field">
+                <span>待核对项（解决后删除对应行）</span>
+                <textarea
+                  value={problem.uncertainties.join('\n')}
+                  disabled={busy}
+                  onChange={(e) =>
+                    edit({ ...problem, uncertainties: e.target.value.split('\n').filter(Boolean) })
+                  }
+                />
+              </label>
               {problem.uncertainties.length > 0 && (
                 <div role="note">
                   <strong>需要核对</strong>
@@ -226,7 +285,7 @@ export function StudyWorkbench() {
         </section>
         <section className="panel study-stack">
           <h2>3 · 分步探索</h2>
-          {problem && confirmed && <ProblemScene key={JSON.stringify(problem)} problem={problem} />}
+
           {!problem ? (
             <p>
               导入题目后，这里会根据分问生成学习入口。支持证明、计算、选择和开放问题的文字指导。
@@ -283,10 +342,27 @@ export function StudyWorkbench() {
                 给我一个下一步提示
               </button>
               {!confirmed && <p>先在左侧核对并确认题目。</p>}
+              {!guidance && (
+                <div>
+                  <button className="btn" type="button" disabled>
+                    AI 可视化 · 前往几何实验室
+                  </button>
+                  <p className="field-hint">
+                    先核对题目并点击「给我一个下一步提示」，提示成功返回后即可进入本题的三维可视化。
+                  </p>
+                </div>
+              )}
               {guidance && (
                 <div className="study-guidance" aria-live="polite">
                   <h3>下一步</h3>
                   <p>{guidance.hint}</p>
+                  <VisualizeButton
+                    photo={photo || undefined}
+                    problem={problem}
+                    hint={guidance.hint}
+                    question={selected}
+                    progress={answers[selected] || ''}
+                  />
                   <h3>试着想一想</h3>
                   <p>{guidance.check}</p>
                   {guidance.limitations.map((s, i) => (
@@ -299,8 +375,8 @@ export function StudyWorkbench() {
           <p className="field-hint">
             三维探索按受支持模板生成，不支持的题目保留文字学习；AI 提示可能出错，请结合原题核对。
           </p>
-          {busy && <p role="status">正在处理，请稍候…</p>}
-          {error && <p role="alert">{error}</p>}
+          {busy && <p role="status">正在识别题目或复核图示，请稍候…</p>}
+          {error && problem && <p role="alert">{error}</p>}
         </section>
       </div>
     </>

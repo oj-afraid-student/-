@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import type { StudyProblem } from '@/shared/study-contract';
+import { metricSchema } from './scene';
 import { foldScene, boxScene } from './fixtures';
 import { parseScene, evaluateScene } from './constraints';
 export const planSchema = z
@@ -7,6 +9,21 @@ export const planSchema = z
     reason: z.string().max(2000),
     dimensions: z.array(z.number().finite().positive().min(0.01).max(1000)).max(3),
     evidence: z.array(z.string().max(2000)).max(10),
+    labels: z.record(z.string(), z.string().min(1).max(20)).optional(),
+    metrics: z.array(metricSchema).max(12).optional(),
+    coverage: z
+      .array(
+        z
+          .object({
+            index: z.number().int().nonnegative(),
+            quote: z.string().min(1).max(1000),
+            status: z.enum(['represented', 'unresolved']),
+            explanation: z.string().max(1000),
+          })
+          .strict(),
+      )
+      .max(30)
+      .optional(),
     missing: z.array(z.string().max(1000)).max(10),
   })
   .strict();
@@ -46,7 +63,43 @@ export function compilePlan(value: unknown) {
       { id: 'diagonal', label: '体对角线 AR', type: 'distance', points: ['A', 'R'] },
     ];
   }
+  if (plan.labels) {
+    scene.points.forEach((p) => {
+      if (plan.labels?.[p.id]) p.label = plan.labels[p.id];
+    });
+  }
+  if (plan.metrics?.length) scene.metrics = plan.metrics;
   const result = parseScene(scene);
   for (let i = 0; i <= 90; i++) evaluateScene(result, ((result.motion?.max ?? 0) * i) / 90);
   return result;
+}
+
+/** Evidence coverage is mechanical; semantic correspondence still needs human confirmation. */
+export function auditPlan(plan: GeometryPlan, problem: StudyProblem) {
+  const issues: string[] = [];
+  if (problem.uncertainties.length) issues.push('请先处理识别结果中的不确定项');
+  const coverage = plan.coverage ?? [];
+  for (let i = 0; i < problem.conditions.length; i++) {
+    const rows = coverage.filter((c) => c.index === i);
+    if (
+      rows.length !== 1 ||
+      rows[0].quote !== problem.conditions[i] ||
+      rows[0].status !== 'represented'
+    )
+      issues.push('条件 ' + (i + 1) + ' 尚未完整映射到模型');
+  }
+  if (coverage.some((c) => c.index >= problem.conditions.length)) issues.push('存在无效条件引用');
+  const source = problem.text + '\n' + problem.conditions.join('\n');
+  if (!plan.evidence.length || plan.evidence.some((e) => !source.includes(e)))
+    issues.push('规划证据必须逐字来自原题');
+  const ids =
+    plan.template === 'box' ? ['A', 'B', 'C', 'D', 'P', 'Q', 'R', 'S'] : ['A', 'B', 'C', 'D', 'E'];
+  if (
+    !plan.labels ||
+    ids.some((id) => !plan.labels?.[id]) ||
+    Object.keys(plan.labels).some((id) => !ids.includes(id)) ||
+    new Set(Object.values(plan.labels ?? {})).size !== ids.length
+  )
+    issues.push('点名映射不完整或重复');
+  return [...new Set(issues)];
 }

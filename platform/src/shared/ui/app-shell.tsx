@@ -8,10 +8,12 @@ import { errorMessage } from '@/shared/api/client';
 import { Icon } from './icons';
 
 const navigation = [
+  { href: '/study', text: '拍照学题', icon: 'pen', hint: '上传题目 · 核对条件 · AI 提示' },
   { href: '/learn', text: '知识学习', icon: 'book', hint: '概念 · 条件 · 例题' },
   { href: '/practice/new', text: '自主练习', icon: 'pen', hint: '选择题组，逐步推理' },
   { href: '/history', text: '练习记录', icon: 'history', hint: '回顾每一次思考' },
   { href: '/knowledge-map', text: '知识图谱', icon: 'diamond', hint: '探索知识的上下层关系' },
+  { href: '/geometry', text: '几何实验室', icon: 'diamond', hint: '折叠 · 构造 · 动态量测' },
 ];
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -62,15 +64,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <strong>知序</strong>
           </Link>
           <nav aria-label="主要导航">
-            {[navigation[0], navigation[3], navigation[1], navigation[2]].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={item.href === pathname ? 'page' : undefined}
-              >
-                {item.text}
-              </Link>
-            ))}
+            {[navigation[0], navigation[3], navigation[4], navigation[1], navigation[2]].map(
+              (item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={item.href === pathname ? 'page' : undefined}
+                >
+                  {item.text}
+                </Link>
+              ),
+            )}
           </nav>
           <div className="graph-user">
             <span className="avatar">{user?.username.slice(0, 1).toUpperCase() ?? '同'}</span>
@@ -108,11 +112,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     );
-  const current = pathname.startsWith('/practice')
-    ? navigation[1]
-    : pathname.startsWith('/results') || pathname.startsWith('/history')
-      ? navigation[2]
-      : navigation[0];
+  const current = pathname.startsWith('/geometry')
+    ? navigation[4]
+    : pathname.startsWith('/practice')
+      ? navigation[1]
+      : pathname.startsWith('/results') || pathname.startsWith('/history')
+        ? navigation[2]
+        : navigation[0];
   return (
     <>
       <a className="skip-link" href="#main-content">

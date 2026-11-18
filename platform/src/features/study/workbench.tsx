@@ -6,6 +6,7 @@ import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { preparePhoto } from '@/shared/prepare-photo';
 import type { StudyProblem, StudyGuidance } from '@/shared/study-contract';
 import './workbench.css';
+import { ProblemScene } from '@/features/geometry/problem-scene';
 export function StudyWorkbench() {
   const [text, setText] = useState(''),
     [photo, setPhoto] = useState(''),
@@ -225,6 +226,7 @@ export function StudyWorkbench() {
         </section>
         <section className="panel study-stack">
           <h2>3 · 分步探索</h2>
+          {problem && confirmed && <ProblemScene key={JSON.stringify(problem)} problem={problem} />}
           {!problem ? (
             <p>
               导入题目后，这里会根据分问生成学习入口。支持证明、计算、选择和开放问题的文字指导。
@@ -295,8 +297,7 @@ export function StudyWorkbench() {
             </>
           )}
           <p className="field-hint">
-            当前为文字学习模式。任意上传题目尚不自动生成三维模型；几何实验室中的固定演示不能视为本题模型。AI
-            提示可能出错，请结合原题核对。
+            三维探索按受支持模板生成，不支持的题目保留文字学习；AI 提示可能出错，请结合原题核对。
           </p>
           {busy && <p role="status">正在处理，请稍候…</p>}
           {error && <p role="alert">{error}</p>}

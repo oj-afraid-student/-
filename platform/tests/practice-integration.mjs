@@ -20,6 +20,10 @@ const origin = `http://127.0.0.1:${port}`;
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
 const bank = JSON.parse(await read('fixtures/server/question-bank.json'));
 const examples = JSON.parse(await read('fixtures/api/practice/result-response.json')).data;
+const sampleSelection = {
+  mode: 'EXPLICIT',
+  questionIds: examples.items.map((item) => item.question.id),
+};
 let app,
   appLog = '';
 async function start() {
@@ -141,22 +145,19 @@ try {
   };
   importRelease();
   importRelease();
-  const units = JSON.parse(await read('fixtures/content/knowledge-units.json'));
+  const { units } = JSON.parse(await read('fixtures/server/geometry-release.json'));
   assert.deepEqual(
     await a.call('/knowledge-points'),
     units.map(({ sections, figures, ...summary }) => summary),
   );
   for (const unit of units) {
     assert.deepEqual(await a.call('/knowledge-points/' + unit.id), unit);
-    const practice = await a.call(
-      '/practices',
-      'POST',
-      {
-        mode: 'FILTERED',
-        knowledgePointId: unit.id,
-      },
-      201,
-    );
+    const selection = { mode: 'FILTERED', knowledgePointId: unit.id };
+    if (!unit.questionIds.length) {
+      await a.call('/practices', 'POST', selection, 404);
+      continue;
+    }
+    const practice = await a.call('/practices', 'POST', selection, 201);
     assert.deepEqual(
       practice.items.map(({ question }) => question.id),
       unit.questionIds,
@@ -166,10 +167,13 @@ try {
   const figure = await fetch(origin + units[0].figures[0].src);
   assert.equal(figure.status, 200);
   assert.match(figure.headers.get('content-type'), /^image\//);
-  console.log('PASS 正式导入重跑、六单元15知识点、图形和单元选题一致');
+  console.log('PASS 正式导入重跑、15 单元 39 知识点、图形和单元选题一致');
   await a.call('/practices', 'POST', { mode: 'ALL', userId: 'forged' }, 400);
   await a.call('/practices', 'POST', { mode: 'ALL' }, 400, { Origin: 'http://foreign.invalid' });
-  const p = await a.call('/practices', 'POST', { mode: 'ALL' }, 201);
+  const full = await a.call('/practices', 'POST', { mode: 'ALL' }, 201);
+  assert.equal(full.totalCount, 86);
+  assert.equal(full.items.at(-1).question.id, 'Q86');
+  const p = await a.call('/practices', 'POST', sampleSelection, 201);
   assert.equal(p.totalCount, 24);
   assert.equal(/correctOptionIds|acceptedValues|reference|grading/.test(JSON.stringify(p)), false);
   await b.call(`/practices/${p.id}`, 'GET', undefined, 404);
@@ -243,7 +247,7 @@ try {
   );
   console.log('PASS 五题3/5、错题重练、真实不同答案并发201/409');
 
-  const rollback = await a.call('/practices', 'POST', { mode: 'ALL' }, 201);
+  const rollback = await a.call('/practices', 'POST', sampleSelection, 201);
   const before = (await pool.query('SELECT count(*) FROM submission')).rows[0].count;
   await pool.query(`CREATE FUNCTION fail_answer() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
     IF (SELECT count(*) FROM submission_answer WHERE practice_id = NEW.practice_id) >= 2

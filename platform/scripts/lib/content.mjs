@@ -14,8 +14,13 @@ export function readContentRelease() {
     return data;
   }
 
-  const units = JSON.parse(readReviewedFile('fixtures/content/knowledge-units.json'));
-  const bank = JSON.parse(readReviewedFile('fixtures/server/question-bank.json'));
+  const { units, bank: expansion } = JSON.parse(
+    readReviewedFile('fixtures/server/geometry-release.json'),
+  );
+  const bank = [
+    ...JSON.parse(readReviewedFile('fixtures/server/question-bank.json')),
+    ...expansion,
+  ];
   const figures = new Set(
     [
       ...units.flatMap((unit) => unit.figures),

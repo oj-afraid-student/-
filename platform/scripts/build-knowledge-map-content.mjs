@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readContentRelease } from './lib/content.mjs';
 const root = new URL('../', import.meta.url);
 const read = (path) => JSON.parse(readFileSync(new URL(path, root), 'utf8'));
 const handoff = read('../docs/content-expansion/立体几何扩充_标注数据.json');
 const old = read('fixtures/content/questions.json');
+const published = new Map(readContentRelease().bank.map(({ question }) => [question.id, question]));
 const nodes = [
   {
     id: 'overview',
@@ -62,7 +64,7 @@ for (const unit of [...handoff.directory].sort((a, b) => a.order - b.order)) {
   }
 }
 // Allowlist only public reading fields. Annotation answers/notes never enter this file.
-const publicQuestion = (q, readingOnly, needsReview = false) => ({
+const publicQuestion = (q, needsReview = false) => ({
   id: q.id,
   version: q.version,
   title: q.title,
@@ -74,19 +76,25 @@ const publicQuestion = (q, readingOnly, needsReview = false) => ({
   ...((q.parts ?? q.statements)
     ? { prompts: (q.parts ?? q.statements).map((p) => ({ id: p.id, prompt: p.prompt })) }
     : {}),
-  readingOnly,
+  readingOnly: !published.has(q.id),
   needsReview,
 });
 const questions = [
-  ...old.map((q) => publicQuestion(q, false)),
+  ...old.map((q) => publicQuestion(q)),
   ...handoff.questions.map((entry) =>
-    publicQuestion(entry.question, true, entry.answerStatus === 'needs_review'),
+    publicQuestion(entry.question, entry.answerStatus === 'needs_review'),
   ),
 ];
 assert.equal(new Set(questions.map((q) => q.id)).size, questions.length);
 assert.equal(questions.length, 86);
 for (const q of questions) {
   assert.ok(q.stem && q.title && q.knowledgeIds.length, q.id);
+  const released = published.get(q.id);
+  if (released) {
+    assert.equal(q.version, released.version, q.id + ' released version');
+    assert.deepEqual(q.knowledgeIds, released.knowledgeIds, q.id + ' released knowledge tags');
+    assert.deepEqual(q.unitIds, released.unitIds, q.id + ' released unit tags');
+  }
   for (const id of q.knowledgeIds) assert.ok(known.has(id), q.id + ' unknown ' + id);
   assert.deepEqual(
     new Set(q.unitIds),

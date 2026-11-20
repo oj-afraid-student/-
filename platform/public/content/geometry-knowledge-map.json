@@ -1435,7 +1435,7 @@
             "text": "圆台平行于底面的截面是圆面"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1464,7 +1464,7 @@
             "text": "底面是正多边形的棱锥是正棱锥"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1493,7 +1493,7 @@
             "text": "用任意一个平面去截球，得到的截面是一个圆"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1522,7 +1522,7 @@
             "text": "8＋2√10"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1551,7 +1551,7 @@
             "text": "9√5/8"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1562,7 +1562,7 @@
         "knowledgeIds": ["G11-02"],
         "unitIds": ["SG-11"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1573,7 +1573,7 @@
         "knowledgeIds": ["G11-03"],
         "unitIds": ["SG-11"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1602,7 +1602,7 @@
             "text": "32√3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1613,7 +1613,7 @@
         "knowledgeIds": ["G8-01"],
         "unitIds": ["SG-08"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": true
       },
       {
@@ -1624,7 +1624,7 @@
         "knowledgeIds": ["G1-06"],
         "unitIds": ["SG-01"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1635,7 +1635,7 @@
         "knowledgeIds": ["G1-01", "G1-04", "G1-05", "G1-06"],
         "unitIds": ["SG-01"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1653,7 +1653,7 @@
             "caption": "题图"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1682,7 +1682,7 @@
             "text": "若直线 a、b 和平面 α 满足 a∥b、a∥α、b 不包含于 α，则 b∥α"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1718,7 +1718,7 @@
             "text": "存在某个点 P，使得 PQ∥平面 ACD₁"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1747,7 +1747,7 @@
             "text": "若 α⊥β、m⊂α、n⊂β，则 m⊥n"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1765,7 +1765,7 @@
             "caption": "题图"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1783,7 +1783,7 @@
             "caption": "题图"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1812,7 +1812,7 @@
             "text": "直线 DC₁∥平面 B₁EF"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1830,7 +1830,7 @@
             "caption": "翻折前与翻折后"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1859,7 +1859,7 @@
             "text": "三棱锥 B₁–ABC 的外接球表面积为 7π/3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1888,7 +1888,7 @@
             "text": "b⊥a"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1906,7 +1906,7 @@
             "caption": "题图"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1935,7 +1935,7 @@
             "text": "③④"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1953,7 +1953,7 @@
             "caption": "题图"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -1982,7 +1982,7 @@
             "text": "若 m∥α、m∥β，则 α∥β"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2011,7 +2011,7 @@
             "text": "0"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2040,7 +2040,7 @@
             "text": "−7/9"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2069,7 +2069,7 @@
             "text": "8"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2105,7 +2105,7 @@
             "text": "√2/3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2141,7 +2141,7 @@
             "text": "三棱锥 B–D₁EC 的体积为 1/2"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2177,7 +2177,7 @@
             "text": "2√3/3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2188,7 +2188,7 @@
         "knowledgeIds": ["G5-05"],
         "unitIds": ["SG-05"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2217,7 +2217,7 @@
             "text": "d"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2253,7 +2253,7 @@
             "text": "2√3/3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2289,7 +2289,7 @@
             "text": "a√30/6"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2325,7 +2325,7 @@
             "text": "√3/2"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2361,7 +2361,7 @@
             "text": "△BED 的面积为 √2"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2397,7 +2397,7 @@
             "text": "[√6/3，1]"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2426,7 +2426,7 @@
             "text": "7√2/2"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2455,7 +2455,7 @@
             "text": "[2√3/3，＋∞)"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2491,7 +2491,7 @@
             "text": "1"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2527,7 +2527,7 @@
             "text": "4"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2563,7 +2563,7 @@
             "text": "3√3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2599,7 +2599,7 @@
             "text": "4"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2635,7 +2635,7 @@
             "text": "过 M、B₁、C 三点的正方体截面不可能是平行四边形"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2664,7 +2664,7 @@
             "text": "2π"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2700,7 +2700,7 @@
             "text": "2−√2"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2729,7 +2729,7 @@
             "text": "√6/3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2765,7 +2765,7 @@
             "text": "2√7"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2794,7 +2794,7 @@
             "text": "6π"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2805,7 +2805,7 @@
         "knowledgeIds": ["G8-02"],
         "unitIds": ["SG-08"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2816,7 +2816,7 @@
         "knowledgeIds": ["G8-03"],
         "unitIds": ["SG-08"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2827,7 +2827,7 @@
         "knowledgeIds": ["G8-03", "G11-03"],
         "unitIds": ["SG-08", "SG-11"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2845,7 +2845,7 @@
             "caption": "图中 O 对应题干中的 O′。"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2856,7 +2856,7 @@
         "knowledgeIds": ["G9-02", "G11-02"],
         "unitIds": ["SG-09", "SG-11"],
         "figures": [],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2885,7 +2885,7 @@
             "text": "三角形的直观图是三角形"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2914,7 +2914,7 @@
             "text": "在该正方体内放置两个半径相等的球，则这两个球的半径的最大值为 (3−√3)/4"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2932,7 +2932,7 @@
             "caption": "题图"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2961,7 +2961,7 @@
             "text": "8√3"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -2997,7 +2997,7 @@
             "text": "若平面 ABD⊥平面 ABCF，则 D 到平面 ABCF 的距离的取值范围为 (0，√3/2]"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -3015,7 +3015,7 @@
             "caption": "图①与图②"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       },
       {
@@ -3051,7 +3051,7 @@
             "text": "当三棱锥 P–ABC 体积最大时，该三棱锥的外接球表面积为 5π"
           }
         ],
-        "readingOnly": true,
+        "readingOnly": false,
         "needsReview": false
       }
     ]

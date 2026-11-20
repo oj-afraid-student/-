@@ -2,8 +2,8 @@ import 'server-only';
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import unitFixtures from '../../../fixtures/content/knowledge-units.json';
 import bankFixtures from '../../../fixtures/server/question-bank.json';
+import geometryRelease from '../../../fixtures/server/geometry-release.json';
 import type {
   Answer,
   CreatePracticeRequest,
@@ -42,8 +42,8 @@ const store: Store = (globals.zhixuDevelopmentStore ??= {
   practices: new Map(),
   submissions: new Map(),
 });
-const units = unitFixtures as KnowledgeDetail[];
-const bank = bankFixtures as QuestionVersionRecord[];
+const units: KnowledgeDetail[] = geometryRelease.units;
+const bank = [...bankFixtures, ...geometryRelease.bank] as QuestionVersionRecord[];
 const cookieName = 'zhixu_development_session';
 const invalid = (message = '请求字段不符合契约。'): never => {
   throw new ApiError('VALIDATION_ERROR', 400, message);

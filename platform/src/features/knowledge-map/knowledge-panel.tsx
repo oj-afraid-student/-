@@ -5,22 +5,23 @@ import { useRouter } from 'next/navigation';
 import { useSession } from '@/features/auth/session';
 import { ApiClientError, errorMessage } from '@/shared/api/client';
 import { GeometryFigure, MathText } from '@/shared/ui/common';
-import { questionsForNode, type GraphNode, type GraphStructure } from './graph-model';
+import type { GraphNode, GraphQuestion, GraphStructure } from './graph-model';
 
 export function KnowledgePanel({
   data,
   focus,
+  questions,
   select,
   questionId,
   selectQuestion,
 }: {
   data: GraphStructure;
   focus: GraphNode;
+  questions: GraphQuestion[];
   select: (id: string, question?: string) => void;
   questionId: string | null;
   selectQuestion: (id: string) => void;
 }) {
-  const questions = questionsForNode(data, focus.id);
   const requestedIndex = questions.findIndex((question) => question.id === questionId);
   const index = Math.max(0, requestedIndex);
   const [busy, setBusy] = useState<'one' | 'group' | null>(null);

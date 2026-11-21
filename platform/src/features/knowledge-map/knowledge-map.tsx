@@ -14,6 +14,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
 import {
   ancestors,
   graphFocus,
+  questionsForNode,
   radialLayout,
   validateStructure,
   type GraphStructure,
@@ -56,6 +57,9 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
   const questionId = query.get('question');
   const focus = graphFocus(data, query.get('node'), questionId);
   const focusId = focus.id;
+  const questions = questionsForNode(data, focusId);
+  const currentQuestion = questions.find((question) => question.id === questionId) ?? questions[0];
+  const relatedTags = new Set(currentQuestion?.knowledgeIds ?? []);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 850, height: 650 });
@@ -210,20 +214,26 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
               const point = layout.points.get(node.id);
               const central = node.id === focusId;
               const parent = node.id === focus.parentId;
+              const related = !central && node.kind === 'point' && relatedTags.has(node.code ?? '');
               return (
                 <button
                   key={node.id}
                   data-node-id={node.id}
                   title={node.label}
                   className={
-                    'km-node' + (central ? ' is-center' : '') + (parent ? ' is-parent' : '')
+                    'km-node' +
+                    (central ? ' is-center' : '') +
+                    (parent ? ' is-parent' : '') +
+                    (related ? ' is-related' : '')
                   }
-                  aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}`}
+                  aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}${related ? '，当前题目关联' : ''}`}
                   aria-current={central ? 'true' : undefined}
                   aria-hidden={!point}
                   tabIndex={point ? 0 : -1}
                   disabled={!point}
-                  onClick={() => select(node.id)}
+                  onClick={() =>
+                    !central && select(node.id, related ? currentQuestion?.id : undefined)
+                  }
                   style={
                     {
                       '--node-x': `${point?.x ?? 0}px`,
@@ -238,7 +248,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                   }
                 >
                   <span className="km-node-role">
-                    {central ? '当前节点' : parent ? '上级' : '下级'}
+                    {central ? '当前节点' : parent ? '上级' : related ? '关联题目' : '下级'}
                   </span>
                   <strong>{node.label}</strong>
                   <span className="km-node-hint">
@@ -286,6 +296,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
           key={focusId}
           data={data}
           focus={focus}
+          questions={questions}
           select={select}
           questionId={questionId}
           selectQuestion={(id) => updateLocation(focusId, id, false)}

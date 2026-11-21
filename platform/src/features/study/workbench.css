@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
+  align-items: start;
 }
 .study-stack {
   display: flex;
@@ -19,20 +20,33 @@
   flex-wrap: wrap;
 }
 .study-tabs [aria-pressed='true'] {
-  background: #176d59;
+  background: var(--accent);
   color: white;
 }
 .study-guidance {
-  background: #edf3e7;
+  background: linear-gradient(145deg, #f1ebff, #faf7ff);
+  border: 1px solid #e5dcfb;
   padding: 20px;
   border-radius: 16px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .study-upload {
-  border: 1px dashed #7b9b87;
+  border: 1px dashed var(--accent);
+  background: linear-gradient(145deg, var(--wash), var(--surface));
   padding: 16px;
   border-radius: 12px;
+}
+.study-upload input::file-selector-button {
+  margin-inline-end: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--tint);
+  color: var(--accent-dark);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
 }
 .study-upload input {
   max-width: 100%;
@@ -45,9 +59,9 @@
 
 .study-photo-preview {
   padding: 16px;
-  border: 1px solid #7b9b87;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #f1f6ed;
+  background: var(--wash);
   overflow-wrap: anywhere;
 }
 .study-photo-image {

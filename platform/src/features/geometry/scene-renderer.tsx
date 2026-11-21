@@ -156,6 +156,11 @@ type Props = {
   cameraVersion: number;
   view: 'iso' | 'top' | 'front';
 };
+const facePalette: Record<string, string> = {
+  '#72a69a': '#22b7b9',
+  '#d99b4e': '#ff8861',
+};
+
 export default function SceneRenderer(props: Props) {
   const {
     scene,
@@ -187,10 +192,10 @@ export default function SceneRenderer(props: Props) {
           </p>
         }
       >
-        <color attach="background" args={['#f5f7f3']} />
+        <color attach="background" args={['#eef9fa']} />
         <CameraRig view={view} version={cameraVersion} />
         {props.traces?.map((points, i) => (
-          <Line key={'trace' + i} points={points} color="#b7518d" lineWidth={2} />
+          <Line key={'trace' + i} points={points} color="#7251c6" lineWidth={2} />
         ))}
         {scene.faces
           .filter((f) => showBase || f.id !== 'base')
@@ -198,14 +203,14 @@ export default function SceneRenderer(props: Props) {
             <Face
               key={f.id}
               vertices={f.vertices.map((id) => p[id])}
-              color={f.color}
+              color={facePalette[f.color] ?? f.color}
               opacity={opacity}
             />
           ))}
         {showGhost && scene.id === 'square-fold' && (
           <Line
             points={['A', 'E', 'D', 'A'].map((id) => initial[id])}
-            color="#85958d"
+            color="#74808f"
             dashed
             dashSize={0.12}
             gapSize={0.08}
@@ -217,7 +222,7 @@ export default function SceneRenderer(props: Props) {
           <Edge
             key={s.id}
             points={s.points.map((id) => p[id])}
-            color={s.id === 'DE' ? '#b47720' : '#47796e'}
+            color={s.id === 'DE' ? '#a34a2a' : '#146c76'}
             selected={selectedLine === s.id}
             onSelect={() => onLine(s.id)}
           />
@@ -226,7 +231,7 @@ export default function SceneRenderer(props: Props) {
           <Edge
             key={s.id}
             points={s.points.map((id) => p[id])}
-            color="#a35394"
+            color="#6947b9"
             selected={selectedLine === s.id}
             onSelect={() => onLine(s.id)}
           />
@@ -234,7 +239,7 @@ export default function SceneRenderer(props: Props) {
         {h && (
           <Line
             points={[p.A, h]}
-            color="#657ab2"
+            color="#7251c6"
             dashed
             dashSize={0.1}
             gapSize={0.07}
@@ -253,7 +258,7 @@ export default function SceneRenderer(props: Props) {
             >
               <sphereGeometry args={[0.075, 16, 12]} />
               <meshBasicMaterial
-                color={selectedPoints.includes(point.id) ? '#b7518d' : '#285d52'}
+                color={selectedPoints.includes(point.id) ? '#7251c6' : '#0a656d'}
                 depthTest={false}
               />
             </mesh>

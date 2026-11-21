@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { z } from 'zod';
 import { problemSchema } from '@/shared/study-contract';
 import { GeometryWorkbench } from './workbench';
+import { MathText } from '@/shared/ui/common';
 
 const transferSchema = z.object({
   problem: problemSchema,
@@ -71,7 +72,7 @@ export function GeometryLabEntry({ task }: { task?: string }) {
             </ul>
           </details>
         ) : null}
-        <p style={{ whiteSpace: 'pre-wrap' }}>{value.problem.text}</p>
+        <MathText>{value.problem.text}</MathText>
         <label className="field">
           <span>核对模型所需条件（每行一项，可补充图示条件）</span>
           <textarea
@@ -106,9 +107,9 @@ export function GeometryLabEntry({ task }: { task?: string }) {
           </>
         )}
         <h3>当前分问</h3>
-        <p>{value.problem.questions[value.question]}</p>
+        <MathText>{value.problem.questions[value.question]}</MathText>
         <h3>AI 第一步提示</h3>
-        <p style={{ whiteSpace: 'pre-wrap' }}>{value.hint}</p>
+        <MathText>{value.hint}</MathText>
       </section>
       <UniversalWorkbench
         key={JSON.stringify(value.problem)}

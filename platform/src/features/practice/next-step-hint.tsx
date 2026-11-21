@@ -4,6 +4,7 @@ import { VisualizeButton } from '@/features/geometry/visualize-button';
 import { useEffect, useRef, useState } from 'react';
 import { errorMessage, request } from '@/shared/api/client';
 import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
+import { MathText } from '@/shared/ui/common';
 
 export function NextStepHint({
   practiceId,
@@ -72,7 +73,9 @@ export function NextStepHint({
       </button>
       {hint && (
         <>
-          <p role="status">{hint}</p>
+          <div role="status">
+            <MathText>{hint}</MathText>
+          </div>
           <VisualizeButton problem={visualProblem} hint={hint} progress={progress} />
         </>
       )}

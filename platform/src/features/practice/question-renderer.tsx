@@ -30,7 +30,7 @@ export function QuestionStructure({ question }: { question: PublicQuestion }) {
         {question.options.map((option) => (
           <div className="row" key={option.id}>
             <strong>{option.id}.</strong>
-            <MathText>{option.text}</MathText>
+            <MathText displayFractions>{option.text}</MathText>
           </div>
         ))}
       </div>
@@ -115,7 +115,7 @@ export function QuestionRenderer({
                   }
                 />
                 <span className="option-letter">{option.id}</span>
-                <MathText>{option.text}</MathText>
+                <MathText displayFractions>{option.text}</MathText>
               </label>
             );
           })}
@@ -247,10 +247,9 @@ export function QuestionRenderer({
         {question.parts.map((part, index) => (
           <div className="written-part" key={part.id}>
             <label className="field">
-              <span className="part-prompt">
-                {question.parts.length > 1 ? `（${index + 1}）` : ''}
-                {part.prompt}
-              </span>
+              <MathText className="part-prompt">
+                {(question.parts.length > 1 ? `（${index + 1}）` : '') + part.prompt}
+              </MathText>
               <textarea
                 value={draft.parts.find((entry) => entry.partId === part.id)?.text ?? ''}
                 onChange={(event) =>

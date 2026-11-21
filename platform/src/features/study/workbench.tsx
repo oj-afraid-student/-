@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { PageHead } from '@/shared/ui/common';
+import { MathText, PageHead } from '@/shared/ui/common';
 import { request, errorMessage } from '@/shared/api/client';
 import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { preparePhoto } from '@/shared/prepare-photo';
@@ -355,7 +355,7 @@ export function StudyWorkbench() {
               {guidance && (
                 <div className="study-guidance" aria-live="polite">
                   <h3>下一步</h3>
-                  <p>{guidance.hint}</p>
+                  <MathText>{guidance.hint}</MathText>
                   <VisualizeButton
                     photo={photo || undefined}
                     problem={problem}
@@ -364,7 +364,7 @@ export function StudyWorkbench() {
                     progress={answers[selected] || ''}
                   />
                   <h3>试着想一想</h3>
-                  <p>{guidance.check}</p>
+                  <MathText>{guidance.check}</MathText>
                   {guidance.limitations.map((s, i) => (
                     <p key={i}>{s}</p>
                   ))}

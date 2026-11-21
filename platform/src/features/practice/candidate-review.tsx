@@ -4,7 +4,7 @@ import { useCallback, useRef, useState, type FormEvent } from 'react';
 import { errorMessage, request } from '@/shared/api/client';
 import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { useResource } from '@/shared/api/use-resource';
-import { difficultyLabels, PageHead, questionTypeLabels } from '@/shared/ui/common';
+import { difficultyLabels, MathText, PageHead, questionTypeLabels } from '@/shared/ui/common';
 
 interface Candidate {
   title: string;
@@ -281,18 +281,18 @@ export function CandidateReview() {
             待复核 · {candidate.knowledgeIds.join('、')}
             {candidate.scopePreview ? ' · 扩充目录预览' : ''}
           </p>
-          <p>{candidate.stem}</p>
-          <ol>
+          <MathText>{candidate.stem}</MathText>
+          <ol className="candidate-preview-fields">
             {candidate.fields.map((field, index) => (
               <li key={index}>
-                {index + 1}. {field}
+                <MathText displayFractions>{field}</MathText>
               </li>
             ))}
           </ol>
           <h3>参考答案</h3>
-          <p>{candidate.answers.join('；')}</p>
+          <MathText>{candidate.answers.join('；')}</MathText>
           <h3>参考解析</h3>
-          <p>{candidate.explanation}</p>
+          <MathText>{candidate.explanation}</MathText>
           <label>
             <input
               type="checkbox"

@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { Component, useRef, useEffect, useState, type ReactNode } from 'react';
 import type { StudyProblem } from '@/shared/study-contract';
 import { request, errorMessage } from '@/shared/api/client';
+import { MathText } from '@/shared/ui/common';
 import { GEOMETRY_SKILLS } from './skill-library';
 import { evaluateUniversal, type UniversalPlan } from './universal';
 import type { Positions, Vec3 } from './scene';
@@ -385,9 +386,9 @@ export function UniversalWorkbench({
                 结合当前构型给我下一步提示
               </button>
               {hint && (
-                <p role="status" style={{ whiteSpace: 'pre-wrap' }}>
-                  {hint}
-                </p>
+                <div role="status">
+                  <MathText>{hint}</MathText>
+                </div>
               )}
             </>
           )}

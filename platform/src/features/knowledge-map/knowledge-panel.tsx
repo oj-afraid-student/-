@@ -113,7 +113,7 @@ export function KnowledgePanel({
             {question.options?.map((o) => (
               <div className="km-option" key={o.id}>
                 <b>{o.id}.</b>
-                <MathText>{o.text}</MathText>
+                <MathText displayFractions>{o.text}</MathText>
               </div>
             ))}
             {question.prompts?.map((p, i) => (

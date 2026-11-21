@@ -4,8 +4,14 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-const { radialLayout, validateStructure, ancestors, questionsForNode } =
-  await import('../src/features/knowledge-map/graph-model.ts');
+const {
+  radialLayout,
+  validateStructure,
+  ancestors,
+  questionsForNode,
+  withPublishedQuestions,
+  graphFocus,
+} = await import('../src/features/knowledge-map/graph-model.ts');
 const data = JSON.parse(
   readFileSync(new URL('../public/content/geometry-knowledge-map.json', import.meta.url)),
 ).data;
@@ -50,6 +56,57 @@ test('原题和扩充题均可练习，Q33保留待核，公开快照不含答�
     assert.ok(!text.includes('"' + field + '"'));
   assert.ok(!text.includes('展示'));
 });
+test('正式86题均有图谱入口，单元题目与发布清单一致', () => {
+  const read = (file) =>
+    JSON.parse(readFileSync(new URL('../fixtures/server/' + file, import.meta.url)));
+  const { units, bank } = read('geometry-release.json');
+  const official = [...read('question-bank.json'), ...bank].map((record) => record.question);
+  const live = withPublishedQuestions(data, official);
+  const root = questionsForNode(live, 'overview');
+  assert.deepEqual(
+    root.map((q) => q.id),
+    official.map((q) => q.id),
+  );
+  for (const unit of units) {
+    assert.deepEqual(
+      questionsForNode(live, 'unit:' + unit.id).map((q) => q.id),
+      unit.questionIds,
+    );
+  }
+  for (const q of root) {
+    const focus = graphFocus(live, null, q.id);
+    assert.equal(focus.kind, 'point', q.id);
+    assert.ok(
+      questionsForNode(live, focus.id).some((entry) => entry.id === q.id),
+      q.id,
+    );
+  }
+});
+
+test('图谱以服务端发布结果为准，弃用静态题稿并接收同标签的新题和换版', () => {
+  const original = data.questions.find((q) => q.id === 'Q33');
+  const latest = { ...original, version: 2, stem: '新版题干' };
+  const newQuestion = { ...latest, id: 'Q1000' };
+  const live = withPublishedQuestions(data, [latest, newQuestion]);
+  assert.deepEqual(
+    live.questions.map(({ id, version, stem, needsReview }) => ({
+      id,
+      version,
+      stem,
+      needsReview,
+    })),
+    [
+      { id: 'Q33', version: 2, stem: '新版题干', needsReview: false },
+      { id: 'Q1000', version: 2, stem: '新版题干', needsReview: false },
+    ],
+  );
+  assert.deepEqual(
+    questionsForNode(live, 'point:G8-01').map((q) => q.id),
+    ['Q33', 'Q1000'],
+  );
+  assert.equal(graphFocus(live, null, 'Q01').id, 'overview');
+});
+
 test('1至32个邻居等角排布、间距不重叠，父节点占用独立方位', () => {
   for (let count = 1; count <= 32; count++) {
     const nodes = [

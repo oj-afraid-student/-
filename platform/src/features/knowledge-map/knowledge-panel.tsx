@@ -11,42 +11,62 @@ export function KnowledgePanel({
   data,
   focus,
   select,
+  questionId,
+  selectQuestion,
 }: {
   data: GraphStructure;
   focus: GraphNode;
-  select: (id: string) => void;
+  select: (id: string, question?: string) => void;
+  questionId: string | null;
+  selectQuestion: (id: string) => void;
 }) {
   const questions = questionsForNode(data, focus.id);
-  const [index, setIndex] = useState(0);
-  const [busy, setBusy] = useState(false);
+  const requestedIndex = questions.findIndex((question) => question.id === questionId);
+  const index = Math.max(0, requestedIndex);
+  const [busy, setBusy] = useState<'one' | 'group' | null>(null);
   const [error, setError] = useState('');
   const locked = useRef(false);
+  const active = useRef(false);
   const panel = useRef<HTMLElement>(null);
   const { api, expire } = useSession();
   const router = useRouter();
   const question = questions[index];
   useLayoutEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+    };
+  }, []);
+  useLayoutEffect(() => {
     panel.current?.scrollTo({ top: 0, behavior: 'instant' });
   }, [index]);
   const children = data.nodes.filter((n) => n.parentId === focus.id);
-  async function practice() {
-    if (!question || question.readingOnly || locked.current) return;
+  async function practice(mode: 'one' | 'group') {
+    if (!question || locked.current || (mode === 'group' && questions.length > 100)) return;
     locked.current = true;
-    setBusy(true);
+    setBusy(mode);
     setError('');
+    const questionIds = mode === 'one' ? [question.id] : questions.map((entry) => entry.id);
     try {
-      const result = await api.createPractice({ mode: 'EXPLICIT', questionIds: [question.id] });
-      router.push('/practice/' + encodeURIComponent(result.id));
+      const result = await api.createPractice({ mode: 'EXPLICIT', questionIds });
+      if (active.current) router.push('/practice/' + encodeURIComponent(result.id));
     } catch (error) {
+      if (!active.current) return;
       if (error instanceof ApiClientError && error.status === 401) expire();
-      setError(errorMessage(error));
+      setError(
+        error instanceof ApiClientError && error.status === 404
+          ? '关联题的发布状态有更新，请刷新题目后重试。'
+          : errorMessage(error),
+      );
     } finally {
       locked.current = false;
-      setBusy(false);
+      if (active.current) setBusy(null);
     }
   }
   function change(next: number) {
-    setIndex(next);
+    const selected = questions[next];
+    if (!selected) return;
+    selectQuestion(selected.id);
     setError('');
   }
   return (
@@ -80,6 +100,11 @@ export function KnowledgePanel({
           <GeometryFigure key={f.id} figure={f} />
         ))}
       </details>
+      {questionId && requestedIndex < 0 && (
+        <p className="notice amber" role="status">
+          原题当前不在此节点的可练习题目中，可查看下方其他关联题。
+        </p>
+      )}
       {question ? (
         <>
           <label className="km-picker">
@@ -87,7 +112,7 @@ export function KnowledgePanel({
             <select
               aria-label="选择关联题目"
               value={index}
-              disabled={busy}
+              disabled={Boolean(busy)}
               onChange={(e) => change(Number(e.target.value))}
             >
               {questions.map((q, i) => (
@@ -102,7 +127,7 @@ export function KnowledgePanel({
               <span className="code-label">
                 {question.id} · 第 {question.version} 版 · {index + 1}/{questions.length}
               </span>
-              <span className="tag">{question.readingOnly ? '学习题目' : '练习题目'}</span>
+
               {question.needsReview && <span className="tag amber">内容待复核</span>}
             </div>
             <h3>{question.title}</h3>
@@ -123,7 +148,7 @@ export function KnowledgePanel({
               {question.knowledgeIds.map((id) => {
                 const n = data.nodes.find((n) => n.kind === 'point' && n.code === id);
                 return n ? (
-                  <button key={id} onClick={() => select(n.id)} title={n.label}>
+                  <button key={id} onClick={() => select(n.id, question.id)} title={n.label}>
                     {n.label}
                   </button>
                 ) : null;
@@ -133,35 +158,41 @@ export function KnowledgePanel({
           <div className="km-question-actions">
             <button
               className="btn small"
-              disabled={index === 0 || busy}
+              disabled={index === 0 || Boolean(busy)}
               onClick={() => change(index - 1)}
             >
               上一题
             </button>
             <button
               className="btn small"
-              disabled={index === questions.length - 1 || busy}
+              disabled={index === questions.length - 1 || Boolean(busy)}
               onClick={() => change(index + 1)}
             >
               下一题
             </button>
             <button
               className="btn small primary"
-              disabled={question.readingOnly || busy}
-              onClick={() => void practice()}
+              disabled={Boolean(busy)}
+              onClick={() => void practice('one')}
             >
-              {busy ? '正在创建…' : '练习此题'}
+              {busy === 'one' ? '正在创建…' : '练习此题'}
             </button>
           </div>
+          {questions.length > 1 && questions.length <= 100 && (
+            <button
+              className="btn small wide"
+              disabled={Boolean(busy)}
+              onClick={() => void practice('group')}
+            >
+              {busy === 'group' ? '正在创建…' : `练习本节点全部 ${questions.length} 题`}
+            </button>
+          )}
+          {questions.length > 100 && (
+            <p className="km-future-note">整组练习最多 100 题，请选择下级节点缩小范围。</p>
+          )}
           {error && (
             <p role="alert" className="notice error">
               {error}
-            </p>
-          )}
-          {question.readingOnly && (
-            <p className="km-future-note">
-              本题用于阅读学习，完成正式题库录入后开放作答与判题。
-              {question.needsReview ? '本题内容仍在复核。' : ''}
             </p>
           )}
         </>

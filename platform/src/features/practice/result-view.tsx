@@ -188,6 +188,13 @@ function ResultContent({ result }: { result: SubmissionDetail }) {
               </div>
               <QuestionContent question={item.question} />
               <QuestionStructure question={item.question} />
+              <Link
+                className="text-link"
+                href={'/knowledge-map?question=' + encodeURIComponent(item.question.id)}
+                prefetch={false}
+              >
+                在知识图谱中查看关联知识点
+              </Link>
               <div className="answer-review">
                 <div>
                   <h3>我的作答</h3>

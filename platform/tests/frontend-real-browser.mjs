@@ -329,6 +329,64 @@ try {
   );
   check('EXPLICIT 保留题序，单元筛选按公开单元 ID 接入');
 
+  await page.goto(origin + '/knowledge-map');
+  await page.getByRole('button', { name: '练习本节点全部 86 题' }).click();
+  await page.waitForURL('**/practice/**');
+  await page.locator('.question-numbers button').last().waitFor();
+  assert.equal(await page.locator('.question-numbers button').count(), 86);
+
+  await page.goto(origin + '/knowledge-map?node=point%3AG5-04');
+  const picker = page.getByLabel('选择关联题目');
+  await picker.waitFor();
+  assert.deepEqual(
+    await picker
+      .locator('option')
+      .evaluateAll((options) => options.map((option) => option.textContent.split(' · ')[0])),
+    ['Q58', 'Q59'],
+  );
+  await picker.selectOption({ index: 1 });
+  await page.waitForURL('**/knowledge-map?node=point%3AG5-04&question=Q59');
+  await page.getByRole('button', { name: '练习此题' }).click();
+  await page.waitForURL('**/practice/**');
+  await page.locator('.question-meta .code-label').filter({ hasText: 'Q59' }).waitFor();
+  await page.goBack();
+  await page.waitForURL('**/knowledge-map?node=point%3AG5-04&question=Q59');
+  await page
+    .getByRole('article', { name: '当前关联题目' })
+    .getByText(/Q59 · 第/)
+    .waitFor();
+
+  await page.goto(origin + '/knowledge-map?question=Q36');
+  await page
+    .getByRole('article', { name: '当前关联题目' })
+    .getByText(/Q36 · 第/)
+    .waitFor();
+  const graphPracticeResponse = page.waitForResponse(
+    (response) =>
+      response.url() === origin + '/api/v1/practices' && response.request().method() === 'POST',
+  );
+  await page.getByRole('button', { name: '练习此题' }).click();
+  const graphPractice = (await (await graphPracticeResponse).json()).data;
+  await page.waitForURL('**/practice/' + graphPractice.id);
+  const graphItem = graphPractice.items[0];
+  await fill(page, graphItem, {
+    type: graphItem.question.type,
+    parts: graphItem.question.parts.map((part) => ({
+      partId: part.id,
+      text: '根据题目条件先验证所在平面，再判断两线位置关系。',
+    })),
+  });
+  await confirm(page);
+  await result(page);
+  await page.getByRole('link', { name: '在知识图谱中查看关联知识点' }).click();
+  await page.waitForURL('**/knowledge-map?question=Q36');
+  await page
+    .getByRole('article', { name: '当前关联题目' })
+    .getByText(/Q36 · 第/)
+    .waitFor();
+  await page.getByRole('navigation', { name: '当前知识路径' }).locator('[aria-current]').waitFor();
+  check('图谱总览启动86题，细分节点保留选题，扩充题可提交并回到关联知识点');
+
   const fullBank = await create(page);
   assert.equal(fullBank.totalCount, 86);
   const all = await create(page, 'EXPLICIT', [...answers.keys()].join('、'));

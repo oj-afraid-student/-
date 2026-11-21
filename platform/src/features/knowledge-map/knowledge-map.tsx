@@ -8,9 +8,16 @@ import {
   useSyncExternalStore,
   type CSSProperties,
 } from 'react';
+import { useSession } from '@/features/auth/session';
 import { useResource } from '@/shared/api/use-resource';
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
-import { ancestors, radialLayout, validateStructure, type GraphStructure } from './graph-model';
+import {
+  ancestors,
+  graphFocus,
+  radialLayout,
+  validateStructure,
+  type GraphStructure,
+} from './graph-model';
 import { loadGraphStructure } from './structure';
 import { KnowledgePanel } from './knowledge-panel';
 
@@ -22,20 +29,16 @@ function observeFocus(listener: () => void) {
     window.removeEventListener('zhixu:graph-focus', listener);
   };
 }
-function readFocus() {
-  return new URLSearchParams(window.location.search).get('node');
+function readLocation() {
+  return window.location.search;
 }
 
-export function KnowledgeMap({
-  initialId,
-  loader = loadGraphStructure,
-}: {
-  initialId?: string;
-  loader?: (signal: AbortSignal) => Promise<GraphStructure>;
-}) {
+export function KnowledgeMap({ initialQuery }: { initialQuery: string }) {
+  const { api } = useSession();
   const read = useCallback(
-    async (signal: AbortSignal) => validateStructure(await loader(signal)),
-    [loader],
+    async (signal: AbortSignal) =>
+      validateStructure(await loadGraphStructure(api.publishedGraphQuestions, signal)),
+    [api],
   );
   const state = useResource(read);
   if (state.loading) return <LoadingState text="正在整理知识结构…" />;
@@ -44,12 +47,15 @@ export function KnowledgeMap({
     return (
       <EmptyState title="知识目录尚未准备好">知识内容接入后，可从这里探索上下层关系。</EmptyState>
     );
-  return <GraphWorkspace data={state.data} initialId={initialId} />;
+  return <GraphWorkspace data={state.data} initialQuery={initialQuery} />;
 }
-function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?: string }) {
+function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQuery: string }) {
   const root = data.nodes.find((node) => node.parentId === null)!;
-  const requestedId = useSyncExternalStore(observeFocus, readFocus, () => initialId ?? null);
-  const focusId = data.nodes.some((node) => node.id === requestedId) ? requestedId! : root.id;
+  const location = useSyncExternalStore(observeFocus, readLocation, () => initialQuery);
+  const query = new URLSearchParams(location);
+  const questionId = query.get('question');
+  const focus = graphFocus(data, query.get('node'), questionId);
+  const focusId = focus.id;
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 850, height: 650 });
@@ -58,7 +64,7 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
   const drag = useRef<{ id: number; x: number; y: number; startX: number; startY: number } | null>(
     null,
   );
-  const focus = data.nodes.find((node) => node.id === focusId)!;
+
   const layout = radialLayout(data.nodes, focusId);
   const path = ancestors(data.nodes, focusId);
   const scale =
@@ -80,14 +86,20 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
   }, []);
-  function select(id: string) {
-    if (id === focusId) return;
-    setPan({ x: 0, y: 0 });
-    setZoom(1);
+  function updateLocation(id: string, question: string | null, moveNode: boolean) {
     const url = new URL(window.location.href);
     url.searchParams.set('node', id);
-    window.history.pushState(null, '', url.pathname + url.search);
+    if (question) url.searchParams.set('question', question);
+    else url.searchParams.delete('question');
+    if (moveNode) window.history.pushState(null, '', url);
+    else window.history.replaceState(null, '', url);
     window.dispatchEvent(new Event('zhixu:graph-focus'));
+  }
+  function select(id: string, question: string | null = null) {
+    if (id === focusId && questionId === question) return;
+    setPan({ x: 0, y: 0 });
+    setZoom(1);
+    updateLocation(id, question, id !== focusId);
   }
   function resetView() {
     setZoom(1);
@@ -270,7 +282,14 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
         </footer>
       </section>
       <aside className="km-right" aria-label="关联题目与学习助手">
-        <KnowledgePanel key={focusId} data={data} focus={focus} select={select} />
+        <KnowledgePanel
+          key={focusId}
+          data={data}
+          focus={focus}
+          select={select}
+          questionId={questionId}
+          selectQuestion={(id) => updateLocation(focusId, id, false)}
+        />
         <section className="km-chat" aria-label="AI 对话预留区">
           <header>
             <h2>

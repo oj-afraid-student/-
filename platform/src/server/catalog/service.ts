@@ -2,7 +2,7 @@ import 'server-only';
 import type { KnowledgeDetail, KnowledgeSummary } from '@/shared/contracts';
 import { withTransaction } from '@/server/db';
 import { ApiError } from '@/server/http';
-import { practiceCatalog } from '@/server/practice/catalog';
+import { practiceCatalog, publicQuestion } from '@/server/practice/catalog';
 
 type UnitRow = Pick<KnowledgeSummary, 'id' | 'title' | 'summary' | 'order'> & {
   content: Pick<KnowledgeDetail, 'extension' | 'knowledgeIds' | 'sections' | 'figures'>;
@@ -48,4 +48,10 @@ export async function getKnowledgeUnit(id: string): Promise<KnowledgeDetail> {
   const [unit] = await readUnits(id);
   if (!unit) throw new ApiError('NOT_FOUND', 404, '没有找到这个知识单元。');
   return unit;
+}
+
+export async function listPublishedQuestions() {
+  return withTransaction(async (client) =>
+    (await practiceCatalog(client).listPublished()).map(({ question }) => publicQuestion(question)),
+  );
 }

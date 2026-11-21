@@ -17,6 +17,9 @@ function check(value, type) {
 check(read('fixtures/content/questions.json'), 'C.PublicQuestion[]');
 check(read('fixtures/content/knowledge-units.json'), 'C.KnowledgeDetail[]');
 check(read('fixtures/server/question-bank.json'), 'QuestionVersionRecord[]');
+const release = read('fixtures/server/geometry-release.json');
+check(release.units, 'C.KnowledgeDetail[]');
+check(release.bank, 'QuestionVersionRecord[]');
 check(read('fixtures/api/practice/submit-request.json'), 'C.SubmitPracticeRequest');
 check(read('fixtures/api/practice/result-response.json'), 'C.ApiResponse<C.SubmissionDetail>');
 check(read('fixtures/api/practice/submitted-response.json'), 'C.ApiResponse<C.Practice>');

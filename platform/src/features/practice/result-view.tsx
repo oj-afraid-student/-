@@ -237,7 +237,7 @@ function AnswerReview({ question, answer }: { question: PublicQuestion; answer: 
             <strong>
               判断 {index + 1}：{entry.value ? '正确' : '错误'}
             </strong>
-            <MathText>{entry.reason}</MathText>
+            <MathText verbatim>{entry.reason}</MathText>
           </div>
         ))}
       </div>
@@ -247,7 +247,7 @@ function AnswerReview({ question, answer }: { question: PublicQuestion; answer: 
       {answer.parts.map((part, index) => (
         <div key={part.partId} className="answer-part">
           <strong>第 {index + 1} 问</strong>
-          <MathText>{part.text}</MathText>
+          <MathText verbatim>{part.text}</MathText>
         </div>
       ))}
     </div>

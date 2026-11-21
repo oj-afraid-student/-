@@ -1,0 +1,62 @@
+.study-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+}
+.study-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.study-stack textarea {
+  width: 100%;
+  white-space: pre-wrap;
+}
+.study-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.study-tabs [aria-pressed='true'] {
+  background: #176d59;
+  color: white;
+}
+.study-guidance {
+  background: #edf3e7;
+  padding: 20px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.study-upload {
+  border: 1px dashed #7b9b87;
+  padding: 16px;
+  border-radius: 12px;
+}
+.study-upload input {
+  max-width: 100%;
+}
+@media (max-width: 800px) {
+  .study-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.study-photo-preview {
+  padding: 16px;
+  border: 1px solid #7b9b87;
+  border-radius: 12px;
+  background: #f1f6ed;
+  overflow-wrap: anywhere;
+}
+.study-photo-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  margin: 12px 0;
+  background: white;
+  border-radius: 8px;
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import type { PublicQuestion } from '@/shared/contracts';
+import type { ReactNode } from 'react';
 import { difficultyLabels, GeometryFigure, MathText, questionTypeLabels } from '@/shared/ui/common';
 import type { AnswerDraft, AnswerIssue } from './answer-model';
 
@@ -29,7 +30,7 @@ export function QuestionStructure({ question }: { question: PublicQuestion }) {
         {question.options.map((option) => (
           <div className="row" key={option.id}>
             <strong>{option.id}.</strong>
-            <MathText>{option.text}</MathText>
+            <MathText displayFractions>{option.text}</MathText>
           </div>
         ))}
       </div>
@@ -58,6 +59,7 @@ export function QuestionRenderer({
   disabled = false,
   issues = [],
   prefix,
+  partTools,
 }: {
   question: PublicQuestion;
   draft: AnswerDraft;
@@ -65,6 +67,7 @@ export function QuestionRenderer({
   disabled?: boolean;
   issues?: AnswerIssue[];
   prefix: string;
+  partTools?: (partId: string, applyPhoto?: (text: string) => void) => ReactNode;
 }) {
   const errorFor = (field: string) => issues.find((issue) => issue.field === field)?.message;
   const error = (field: string) =>
@@ -112,7 +115,7 @@ export function QuestionRenderer({
                   }
                 />
                 <span className="option-letter">{option.id}</span>
-                <MathText>{option.text}</MathText>
+                <MathText displayFractions>{option.text}</MathText>
               </label>
             );
           })}
@@ -230,6 +233,7 @@ export function QuestionRenderer({
                 />
               </label>
               {error(`${statement.id}-reason`)}
+              {partTools?.(statement.id)}
             </fieldset>
           );
         })}
@@ -243,10 +247,9 @@ export function QuestionRenderer({
         {question.parts.map((part, index) => (
           <div className="written-part" key={part.id}>
             <label className="field">
-              <span className="part-prompt">
-                {question.parts.length > 1 ? `（${index + 1}）` : ''}
-                {part.prompt}
-              </span>
+              <MathText className="part-prompt">
+                {(question.parts.length > 1 ? `（${index + 1}）` : '') + part.prompt}
+              </MathText>
               <textarea
                 value={draft.parts.find((entry) => entry.partId === part.id)?.text ?? ''}
                 onChange={(event) =>
@@ -264,6 +267,14 @@ export function QuestionRenderer({
               />
             </label>
             {error(part.id)}
+            {partTools?.(part.id, (text) =>
+              onChange({
+                ...draft,
+                parts: draft.parts.map((entry) =>
+                  entry.partId === part.id ? { ...entry, text } : entry,
+                ),
+              }),
+            )}
           </div>
         ))}
         <p className="field-hint">每问最多 10000 个字符。提交后保存过程并进入复核。</p>

@@ -222,10 +222,10 @@ try {
   assert.equal(await page.locator('.development-banner').count(), 0);
   check('关闭开发样例：真实注册不自动登录，真实 Cookie 登录成功');
 
-  const units = await read('fixtures/content/knowledge-units.json');
+  const { units } = await read('fixtures/server/geometry-release.json');
   await page.goto(origin + '/learn');
   await page.locator('.unit-card').last().waitFor();
-  assert.equal(await page.locator('.unit-card').count(), 6);
+  assert.equal(await page.locator('.unit-card').count(), 15);
   for (const unit of units) {
     await page
       .locator('.unit-card')
@@ -235,10 +235,11 @@ try {
     await page.waitForURL('**/learn/' + unit.id);
     await page.locator('.knowledge-section').last().waitFor();
     assert.equal(await page.locator('.knowledge-section').count(), unit.sections.length);
-    await page
-      .locator('.knowledge-content img')
-      .first()
-      .evaluate((img) => img.decode());
+    if (unit.figures.length)
+      await page
+        .locator('.knowledge-content img')
+        .first()
+        .evaluate((img) => img.decode());
     if (unit.id === 'SG-01') {
       await page.getByRole('button', { name: '开始单元练习' }).click();
       await page.waitForURL('**/practice/**');
@@ -250,7 +251,7 @@ try {
     }
     await page.locator('.unit-card').last().waitFor();
   }
-  check('正式导入后打开六单元，知识正文、图形及单元练习入口可用');
+  check('正式导入后打开 15 单元，知识正文、图形及单元练习入口可用');
   await shot('01-真实知识目录');
 
   const knowledgeRoute = '**/api/v1/knowledge-points';
@@ -272,7 +273,7 @@ try {
   await page.getByLabel('多选题', { exact: true }).check();
   await page.getByLabel('题量（可选）', { exact: true }).fill('99');
   await page.getByRole('button', { name: '创建并开始练习' }).click();
-  await page.getByText('匹配的题目只有 5 道，请减少题量。', { exact: true }).waitFor();
+  await page.getByText(/匹配的题目只有 \d+ 道，请减少题量。/).waitFor();
   await page.getByLabel('题量（可选）', { exact: true }).fill('5');
   const choicesResponse = page.waitForResponse(
     (response) =>
@@ -322,10 +323,15 @@ try {
       response.url() === origin + '/api/v1/practices' && response.request().method() === 'POST',
   );
   await page.getByRole('button', { name: '创建并开始练习' }).click();
-  assert.equal((await (await unitResponse).json()).data.totalCount, 6);
+  assert.equal(
+    (await (await unitResponse).json()).data.totalCount,
+    units.find((unit) => unit.id === 'SG-01').questionIds.length,
+  );
   check('EXPLICIT 保留题序，单元筛选按公开单元 ID 接入');
 
-  const all = await create(page);
+  const fullBank = await create(page);
+  assert.equal(fullBank.totalCount, 86);
+  const all = await create(page, 'EXPLICIT', [...answers.keys()].join('、'));
   assert.equal(all.totalCount, 24);
   await page
     .locator('.practice-sidebar')
@@ -617,7 +623,7 @@ try {
         {
           base: 'cfede3e',
           database: 'PostgreSQL 17.11; isolated temporary schema',
-          knowledge: 'Six units and their practice links use the formal PostgreSQL import',
+          knowledge: '15 units and their practice links use the formal PostgreSQL import',
           checks,
           errors,
           passed: true,

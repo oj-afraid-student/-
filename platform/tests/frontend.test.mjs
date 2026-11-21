@@ -150,6 +150,11 @@ test('登录返回地址拒绝外域、双斜线、反斜线与控制字符', ()
     assert.equal(safeReturnPath(path), '/learn');
   assert.equal(safeReturnPath('/practice/my-id'), '/practice/my-id');
   assert.equal(safeReturnPath('/history?page=2'), '/history?page=2');
+  assert.equal(
+    safeReturnPath('/knowledge-map?node=point%3AG5-04'),
+    '/knowledge-map?node=point%3AG5-04',
+  );
+  assert.equal(safeReturnPath('/knowledge-map-evil'), '/learn');
 });
 test('统一请求保持 Cookie、GET/退出无 JSON body，POST 精确封装', async () => {
   const original = globalThis.fetch;

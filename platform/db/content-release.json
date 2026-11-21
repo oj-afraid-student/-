@@ -1,7 +1,34 @@
 {
   "files": {
-    "fixtures/content/knowledge-units.json": "ff8a6caa3bd35c00c46d60d790c79e00da6983ecf12bb5491f367064533521bb",
+    "fixtures/server/geometry-release.json": "f6aacc039f18b622300e0fe689dc7603b5a613b3b76b05bd28df6701e2394605",
     "fixtures/server/question-bank.json": "5ea273389cb773e175bd72ed606c0eecf2e9f5688f9b81d0b2441dc60fcd704c",
-    "public/geometry/cube-a-v1.png": "06b43e1db25af6502ca26f30991f6dc60970f7372bab24c264ce4694c4ece616"
+    "public/geometry/cube-a-v1.png": "06b43e1db25af6502ca26f30991f6dc60970f7372bab24c264ce4694c4ece616",
+    "public/geometry/q36-v1.png": "04002dafcd2c7af531637940ca40ca377e64e3857ac22e58d52429e149631265",
+    "public/geometry/q38-v1.png": "5b46ae4b666c454965b8279f97553d34f9d4e449dd873b5169d1cabe5c8f2a07",
+    "public/geometry/q40-v1.png": "11fab7370007579cd50343abaf734e9d35389a1d01ea6ec1b6252c6a822e271a",
+    "public/geometry/q41-v1.png": "e250d434997445c523155a9cee65d604ea8f894e27ad5101c6c2afa0aff93e3b",
+    "public/geometry/q43-v1.png": "52dd923c75b76af018acbb4f71454e7db58a8980e4eed8bb51fac322765507fd",
+    "public/geometry/q46-v1.png": "ec8baa9c65d49de93b6db708055b4d7b0f276c789a4cd6edea034e9eff19ebcf",
+    "public/geometry/q48-v1.png": "28616bb28946ec6c81103290de230250fe4e6b85fe8990fae8c0ed8583357680",
+    "public/geometry/q53-v1.png": "0e41438e0217b9baa11190ba889c3a3c20153b7f1f9a77440b0366a60e8c9d0c",
+    "public/geometry/q54-v1.png": "fb48050f07a78e65f17bb01ef7464319868f0249097ee858c319bd391e3be478",
+    "public/geometry/q55-v1.png": "f7c7eda3571257d7e95a7f0dc8d4634cce1ebada098e5800446c5c8dd99725c8",
+    "public/geometry/q58-v1.png": "639f69db8296cee026d650d1aeafe043cd2e6c54f96a554438bd4a6babbe79f2",
+    "public/geometry/q59-v1.png": "63f7f171c7db94696968f423bab7e44b82a762ee08376ff4120da5db4a1cd30f",
+    "public/geometry/q60-v1.png": "7a05dd3eb3715cb70cac423a05e2f01adf66a6f8ca57b18ec242cf3fc5498e1c",
+    "public/geometry/q61-v1.png": "e5a36e1ac32554c9ea827df4f11a1d5a69c06dd1492eec8808e590fececd803a",
+    "public/geometry/q62-v1.png": "a222276fc973b5104786e5439eabd0c58aa9d5c51c7706b448f94621ab330812",
+    "public/geometry/q65-v1.png": "5fba455eafdf0ea2c5194821aa17ace9e9b0ec2ed1b3f38a35e9d0fb74dbfe3e",
+    "public/geometry/q66-v1.png": "980d787ffb9c4020cc2f5f95a7b068efad9566833f690d1c7ee0540b606e7848",
+    "public/geometry/q67-v1.png": "12edcdeaa4fc145f1b5c43c5e537d75f033087fab47204e6d4c786f54bdaf4df",
+    "public/geometry/q68-v1.png": "ff1b5c1511b426ab8bb5fbd6389ac446185520cc2da62ffeef8f3e379f79af09",
+    "public/geometry/q69-v1.png": "5788a2dbbdb5af8f0cc32d032b03aa6428114ab7c762c79edc467b05f704c7b1",
+    "public/geometry/q71-v1.png": "ad46f2cb48552a9bfddb3a99370c2c3945009d4eaa1d617f61b53309ede9a4d5",
+    "public/geometry/q73-v1.png": "7f92e28ce7c94672e94b483b498b0b136382944c50497dc19eb58e2f5834a2f6",
+    "public/geometry/q78-v1.png": "080c6624a44ac0467c1d739c131e3777db3dc3494ad1f8a580f069ba79d3e7da",
+    "public/geometry/q82-v1.png": "ea21c7c1e46f9aaa623415a229675e904b80c502007f066a5f60811261a703bb",
+    "public/geometry/q84-v1.png": "b73d11714d4ce9a186ccf9e9e8c9fe4e4e101ff1dfc9822a27a822fe1d57dda1",
+    "public/geometry/q85-v1.png": "fa82fd738bc2d46b37daad4f470a4ffa8682d40a004ae6025911e1411d5665e8",
+    "public/geometry/q86-v1.png": "354bfdb957e471fc380fdc8373a912cb50d5737d85c2a99ef085e56daaaca663"
   }
 }

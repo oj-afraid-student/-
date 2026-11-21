@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { Figure, GradingStatus, QuestionType } from '@/shared/contracts';
 import { Icon } from './icons';
+export { MathText } from './math-text';
 
 export const questionTypeLabels: Record<QuestionType, string> = {
   SINGLE_CHOICE: '单选题',
@@ -66,9 +67,6 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
       <div className="muted">{children}</div>
     </div>
   );
-}
-export function MathText({ children, className = '' }: { children: string; className?: string }) {
-  return <div className={`math-text ${className}`}>{children}</div>;
 }
 export function GeometryFigure({ figure }: { figure: Figure }) {
   return (

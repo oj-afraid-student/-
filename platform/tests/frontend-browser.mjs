@@ -55,8 +55,12 @@ async function login(username, password, target = page) {
   await target.waitForURL('**/learn');
   await target.locator('.unit-card').first().waitFor();
 }
-async function createAll(target = page) {
+async function createPractice(questionIds, target = page) {
   await target.goto(`${origin}/practice/new`);
+  if (questionIds) {
+    await target.getByRole('radio', { name: /指定题号/ }).check();
+    await target.getByLabel('题号', { exact: true }).fill(questionIds.join('、'));
+  }
   const response = target.waitForResponse(
     (response) =>
       response.url().endsWith('/api/development/practices') &&
@@ -129,12 +133,12 @@ try {
   await page.getByRole('button', { name: '进入学习空间', exact: true }).click();
   await page.waitForURL('**/learn');
   await page.locator('.unit-card').first().waitFor();
-  assert.equal(await page.locator('.unit-card').count(), 6);
+  assert.equal(await page.locator('.unit-card').count(), 15);
   await screenshot('02-知识目录');
-  check('注册校验、注册不自动登录、错误密码与正常登录、六单元目录');
+  check('注册校验、注册不自动登录、错误密码与正常登录、15 单元目录');
   await page.locator('a[href="/learn/SG-01"]').click();
   await page.locator('.knowledge-section').first().waitFor();
-  assert.equal(await page.locator('.knowledge-section').count(), 4);
+  assert.equal(await page.locator('.knowledge-section').count(), 6);
   assert.ok(await page.locator('.geometry-figure img').count());
   await screenshot('03-知识详情');
   check('知识段落、定理条件、例题、易错点与原图');
@@ -143,9 +147,12 @@ try {
   await page.goto(`${origin}/practice/new?unit=SG-01`);
   await page.getByLabel('题量（可选）').fill('99');
   await page.getByRole('button', { name: '创建并开始练习' }).click();
-  await visibleText('匹配的题目只有 6 道，请减少题量。');
+  await page.getByText(/匹配的题目只有 \d+ 道，请减少题量。/).waitFor();
   check('空历史和筛选题量不足 409');
-  const practice = await createAll();
+  const all = await createPractice();
+  assert.equal(all.totalCount, 86);
+  assert.equal(await page.locator('.question-numbers button').count(), 86);
+  const practice = await createPractice([...answers.keys()]);
   assert.equal(practice.totalCount, 24);
   assert.equal(await page.locator('.question-numbers button').count(), 24);
   assert.equal(await page.locator('.reference-explanation').count(), 0);
@@ -154,7 +161,7 @@ try {
     .getByRole('button', { name: '检查并提交', exact: true })
     .click();
   await page.getByRole('alert').filter({ hasText: '还有 24 题需要补全' }).waitFor();
-  check('全量练习、未答定位、提交前没有解析');
+  check('全量 86 题、原 24 题未答定位、提交前没有解析');
   const covered = new Set();
   for (let i = 0; i < practice.items.length; i++) {
     const item = practice.items[i];

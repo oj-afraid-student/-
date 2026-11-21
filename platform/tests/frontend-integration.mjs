@@ -51,9 +51,15 @@ test('开发 HTTP 闭环：注册不自动登录、24题、提交去重、待复
   assert.equal((await a('/auth/me')).data.username, credentials.username);
   assert.deepEqual((await a('/me/submissions')).data.items, []);
   const units = (await a('/knowledge-points')).data;
-  assert.equal(units.length, 6);
-  assert.equal((await a('/knowledge-points/SG-01')).data.sections.length, 4);
-  const created = await a('/practices', 'POST', { mode: 'ALL' });
+  assert.equal(units.length, 15);
+  assert.equal((await a('/knowledge-points/SG-01')).data.sections.length, 6);
+  const all = await a('/practices', 'POST', { mode: 'ALL' });
+  assert.equal(all.status, 201);
+  assert.equal(all.data.totalCount, 86);
+  const created = await a('/practices', 'POST', {
+    mode: 'EXPLICIT',
+    questionIds: [...byQuestion.keys()],
+  });
   assert.equal(created.status, 201);
   const practice = created.data;
   assert.equal(practice.items.length, 24);

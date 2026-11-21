@@ -8,9 +8,12 @@ import { errorMessage } from '@/shared/api/client';
 import { Icon } from './icons';
 
 const navigation = [
+  { href: '/study', text: '拍照学题', icon: 'pen', hint: '上传题目 · 核对条件 · AI 提示' },
   { href: '/learn', text: '知识学习', icon: 'book', hint: '概念 · 条件 · 例题' },
   { href: '/practice/new', text: '自主练习', icon: 'pen', hint: '选择题组，逐步推理' },
   { href: '/history', text: '练习记录', icon: 'history', hint: '回顾每一次思考' },
+  { href: '/knowledge-map', text: '知识图谱', icon: 'diamond', hint: '探索知识的上下层关系' },
+  { href: '/geometry', text: '几何实验室', icon: 'diamond', hint: '折叠 · 构造 · 动态量测' },
 ];
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -52,11 +55,71 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </>
     );
-  const current = pathname.startsWith('/practice')
-    ? navigation[1]
-    : pathname.startsWith('/results') || pathname.startsWith('/history')
-      ? navigation[2]
-      : navigation[0];
+  if (pathname === '/knowledge-map')
+    return (
+      <div className="graph-app">
+        <header className="graph-topbar">
+          <Link className="brand" href="/learn">
+            <span className="brandmark">知</span>
+            <strong>知序</strong>
+          </Link>
+          <nav aria-label="主要导航">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={item.href === pathname ? 'page' : undefined}
+              >
+                {item.text}
+              </Link>
+            ))}
+          </nav>
+          <div className="graph-user">
+            <span className="avatar">{user?.username.slice(0, 1).toUpperCase() ?? '同'}</span>
+            <strong>{user?.username}</strong>
+            <button
+              className="icon-button"
+              aria-label="退出登录"
+              disabled={busy}
+              onClick={() => void logout()}
+            >
+              <Icon name="exit" />
+            </button>
+          </div>
+        </header>
+        {developmentFixtures && (
+          <div className="development-banner" role="status">
+            开发样例环境 · 账号与练习数据在重启后重置
+          </div>
+        )}
+        {error && (
+          <p className="notice error" role="alert">
+            {error}
+          </p>
+        )}
+        {warning && (
+          <p className="notice amber" role="status">
+            {warning}
+            <button className="btn small" onClick={() => void recheck()}>
+              重新确认登录状态
+            </button>
+          </p>
+        )}
+        <main className="graph-main" id="main-content">
+          {children}
+        </main>
+      </div>
+    );
+  const currentPath = pathname.startsWith('/results')
+    ? '/history'
+    : pathname.startsWith('/practice')
+      ? '/practice/new'
+      : pathname;
+  const current =
+    navigation.find(
+      (item) => currentPath === item.href || currentPath.startsWith(item.href + '/'),
+    ) ?? navigation.find((item) => item.href === '/learn')!;
+
   return (
     <>
       <a className="skip-link" href="#main-content">

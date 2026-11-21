@@ -64,8 +64,10 @@ export function selection(
     keys(value, ['mode'], ['knowledgePointId', 'difficulty', 'questionTypes', 'count']);
     if (value.knowledgePointId !== undefined) {
       if (typeof value.knowledgePointId !== 'string') invalid();
-      versions = versions.filter((record) =>
-        record.question.unitIds.includes(value.knowledgePointId as string),
+      versions = versions.filter(
+        (record) =>
+          record.question.unitIds.includes(value.knowledgePointId as string) ||
+          record.question.knowledgeIds.includes(value.knowledgePointId as string),
       );
     }
     if (value.difficulty !== undefined) {
@@ -105,7 +107,6 @@ export function selection(
         (value.count as number) > 100
       )
         invalid('题量应为 1—100 的整数。');
-      if (!versions.length) missing();
       if (versions.length < (value.count as number))
         throw new ApiError('CONFLICT', 409, `匹配的题目只有 ${versions.length} 道，请减少题量。`);
       versions = versions.slice(0, value.count as number);

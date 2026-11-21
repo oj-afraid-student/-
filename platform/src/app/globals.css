@@ -22,7 +22,8 @@
   --gold: #96600a;
   --red: #a3382b;
   color-scheme: light;
-  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  --reading-font: 'Question Numerals', 'Times New Roman', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  font-family: var(--reading-font);
   color: var(--ink);
   background: var(--bg);
   font-size: 14px;
@@ -141,16 +142,18 @@ p {
 }
 h1,
 h2,
-h3 {
+h3,
+h4,
+h5,
+h6 {
   line-height: 1.5;
+  font-weight: 700;
 }
 h2 {
   font-size: 18px;
-  font-weight: 650;
 }
 h3 {
   font-size: 15px;
-  font-weight: 650;
 }
 p {
   margin-bottom: 12px;
@@ -240,10 +243,8 @@ hr {
   margin-bottom: 9px;
 }
 .code-label {
-  font:
-    11px ui-monospace,
-    Consolas,
-    monospace;
+  font-family: var(--reading-font);
+  font-size: 11px;
   color: var(--muted);
 }
 .panel {
@@ -659,7 +660,6 @@ hr {
 }
 .page-head h1 {
   font-size: 28px;
-  font-weight: 650;
   margin: 0 0 8px;
   overflow-wrap: anywhere;
   letter-spacing: -0.4px;
@@ -705,7 +705,6 @@ hr {
 }
 .learning-hero h2 {
   font-size: 30px;
-  font-weight: 650;
   line-height: 1.65;
   margin: 14px 0 12px;
   letter-spacing: -0.7px;
@@ -745,7 +744,7 @@ hr {
 }
 .learning-strip b {
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--accent);
 }
 .learning-strip .icon {
@@ -857,6 +856,7 @@ hr {
 }
 .section-number {
   font-size: 21px;
+  font-weight: 700;
   color: var(--accent);
   border-right: 1px solid var(--line);
   padding-right: 18px;
@@ -1368,7 +1368,7 @@ hr {
 .result-score > strong {
   display: block;
   font-size: 48px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -1px;
   color: var(--accent);
 }
@@ -1404,7 +1404,7 @@ hr {
 .result-stats strong {
   font-size: 27px;
   color: var(--accent);
-  font-weight: 550;
+  font-weight: 700;
   display: block;
   margin-top: 3px;
 }
@@ -1582,7 +1582,6 @@ td > small {
 .auth-intro h1 {
   font-size: 38px;
   line-height: 1.7;
-  font-weight: 600;
   letter-spacing: -1px;
   margin: 18px 0;
 }
@@ -2258,7 +2257,6 @@ td > small {
   unicode-range: U+0041-005A, U+0061-007A, U+0370-03FF;
 }
 
-.question-panel,
-.result-item {
+.question-panel {
   font-family: 'Question Numerals', 'Microsoft YaHei', 'Segoe UI', sans-serif;
 }

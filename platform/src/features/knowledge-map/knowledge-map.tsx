@@ -248,7 +248,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                   }
                 >
                   <span className="km-node-role">
-                    {central ? '当前节点' : parent ? '上级' : related ? '关联题目' : '下级'}
+                    {central ? '当前节点' : parent ? '上级' : related ? '关联下级' : '下级'}
                   </span>
                   <strong>{node.label}</strong>
                   <span className="km-node-hint">
@@ -267,7 +267,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
           )}
         </div>
         <footer className="km-toolbar">
-          <p>大圆：当前节点 · 小圆：相邻层级</p>
+          <p>大圆：当前节点 · 浅蓝：上级 · 浅紫：下级</p>
           <span>点击切换 · 拖动平移</span>
           <div className="km-zoom">
             <button

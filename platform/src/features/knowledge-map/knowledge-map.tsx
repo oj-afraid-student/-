@@ -20,6 +20,7 @@ import {
   type GraphStructure,
 } from './graph-model';
 import { loadGraphStructure } from './structure';
+import { KnowledgeChat } from './knowledge-chat';
 import { KnowledgePanel } from './knowledge-panel';
 
 function observeFocus(listener: () => void) {
@@ -293,7 +294,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
       </section>
       <aside className="km-right" aria-label="关联题目与学习助手">
         <KnowledgePanel
-          key={focusId}
+          key={'questions:' + focusId}
           data={data}
           focus={focus}
           questions={questions}
@@ -301,26 +302,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
           questionId={questionId}
           selectQuestion={(id) => updateLocation(focusId, id, false)}
         />
-        <section className="km-chat" aria-label="AI 对话预留区">
-          <header>
-            <h2>
-              <span aria-hidden="true">✧</span> AI 学习助手
-            </h2>
-            <span className="tag">预留</span>
-          </header>
-          <div className="km-chat-context">
-            <span>当前知识点</span>
-            <span>当前题目</span>
-          </div>
-          <p>选中知识点或题目后，在这里提问。</p>
-          <div className="km-chat-input">
-            <textarea aria-label="AI 提问（待接入）" placeholder="输入你的问题…" disabled />
-            <button aria-label="发送问题（待接入）" disabled>
-              ↑
-            </button>
-          </div>
-          <small>对话功能待接入</small>
-        </section>
+        <KnowledgeChat key={'chat:' + focusId} focus={focus} question={currentQuestion} />
       </aside>
     </div>
   );

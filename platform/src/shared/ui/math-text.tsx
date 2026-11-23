@@ -157,11 +157,13 @@ export function MathText({
   className = '',
   displayFractions = false,
   verbatim = false,
+  allowLinksAndImages = true,
 }: {
   children: string;
   className?: string;
   displayFractions?: boolean;
   verbatim?: boolean;
+  allowLinksAndImages?: boolean;
 }) {
   if (verbatim) return <div className={'math-text math-verbatim ' + className}>{children}</div>;
   return (
@@ -174,6 +176,8 @@ export function MathText({
           rehypeMathVariables,
         ]}
         skipHtml
+        disallowedElements={allowLinksAndImages ? undefined : ['a', 'img']}
+        unwrapDisallowed
       >
         {children.replace(/_{4,}/gu, (blank) => '\\_'.repeat(blank.length))}
       </Markdown>

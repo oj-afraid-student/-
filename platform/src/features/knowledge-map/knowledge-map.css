@@ -431,16 +431,52 @@
   display: flex;
   gap: 8px;
 }
-.km-chat-context span {
-  padding: 1px 10px;
-  font-size: 10px;
+.km-chat-context button {
+  padding: 4px 10px;
+  font-size: 11px;
   border: 1px solid var(--line);
   border-radius: 15px;
 }
-.km-chat p {
+.km-chat-context button[aria-pressed='true'] {
+  color: var(--accent-dark);
+  background: var(--tint);
+  border-color: var(--line-strong);
+}
+.km-chat-target {
   font-size: 12px;
   color: var(--muted);
-  margin: 12px 0;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.km-chat-log {
+  max-height: min(220px, 24vh);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.km-chat-turn + .km-chat-turn {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.km-chat-question {
+  background: var(--tint);
+  border-radius: 6px;
+  color: var(--accent-dark);
+  padding: 5px 8px;
+  margin: 0 0 6px;
+  white-space: pre-wrap;
+}
+.km-chat-turn .math-text > :last-child {
+  margin-bottom: 0;
+}
+.km-chat .field-error {
+  font-size: 12px;
+  margin: 6px 0 0;
 }
 .km-chat-input {
   position: relative;

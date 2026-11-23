@@ -341,15 +341,13 @@
   background: var(--accent);
   color: white;
 }
-.km-tabs button {
-  opacity: 0.8;
-  color: var(--muted);
+.km-tabs > a {
+  border-radius: 7px;
+  color: var(--accent-dark);
 }
-.km-tabs small {
-  font-size: 9px;
-  background: #fff1cd;
-  border-radius: 8px;
-  padding: 2px 4px;
+.km-tabs > a:hover {
+  background: var(--tint);
+  text-decoration: underline;
 }
 .km-context {
   font-size: 12px;

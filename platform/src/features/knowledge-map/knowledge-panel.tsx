@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/features/auth/session';
@@ -78,9 +79,9 @@ export function KnowledgePanel({
       </header>
       <div className="km-tabs">
         <span aria-current="page">知识点题目</span>
-        <button disabled>
-          上传的题目 <small>待接入</small>
-        </button>
+        <Link href="/study">
+          上传题目 <span aria-hidden="true">→</span>
+        </Link>
       </div>
       <p className="km-context" aria-live="polite">
         当前节点：<b>{focus.label}</b>

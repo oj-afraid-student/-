@@ -11,10 +11,17 @@ export async function modelJson(
   system: string,
   content: ModelContent,
   maxTokens = 1800,
+  options: {
+    recoverLength?: boolean;
+    timeoutMs?: number;
+    lengthRetryInstruction?: string;
+    disableThinking?: boolean;
+  } = {},
 ): Promise<unknown> {
   const { ZHIXU_AI_API_KEY: key, ZHIXU_AI_BASE_URL: base, ZHIXU_AI_MODEL: model } = process.env;
   if (!key || !base || !model) throw new ApiError('SERVICE_UNAVAILABLE', 503, '模型服务尚未配置。');
-  const signal = AbortSignal.timeout(MODEL_TIMEOUT_MS);
+  const signal = AbortSignal.timeout(options.timeoutMs ?? MODEL_TIMEOUT_MS);
+  let truncated = false;
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
       const response = await fetch(base.replace(/\/$/, '') + '/chat/completions', {
@@ -22,7 +29,10 @@ export async function modelJson(
         headers: { Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model,
-          ...(new URL(base).hostname === 'api.deepseek.com'
+          ...(new URL(base).hostname === 'api.deepseek.com' ||
+          (options.disableThinking &&
+            new URL(base).hostname === 'llmapi.paratera.com' &&
+            model === 'DeepSeek-V4.1-Flash-1017')
             ? { thinking: { type: 'disabled' } }
             : {}),
           messages: [
@@ -31,13 +41,17 @@ export async function modelJson(
               content:
                 system +
                 (attempt
-                  ? '\n上次响应不是合法JSON。此次必须只输出一个合法JSON对象，不加Markdown围栏或解释；数学符号优先用Unicode，字符串中的反斜杠必须按JSON规则双写。'
+                  ? truncated
+                    ? '\n' +
+                      (options.lengthRetryInstruction ??
+                        '上次输出被截断。重新生成同一知识范围内的一道更简洁的题，只保留1至2个小问，使用容易核验的数据。解析最多300字，点线图最多6个顶点和9条边。必须返回完整JSON，不要续写上次残片。')
+                    : '\n上次响应不是合法JSON。此次必须只输出一个合法JSON对象，不加Markdown围栏或解释；数学符号优先用Unicode，字符串中的反斜杠必须按JSON规则双写。'
                   : ''),
             },
             { role: 'user', content },
           ],
           response_format: { type: 'json_object' },
-          max_tokens: Math.min(8000, Math.max(100, maxTokens)),
+          max_tokens: truncated ? 8000 : Math.min(8000, Math.max(100, maxTokens)),
         }),
         cache: 'no-store',
         redirect: 'error',
@@ -61,11 +75,15 @@ export async function modelJson(
       }
       const body = await response.json();
       const choice = body.choices?.[0];
+      if (choice?.finish_reason === 'length' && options.recoverLength && attempt === 0) {
+        truncated = true;
+        continue;
+      }
       if (choice?.finish_reason === 'length')
         throw new ApiError(
           'SERVICE_UNAVAILABLE',
           503,
-          '识别内容超出模型输出长度，未收到完整结果。请裁剪到一道题后重试。',
+          '内容超出模型输出长度，未收到完整结果，请重试。',
         );
       if (choice?.finish_reason === 'content_filter')
         throw new ApiError(

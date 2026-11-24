@@ -24,12 +24,12 @@ test('正式内容可从 002 空库导入和重跑，版本冲突不留下半次
     )
   ).rows;
   const release = readContentRelease();
-  const summary = { units: 15, questions: 86 };
+  const summary = { units: 15, questions: 85 };
   assert.deepEqual(await importContent(db, release), summary);
   const { rows: first } = await db.query(
     'SELECT id, question_key, version, is_published FROM question_version ORDER BY question_key',
   );
-  assert.equal(first.length, 86);
+  assert.equal(first.length, 85);
   assert.ok(first.every(({ is_published }) => is_published));
   assert.deepEqual(await importContent(db, release), summary);
   assert.deepEqual(
@@ -52,8 +52,11 @@ test('正式内容可从 002 空库导入和重跑，版本冲突不留下半次
     ).rows,
     original,
   );
-  const q33 = release.bank.find(({ question }) => question.id === 'Q33');
-  assert.deepEqual(q33.grading.blanks.find(({ blankId }) => blankId === 'b2').acceptedValues, [[]]);
+  assert.equal(
+    release.bank.some(({ question }) => question.id === 'Q33'),
+    false,
+  );
+  assert.ok(release.heldQuestionIds.includes('Q33'));
 
   const modified = structuredClone(release);
   modified.units[0].title = '用于验证回滚的标题';

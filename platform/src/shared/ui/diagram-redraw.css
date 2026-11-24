@@ -1,0 +1,41 @@
+.diagram-redraw {
+  border: 1px solid #d8e1d4;
+  border-radius: 12px;
+  padding: 16px;
+  margin-block: 16px;
+  min-width: 0;
+}
+.diagram-actions,
+.diagram-edit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-block: 10px;
+}
+.diagram-edit-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.diagram-edit-row input:not([type='checkbox']) {
+  width: 90px;
+}
+.diagram-edit-row input[type='checkbox'] {
+  width: auto;
+}
+.diagram-preview {
+  display: block;
+  width: 100%;
+  max-width: 750px;
+  height: auto;
+  border: 1px solid #d8e1d4;
+  margin-block: 12px;
+}
+.diagram-redraw details {
+  margin-block: 12px;
+}
+.diagram-redraw summary {
+  cursor: pointer;
+  font-weight: 600;
+}

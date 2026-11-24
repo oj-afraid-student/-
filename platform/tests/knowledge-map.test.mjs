@@ -32,7 +32,10 @@ test('题目按实际细分标签去重筛选，包含原题与扩充题，空�
   assert.equal(questionsForNode(data, 'missing').length, 0);
 });
 test('原题和扩充题均可练习，Q33保留待核，公开快照不含答案字段', () => {
-  assert.ok(data.questions.every((q) => !q.readingOnly));
+  assert.deepEqual(
+    data.questions.filter((q) => q.readingOnly).map((q) => q.id),
+    ['Q33'],
+  );
   assert.deepEqual(
     data.questions.filter((q) => q.needsReview).map((q) => q.id),
     ['Q33'],

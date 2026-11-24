@@ -49,9 +49,28 @@ export const studyInputSchema = z.discriminatedUnion('action', [
       question: z.number().int().min(0).max(14),
       progress: z.string().max(12000),
       followup: z.string().max(2000),
+      previousProgress: z
+        .array(
+          z
+            .object({
+              question: z.number().int().min(0).max(14),
+              progress: z.string().trim().min(1).max(12000),
+            })
+            .strict(),
+        )
+        .max(14)
+        .optional(),
     })
     .strict()
-    .refine((v) => v.question < v.problem.questions.length),
+    .refine((v) => v.question < v.problem.questions.length)
+    .refine((v) => {
+      const history = v.previousProgress ?? [];
+      return (
+        history.every((entry) => entry.question < v.question) &&
+        new Set(history.map((entry) => entry.question)).size === history.length &&
+        history.reduce((sum, entry) => sum + entry.progress.length, 0) <= 24000
+      );
+    }),
 ]);
 export const guidanceSchema = z
   .object({

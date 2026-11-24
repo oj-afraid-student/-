@@ -19,8 +19,13 @@ export function readContentRelease() {
   );
   const bank = [
     ...JSON.parse(readReviewedFile('fixtures/server/question-bank.json')),
-    ...expansion,
+    ...expansion.filter((record) => record.publicationStatus === 'PUBLISHED'),
   ];
+  const heldQuestionIds = expansion
+    .filter((record) => record.publicationStatus !== 'PUBLISHED')
+    .map((record) => record.question.id);
+  const available = new Set(bank.map((record) => record.question.id));
+  for (const unit of units) unit.questionIds = unit.questionIds.filter((id) => available.has(id));
   const figures = new Set(
     [
       ...units.flatMap((unit) => unit.figures),
@@ -33,7 +38,7 @@ export function readContentRelease() {
     }
     readReviewedFile('public' + src);
   }
-  return { units, bank };
+  return { units, bank, heldQuestionIds };
 }
 
 const sameIds = (left, right) =>
@@ -95,6 +100,11 @@ export async function importContent(client, release) {
   try {
     // Serialize releases, including repeat imports against the same versions.
     await client.query('LOCK TABLE knowledge_point, question_version IN SHARE ROW EXCLUSIVE MODE');
+    if (release.heldQuestionIds?.length)
+      await client.query(
+        'UPDATE question_version SET is_published = false WHERE question_key = ANY($1::text[])',
+        [release.heldQuestionIds],
+      );
     for (const unit of units) {
       const { id, title, summary, order, extension, knowledgeIds, sections, figures } = unit;
       await client.query(

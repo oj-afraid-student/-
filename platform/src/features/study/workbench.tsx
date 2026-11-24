@@ -1,14 +1,18 @@
 'use client';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { MathText, PageHead } from '@/shared/ui/common';
 import { request, errorMessage } from '@/shared/api/client';
-import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
+import { AI_REQUEST_TIMEOUT_MS, HINT_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { preparePhoto } from '@/shared/prepare-photo';
 import type { StudyProblem, StudyGuidance } from '@/shared/study-contract';
 import './workbench.css';
 import { VisualizeButton } from '@/features/geometry/visualize-button';
+import { DiagramRedraw } from '@/shared/ui/diagram-redraw';
+import type { CandidateDiagram } from '@/shared/candidate-diagram';
 export function StudyWorkbench() {
+  const router = useRouter();
   const [text, setText] = useState(''),
     [photo, setPhoto] = useState(''),
     [photoName, setPhotoName] = useState(''),
@@ -23,6 +27,7 @@ export function StudyWorkbench() {
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const pending = useRef<AbortController | null>(null);
+  const [redrawn, setRedrawn] = useState<{ diagram: CandidateDiagram; photo: string } | null>(null);
   useEffect(() => () => pending.current?.abort(), []);
   async function choose(file: File) {
     setBusy(true);
@@ -32,6 +37,7 @@ export function StudyWorkbench() {
     try {
       setPhoto(await preparePhoto(file));
       setPhotoName(file.name);
+      setRedrawn(null);
       setProblem(null);
       setConfirmed(false);
       setGuidance(null);
@@ -48,7 +54,7 @@ export function StudyWorkbench() {
     pending.current = controller;
     setBusy(true);
     setError('');
-    setGuidance(null);
+    if (action === 'recognize') setGuidance(null);
     try {
       if (action === 'recognize') {
         const result = await request<StudyProblem>('/api/v1', '/ai/study', {
@@ -58,6 +64,7 @@ export function StudyWorkbench() {
           timeoutMs: AI_REQUEST_TIMEOUT_MS * 2,
         });
         setProblem(result);
+        setRedrawn(null);
         setConfirmed(false);
         setSelected(0);
         setAnswers({});
@@ -72,9 +79,13 @@ export function StudyWorkbench() {
               question: selected,
               progress: answers[selected] || '',
               followup,
+              previousProgress: Object.entries(answers)
+                .filter(([index, value]) => Number(index) < selected && value.trim())
+                .sort(([left], [right]) => Number(left) - Number(right))
+                .map(([index, progress]) => ({ question: Number(index), progress })),
             },
             signal: controller.signal,
-            timeoutMs: AI_REQUEST_TIMEOUT_MS,
+            timeoutMs: HINT_REQUEST_TIMEOUT_MS,
           }),
         );
       }
@@ -86,6 +97,7 @@ export function StudyWorkbench() {
     }
   }
   function edit(next: StudyProblem) {
+    setRedrawn(null);
     setProblem(next);
     setConfirmed(false);
     setGuidance(null);
@@ -104,6 +116,7 @@ export function StudyWorkbench() {
             <span>题目文字或补充说明</span>
             <textarea
               rows={5}
+              placeholder="可输入完整题目；图片中有多题时，可写“只识别第16题”或说明主体位置。"
               maxLength={12000}
               value={text}
               disabled={busy}
@@ -375,6 +388,39 @@ export function StudyWorkbench() {
           <p className="field-hint">
             三维探索按受支持模板生成，不支持的题目保留文字学习；AI 提示可能出错，请结合原题核对。
           </p>
+          {problem && confirmed && (
+            <DiagramRedraw
+              key={problem.text}
+              text={problem.text}
+              photo={photo || undefined}
+              initial={redrawn?.diagram}
+              disabled={busy}
+              onBusyChange={setBusy}
+              onApply={(diagram, photo) => setRedrawn({ diagram, photo })}
+              onRestore={photo ? () => setRedrawn(null) : undefined}
+            />
+          )}
+          {problem && confirmed && (
+            <button
+              type="button"
+              className="btn"
+              disabled={busy}
+              onClick={() => {
+                sessionStorage.setItem(
+                  'zhixu-upload-review',
+                  JSON.stringify({
+                    ...problem,
+                    photo: redrawn?.photo ?? (photo || undefined),
+                    originalPhoto: photo || undefined,
+                    editableDiagram: redrawn?.diagram,
+                  }),
+                );
+                router.push('/practice/candidates');
+              }}
+            >
+              自动标注并进入题库复核
+            </button>
+          )}
           {busy && <p role="status">正在识别题目或复核图示，请稍候…</p>}
           {error && problem && <p role="alert">{error}</p>}
         </section>

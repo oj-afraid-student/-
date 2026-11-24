@@ -1613,7 +1613,7 @@
         "knowledgeIds": ["G8-01"],
         "unitIds": ["SG-08"],
         "figures": [],
-        "readingOnly": false,
+        "readingOnly": true,
         "needsReview": true
       },
       {

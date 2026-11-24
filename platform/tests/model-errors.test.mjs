@@ -52,6 +52,40 @@ test('model errors distinguish authentication, rate limit, truncation and invali
       });
     assert.deepEqual(await modelJson('json', 'test'), { ok: true });
     assert.equal(attempts, 2);
+    const limits = [];
+    globalThis.fetch = async (_url, opts) => {
+      const body = JSON.parse(opts.body);
+      limits.push(body.max_tokens);
+      if (limits.length === 1)
+        return Response.json({
+          choices: [{ finish_reason: 'length', message: { content: '{"partial":' } }],
+        });
+      assert.match(body.messages[0].content, /重新生成/);
+      return Response.json({
+        choices: [{ finish_reason: 'stop', message: { content: '{"ok":true}' } }],
+      });
+    };
+    assert.deepEqual(await modelJson('json', 'test', 5000, { recoverLength: true }), { ok: true });
+    assert.deepEqual(limits, [5000, 8000]);
+    let failedAttempts = 0;
+    globalThis.fetch = async () => {
+      failedAttempts++;
+      return Response.json({ choices: [{ finish_reason: 'length', message: { content: '{' } }] });
+    };
+    await assert.rejects(modelJson('json', 'test', 5000, { recoverLength: true }), /输出长度/);
+    assert.equal(failedAttempts, 2);
+    process.env.ZHIXU_AI_BASE_URL = 'https://llmapi.paratera.com';
+    process.env.ZHIXU_AI_MODEL = 'DeepSeek-V4.1-Flash-1017';
+    const thinkingModes = [];
+    globalThis.fetch = async (_url, opts) => {
+      thinkingModes.push(JSON.parse(opts.body).thinking);
+      return Response.json({
+        choices: [{ finish_reason: 'stop', message: { content: '{"ok":true}' } }],
+      });
+    };
+    await modelJson('json', 'test', 8000, { disableThinking: true });
+    await modelJson('json', 'test');
+    assert.deepEqual(thinkingModes, [{ type: 'disabled' }, undefined]);
   } finally {
     globalThis.fetch = previous;
     for (const [k, v] of Object.entries(saved))

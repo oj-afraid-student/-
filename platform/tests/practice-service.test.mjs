@@ -18,11 +18,162 @@ const { readJson } = await import('../src/server/practice/request.ts');
 const { generateCandidate, requestHint } = await import('../src/server/ai/learning.ts');
 const { candidateScopes } = await import('../src/server/ai/scope.ts');
 const { publishCandidate } = await import('../src/server/ai/publish.ts');
+const { loadQuestionForRevision } = await import('../src/server/ai/revision.ts');
+const { suggestTags } = await import('../src/server/ai/tags.ts');
+const { validateCandidate } = await import('../src/server/ai/learning.ts');
+const { candidateDiagramSchema } = await import('../src/shared/candidate-diagram.ts');
 import { NextRequest } from 'next/server.js';
 const read = async (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const bank = JSON.parse(await read('fixtures/server/question-bank.json'));
 const expected = JSON.parse(await read('fixtures/api/practice/result-response.json')).data;
 const error = (status) => (e) => e.status === status;
+
+test('候选题使用字母答案并兼容历史序号，示意图拒绝无效端点', () => {
+  const base = {
+    title: '题',
+    stem: '选择正确选项',
+    fields: ['甲', '乙', '丙', '丁'],
+    answers: ['a', 'C'],
+    explanation: 'A和C正确。',
+  };
+  const reject = () => {
+    throw new Error('invalid');
+  };
+  assert.deepEqual(validateCandidate(base, 'MULTIPLE_CHOICE', 'BASIC', reject).answers, ['A', 'C']);
+  assert.deepEqual(
+    validateCandidate({ ...base, answers: ['1', '3'] }, 'MULTIPLE_CHOICE', 'BASIC', reject).answers,
+    ['A', 'C'],
+  );
+  assert.throws(() =>
+    validateCandidate({ ...base, answers: ['A', '1'] }, 'MULTIPLE_CHOICE', 'BASIC', reject),
+  );
+  const points = [
+    { id: 'A', x: 100, y: 100 },
+    { id: 'B', x: 200, y: 100 },
+    { id: 'C', x: 200, y: 200 },
+  ];
+  assert.ok(
+    candidateDiagramSchema.safeParse({
+      points,
+      edges: [
+        { from: 'A', to: 'B', dashed: false },
+        { from: 'B', to: 'C', dashed: true },
+      ],
+    }).success,
+  );
+  assert.equal(
+    candidateDiagramSchema.safeParse({
+      points,
+      edges: [
+        { from: 'A', to: 'Z', dashed: false },
+        { from: 'B', to: 'C', dashed: true },
+      ],
+    }).success,
+    false,
+  );
+});
+
+test('自动标签只接受正式编号，复核可跨单元发布并保留上传图', async (t) => {
+  await setup(t);
+  const previous = process.env.ZHIXU_QUESTION_REVIEWER_IDS;
+  process.env.ZHIXU_QUESTION_REVIEWER_IDS = users[0];
+  t.after(() => {
+    if (previous === undefined) delete process.env.ZHIXU_QUESTION_REVIEWER_IDS;
+    else process.env.ZHIXU_QUESTION_REVIEWER_IDS = previous;
+  });
+  for (const [id, tag] of [
+    ['SG-01', 'G1-01'],
+    ['SG-02', 'G2-01'],
+  ]) {
+    await db.query(
+      'INSERT INTO knowledge_point (id,title,sort_order,content) VALUES ($1,$1,1,$2)',
+      [
+        id,
+        {
+          knowledgeIds: [tag],
+          sections: [{ id: tag, title: tag, paragraphs: ['测试正文'] }],
+          figures: [],
+          extension: false,
+        },
+      ],
+    );
+  }
+  const env = {
+    ZHIXU_AI_BASE_URL: 'https://model.invalid/v1',
+    ZHIXU_AI_API_KEY: 'test',
+    ZHIXU_AI_MODEL: 'test',
+  };
+  for (const [key, value] of Object.entries(env)) {
+    const prior = process.env[key];
+    process.env[key] = value;
+    t.after(() => {
+      if (prior === undefined) delete process.env[key];
+      else process.env[key] = prior;
+    });
+  }
+  const mock = t.mock.method(globalThis, 'fetch', async () =>
+    Response.json({
+      choices: [
+        {
+          finish_reason: 'stop',
+          message: {
+            content: JSON.stringify({
+              tags: [
+                { id: 'G1-01', reason: '需要确定平面' },
+                { id: 'G2-01', reason: '需要平行条件' },
+              ],
+            }),
+          },
+        },
+      ],
+    }),
+  );
+  assert.equal((await suggestTags({ stem: '证明平行关系', fields: ['证明'] })).tags.length, 2);
+  mock.mock.mockImplementationOnce(async () =>
+    Response.json({ choices: [{ finish_reason: 'length', message: { content: '{' } }] }),
+  );
+  assert.equal((await suggestTags({ stem: '证明平行关系', fields: ['证明'] })).tags.length, 2);
+  const retriedTagCalls = mock.mock.calls
+    .slice(-2)
+    .map((call) => JSON.parse(call.arguments[1].body));
+  assert.deepEqual(
+    retriedTagCalls.map((call) => call.max_tokens),
+    [6000, 8000],
+  );
+  assert.deepEqual(retriedTagCalls[0].messages[1], retriedTagCalls[1].messages[1]);
+  assert.match(retriedTagCalls[1].messages[0].content, /不杜撰编号/);
+  mock.mock.mockImplementationOnce(async () =>
+    Response.json({
+      choices: [
+        { finish_reason: 'stop', message: { content: '{"tags":[{"id":"FAKE","reason":"错误"}]}' } },
+      ],
+    }),
+  );
+  await assert.rejects(suggestTags({ stem: '证明', fields: [] }), error(400));
+  const input = {
+    requestId: 'e725ed13-ac40-490a-b289-f3802cfa3178',
+    confirmed: true,
+    title: '多标签上传题',
+    origin: 'UPLOAD',
+    stem: '判断条件',
+    fields: ['甲', '乙'],
+    answers: ['1'],
+    explanation: '甲正确',
+    type: 'SINGLE_CHOICE',
+    difficulty: 'BASIC',
+    knowledgeIds: ['G1-01', 'G2-01'],
+    photo: 'data:image/jpeg;base64,/9j/AA==',
+  };
+  const result = await publishCandidate(users[0], input);
+  const practice = await createPractice(users[1], { mode: 'EXPLICIT', questionIds: [result.id] });
+  assert.deepEqual(practice.items[0].question.knowledgeIds, input.knowledgeIds);
+  assert.equal(practice.items[0].question.unitIds.length, 2);
+  assert.equal(practice.items[0].question.figures[0].src, input.photo);
+  assert.equal(practice.items[0].question.sourceLabel, '上传题目 · 人工复核');
+  await assert.rejects(publishCandidate(users[0], { ...input, origin: 'INVALID' }), error(400));
+  await assert.rejects(publishCandidate(users[0], { ...input, origin: ['UPLOAD'] }), error(400));
+  assert.deepEqual(await publishCandidate(users[0], input), result);
+});
 
 test('在线复核发布校验权限与知识点，重复请求不重复入库', async (t) => {
   await setup(t);
@@ -67,6 +218,90 @@ test('在线复核发布校验权限与知识点，重复请求不重复入库',
   const detail = await getSubmission(users[1], submission.data.submissionId);
   assert.equal(detail.items[0].evaluation.status, 'CORRECT');
   assert.equal(detail.items[0].reference.explanation, input.explanation);
+});
+
+test('题库修订保留旧练习和判题、新练习取新版，拒绝越权与过期编辑并保证幂等', async (t) => {
+  await setup(t);
+  const prior = process.env.ZHIXU_QUESTION_REVIEWER_IDS;
+  process.env.ZHIXU_QUESTION_REVIEWER_IDS = users[0];
+  t.after(() =>
+    prior === undefined
+      ? delete process.env.ZHIXU_QUESTION_REVIEWER_IDS
+      : (process.env.ZHIXU_QUESTION_REVIEWER_IDS = prior),
+  );
+  await db.query(
+    "INSERT INTO knowledge_point(id,title,sort_order,content) VALUES('SG-01','空间关系',1,$1)",
+    [{ sections: [], knowledgeIds: ['G1-01'] }],
+  );
+  const input = {
+    requestId: 'e725ed13-ac40-490a-b289-f3802cfa3190',
+    confirmed: true,
+    origin: 'UPLOAD',
+    title: '修订测试原题',
+    stem: '第一版题干',
+    type: 'SINGLE_CHOICE',
+    difficulty: 'BASIC',
+    knowledgeIds: ['G1-01'],
+    fields: ['选项甲', '选项乙'],
+    answers: ['A'],
+    explanation: '第一版解析',
+    photo: 'data:image/jpeg;base64,/9j/AA==',
+  };
+  const first = await publishCandidate(users[0], input);
+  const oldPaper = await createPractice(users[1], { mode: 'EXPLICIT', questionIds: [first.id] });
+  await assert.rejects(loadQuestionForRevision(users[1], first.id), error(403));
+  const loaded = await loadQuestionForRevision(users[0], first.id);
+  assert.deepEqual(loaded.answers, ['A']);
+  assert.equal(loaded.revision.baseVersion, 1);
+  const { photo, ...noNewPhoto } = input;
+  const update = {
+    ...noNewPhoto,
+    requestId: 'e725ed13-ac40-490a-b289-f3802cfa3191',
+    revision: { id: first.id, baseVersion: 1 },
+    stem: '第二版题干',
+    answers: ['B'],
+    explanation: '第二版解析',
+  };
+  await assert.rejects(publishCandidate(users[1], update), error(403));
+  const second = await publishCandidate(users[0], update);
+  assert.deepEqual(second, { id: first.id, version: 2 });
+  assert.deepEqual(await publishCandidate(users[0], update), second);
+  await assert.rejects(
+    publishCandidate(users[0], { ...update, requestId: 'e725ed13-ac40-490a-b289-f3802cfa3192' }),
+    error(409),
+  );
+  const newPaper = await createPractice(users[1], { mode: 'EXPLICIT', questionIds: [first.id] });
+  assert.equal(newPaper.items[0].question.version, 2);
+  assert.equal(newPaper.items[0].question.stem, '第二版题干');
+  assert.equal(newPaper.items[0].question.figures[0].src, photo);
+  assert.equal((await getPractice(users[1], oldPaper.id)).items[0].question.stem, '第一版题干');
+  for (const [paper, status, explanation] of [
+    [oldPaper, 'CORRECT', '第一版解析'],
+    [newPaper, 'INCORRECT', '第二版解析'],
+  ]) {
+    const saved = await submitPractice(users[1], paper.id, {
+      answers: [
+        {
+          practiceItemId: paper.items[0].id,
+          answer: { type: 'SINGLE_CHOICE', selectedOptionId: 'A' },
+        },
+      ],
+    });
+    const detail = await getSubmission(users[1], saved.data.submissionId);
+    assert.equal(detail.items[0].evaluation.status, status);
+    assert.equal(detail.items[0].reference.explanation, explanation);
+  }
+  const current = await loadQuestionForRevision(users[0], first.id);
+  assert.equal(current.history.length, 2);
+  assert.deepEqual(current.answers, ['B']);
+  assert.equal(
+    (
+      await db.query('SELECT count(*)::int AS n FROM question_version WHERE question_key=$1', [
+        first.id,
+      ])
+    ).rows[0].n,
+    2,
+  );
 });
 
 test('扩充知识点可用于候选出题，组卷仅取已发布且匹配细分标签的题', async (t) => {
@@ -121,7 +356,10 @@ test('解题提示只读取本人练习的固定题目版本，不发送参考�
   }
   const fetch = t.mock.method(globalThis, 'fetch', async (_url, options) => {
     const prompt = JSON.parse(options.body).messages[1];
-    assert.deepEqual(JSON.parse(prompt.content), item.question);
+    assert.deepEqual(
+      JSON.parse(Array.isArray(prompt.content) ? prompt.content[0].text : prompt.content),
+      item.question,
+    );
     return Response.json({
       choices: [
         { finish_reason: 'stop', message: { content: '{"hint":"先观察两条直线是否共面。"}' } },
@@ -152,7 +390,10 @@ test('解题提示只读取本人练习的固定题目版本，不发送参考�
   );
   fetch.mock.mockImplementationOnce(async (_url, options) => {
     const prompt = JSON.parse(options.body).messages[1];
-    assert.deepEqual(JSON.parse(prompt.content), { question, target, studentProgress: progress });
+    assert.deepEqual(
+      JSON.parse(Array.isArray(prompt.content) ? prompt.content[0].text : prompt.content),
+      { question, target, studentProgress: progress },
+    );
     return Response.json({
       choices: [
         { finish_reason: 'stop', message: { content: '{"hint":"用垂直关系找到棱锥的高。"}' } },

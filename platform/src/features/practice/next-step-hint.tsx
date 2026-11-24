@@ -3,7 +3,7 @@ import type { PublicQuestion } from '@/shared/contracts';
 import { VisualizeButton } from '@/features/geometry/visualize-button';
 import { useEffect, useRef, useState } from 'react';
 import { errorMessage, request } from '@/shared/api/client';
-import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
+import { HINT_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { MathText } from '@/shared/ui/common';
 
 export function NextStepHint({
@@ -41,7 +41,7 @@ export function NextStepHint({
           method: 'POST',
           body: { itemId, partId, progress },
           signal: controller.signal,
-          timeoutMs: AI_REQUEST_TIMEOUT_MS,
+          timeoutMs: HINT_REQUEST_TIMEOUT_MS,
         },
       );
       if (!controller.signal.aborted) setHint(result.hint);

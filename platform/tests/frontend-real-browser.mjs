@@ -500,14 +500,61 @@ try {
   );
   await firstUploadMatch.waitFor();
   assert.equal(await firstUploadMatch.locator('.km-node-role').innerText(), '上传题知识点');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  const background = graph.locator('.km-node.is-background');
+  assert.ok((await background.count()) > 0);
+  assert.ok(
+    await background.evaluateAll((nodes) =>
+      nodes.every(
+        (node) =>
+          node.disabled &&
+          !node.textContent.trim() &&
+          !node.hasAttribute('title') &&
+          getComputedStyle(node).pointerEvents === 'none' &&
+          Number(getComputedStyle(node).opacity) > 0,
+      ),
+    ),
+  );
+  const bubbleSkin = firstUploadMatch.locator('.km-bubble');
   assert.equal(
-    await firstUploadMatch.evaluate((node) => getComputedStyle(node).borderTopColor),
+    await bubbleSkin.evaluate((node) => getComputedStyle(node).animationName),
+    'km-bubble-float',
+  );
+  const visibleCurves = graph.locator('.km-edge[style*="opacity: 1"] path');
+  assert.ok((await visibleCurves.count()) > 0);
+  assert.ok(
+    await visibleCurves.evaluateAll((paths) =>
+      paths.every(
+        (curve) =>
+          / Q 50 -?60 100 0$/.test(curve.getAttribute('d')) &&
+          Number.parseFloat(getComputedStyle(curve.ownerSVGElement).width) > 0,
+      ),
+    ),
+  );
+  assert.equal(
+    await bubbleSkin.evaluate((node) => getComputedStyle(node).borderTopColor),
     'rgb(7, 84, 82)',
   );
   const normalNeighbor = graph.locator('.km-node:not([data-upload-kind]):enabled').first();
   await normalNeighbor.click();
-  await graph.locator('.km-node.is-center:not([data-upload-kind]):enabled').waitFor();
+  const nextCenter = graph.locator('.km-node.is-center:not([data-upload-kind]):enabled');
+  await nextCenter.waitFor();
+  await page.waitForFunction(() => {
+    const moving = (node, shift) =>
+      node
+        ?.getAnimations()
+        .some((animation) => animation.effect?.getKeyframes().some((frame) => frame.top === shift));
+    return (
+      moving(document.querySelector('.km-node.is-center'), '-34px') &&
+      moving(document.querySelector('.km-node[data-node-id="unit:SG-01"]'), '27px')
+    );
+  });
   await paths.waitFor();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  assert.equal(
+    await nextCenter.locator('.km-bubble').evaluate((node) => getComputedStyle(node).animationName),
+    'none',
+  );
   const nodeIds = (selector) =>
     paths.locator(selector).evaluateAll((nodes) => nodes.map((node) => node.dataset.nodeId));
   assert.deepEqual(
@@ -525,6 +572,8 @@ try {
     '.km-node.is-center[data-node-id="point:E1"][data-upload-kind="match"]',
   );
   await selectedUploadMatch.waitFor();
+  assert.ok(await selectedUploadMatch.evaluate((node) => node.getAnimations().length === 0));
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   assert.equal(await relatedPanel.count(), 1);
   await relatedPanel.getByRole('button', { name: '知识点题目', exact: true }).click();
   await relatedPanel.locator('.km-context').waitFor();
@@ -554,6 +603,7 @@ try {
   await page.goto(origin + '/knowledge-map?topic=missing');
   await page.getByRole('status').filter({ hasText: '当前图谱找不到这些知识点' }).waitFor();
   await page.locator('.km-node.is-center[data-node-id="overview"]').waitFor();
+  check('圈图气泡、非交互背景、曲线、升降切换与减少动态效果通过');
   check('上传题栏目承载跨分支路径，圈图标注命中及上级，切换节点、栏目、退出及窄屏定位通过');
 
   const fullBank = await create(page);

@@ -144,7 +144,7 @@
   touch-action: none;
   cursor: grab;
   background:
-    radial-gradient(#d0c3f0 0.9px, transparent 0.9px) 0 0 / 24px 24px,
+    radial-gradient(#d1c1ef8c 0.8px, transparent 0.8px) 0 0 / 24px 24px,
     radial-gradient(ellipse at 50% 44%, #fcfaff, #ece4fe);
 }
 .km-viewport.is-dragging {
@@ -162,68 +162,139 @@
   transition: none;
 }
 .km-node {
+  --bubble-core: #fffdfd;
+  --bubble-fill: #eee4ff;
+  --bubble-rim: #c6b2f4;
+  --bubble-border: #8971d8;
+  --bubble-border-width: 1.6px;
   position: absolute;
   left: 0;
   top: 0;
   width: 200px;
   height: 200px;
+  padding: 0;
   border-radius: 50%;
-  border: 1.6px solid #8971d8;
-  background: radial-gradient(circle at 35% 20%, #fdfbff, #eee4ff);
+  transform: translate(var(--node-x), var(--node-y)) translate(-50%, -50%) scale(var(--node-scale));
+  transition:
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 360ms ease;
+  z-index: 2;
+}
+.km-bubble {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  text-align: center;
+  width: 100%;
+  height: 100%;
   padding: 22px;
-  box-shadow: 0 8px 16px #23483112;
-  transform: translate(var(--node-x), var(--node-y)) translate(-50%, -50%) scale(var(--node-scale));
-  transition:
-    transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 360ms ease,
-    background 450ms,
-    box-shadow 450ms;
-  z-index: 2;
+  border-radius: inherit;
+  border: var(--bubble-border-width) solid var(--bubble-border);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 25% 15%, #ffffffc9, #fff0 48%),
+    radial-gradient(
+      circle at 36% 30%,
+      var(--bubble-core),
+      var(--bubble-fill) 70%,
+      var(--bubble-rim)
+    );
+  box-shadow:
+    inset 0 2px 5px #fff8,
+    inset -7px -10px 19px #42276515,
+    0 8px 19px #34255e25;
+  pointer-events: none;
+  animation: km-bubble-float var(--float-duration) ease-in-out var(--float-delay) infinite;
+  transition: box-shadow 400ms;
+}
+.km-bubble::before {
+  content: '';
+  position: absolute;
+  top: 12%;
+  left: 18%;
+  width: 19%;
+  height: 8%;
+  border-radius: 50%;
+  transform: rotate(-28deg);
+  background: radial-gradient(ellipse, #fff9, #fff0 71%);
+}
+@keyframes km-bubble-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 calc(-1 * var(--float-shift));
+  }
+}
+.km-node.is-background {
+  --bubble-fill: #d8c7fb;
+  --bubble-rim: #a789e1;
+  opacity: 0.53;
+  pointer-events: none;
+  z-index: 0;
+}
+.km-node.is-background:where([data-node-kind='overview'], [data-node-kind='group']) {
+  --bubble-fill: #c7acef;
+  --bubble-rim: #9f7ad5;
+}
+.km-node.is-background:where([data-node-kind='unit']) {
+  --bubble-fill: #c7dcf9;
+  --bubble-rim: #8dabdf;
 }
 .km-node.is-center {
-  background: radial-gradient(circle at 30% 10%, #f7f2ff, #d8c8ff);
-  border: 2.5px solid var(--accent);
+  --bubble-border: var(--accent);
+  --bubble-border-width: 2.5px;
+  --bubble-fill: #d8c8ff;
+  --bubble-rim: #b8a1ed;
+  z-index: 3;
+}
+.km-node.is-center .km-bubble {
   box-shadow:
-    0 0 0 7px #d8c8ff69,
-    0 14px 35px #4c3ad135;
+    inset -6px -10px 22px #7051ae1e,
+    0 0 0 6px #d8c8ff5c,
+    0 13px 35px #4c3ad13b;
 }
 .km-node.is-parent {
-  border: 2px solid #3875b7;
-  background: radial-gradient(circle at 35% 20%, #f7fbff, #cce4ff);
+  --bubble-border: #3875b7;
+  --bubble-border-width: 2px;
+  --bubble-fill: #cce4ff;
+  --bubble-rim: #a1c9f1;
 }
 .km-node.is-related {
-  border: 3px solid #b57217;
+  --bubble-border: #b57217;
+  --bubble-border-width: 3px;
 }
 .km-node[data-upload-kind] {
-  border: 2px solid var(--km-upload-line);
-  background: radial-gradient(circle at 35% 20%, #f7fffd, var(--km-upload-tint));
+  --bubble-border: var(--km-upload-line);
+  --bubble-border-width: 2px;
+  --bubble-core: #f6fffd;
+  --bubble-fill: var(--km-upload-tint);
+  --bubble-rim: #9dd9d2;
 }
 .km-node[data-upload-kind='match'] {
-  border: 3px solid var(--km-upload-ink);
-  background: radial-gradient(circle at 35% 20%, #effffb, var(--km-upload-fill));
+  --bubble-border: var(--km-upload-ink);
+  --bubble-border-width: 3px;
+  --bubble-fill: var(--km-upload-fill);
+  --bubble-rim: #72c1b5;
 }
-.km-node[data-upload-kind].is-center {
+.km-node[data-upload-kind].is-center .km-bubble {
   box-shadow:
-    0 0 0 7px #a4ded85f,
-    0 14px 35px #155c5852;
+    inset -6px -10px 22px #2b7a721a,
+    0 0 0 6px #a4ded85f,
+    0 13px 35px #155c5852;
 }
-.km-node:not(:disabled):hover {
+.km-node:not(:disabled):hover .km-bubble {
   box-shadow:
-    0 0 0 8px #d8c8ff82,
-    0 14px 35px #4c3ad147;
+    inset -6px -10px 22px #42276515,
+    0 0 0 6px #d8c8ff82,
+    0 14px 29px #4c3ad147;
 }
 .km-node:focus-visible {
   outline: 4px solid var(--brand);
   outline-offset: 9px;
-}
-.km-node:disabled {
-  opacity: 0;
 }
 .km-node strong {
   font-size: 27px;
@@ -262,21 +333,26 @@
 }
 .km-edge {
   position: absolute;
-  top: 0;
+  top: -50px;
   left: 0;
-  height: 1.6px;
-  background: #8468ca;
+  width: 100px;
+  max-width: none;
+  height: 100px;
+  overflow: visible;
+  fill: none;
+  stroke: #8468ca;
+  stroke-width: 1.6px;
+  stroke-linecap: round;
   transform-origin: 0 50%;
   transition:
     transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 650ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 300ms;
   z-index: 1;
   pointer-events: none;
 }
 .km-edge.is-upload {
-  height: 2.5px;
-  background: var(--km-upload-line);
+  stroke: var(--km-upload-line);
+  stroke-width: 2.3px;
 }
 .km-leaf-note {
   position: absolute;
@@ -630,8 +706,10 @@
 @media (prefers-reduced-motion: reduce) {
   .km-world,
   .km-node,
-  .km-edge {
+  .km-edge,
+  .km-bubble {
     transition: none !important;
+    animation: none;
   }
 }
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -87,14 +88,40 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
   const [size, setSize] = useState({ width: 850, height: 650 });
   const [dragging, setDragging] = useState(false);
   const viewport = useRef<HTMLDivElement>(null);
+  const world = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef(focusId);
   const drag = useRef<{ id: number; x: number; y: number; startX: number; startY: number } | null>(
     null,
   );
 
   const layout = radialLayout(data.nodes, focusId);
   const path = ancestors(data.nodes, focusId);
-  const scale =
-    Math.min((size.width - 40) / layout.extent, (size.height - 40) / layout.extent, 1.15) * zoom;
+  const fitScale = Math.max(
+    0.1,
+    Math.min((size.width - 40) / layout.extent, (size.height - 40) / layout.extent, 1.15),
+  );
+  const scale = fitScale * zoom;
+
+  useLayoutEffect(() => {
+    const oldFocus = previousFocus.current;
+    previousFocus.current = focusId;
+    if (oldFocus === focusId || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      return;
+
+    const moves = [
+      [focusId, -34],
+      [oldFocus, 27],
+    ] as const;
+    const animations = moves.map(([id, shift]) =>
+      world.current
+        ?.querySelector(`.km-node[data-node-id="${CSS.escape(id)}"]`)
+        ?.animate([{ top: '0px' }, { top: `${shift}px`, offset: 0.58 }, { top: '0px' }], {
+          duration: 650,
+          easing: 'ease-in-out',
+        }),
+    );
+    return () => animations.forEach((animation) => animation?.cancel());
+  }, [focusId]);
   useEffect(() => {
     const element = viewport.current;
     if (!element) return;
@@ -225,13 +252,14 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
         >
           <div
             className="km-world"
+            ref={world}
             style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${Math.max(0.1, scale)})`,
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
             }}
           >
             {data.nodes
               .filter((node) => node.parentId)
-              .map((node) => {
+              .map((node, index) => {
                 const from = layout.points.get(node.parentId!);
                 const to = layout.points.get(node.id);
                 const visible =
@@ -243,21 +271,30 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                 const onUploadPath =
                   topicPaths.nodeIds.has(node.parentId!) && topicPaths.nodeIds.has(node.id);
                 return (
-                  <div
+                  <svg
                     key={'edge-' + node.id}
                     className={'km-edge' + (onUploadPath ? ' is-upload' : '')}
+                    viewBox="0 -50 100 100"
                     aria-hidden="true"
                     style={{
                       opacity: visible ? 1 : 0,
-                      visibility: visible ? 'visible' : 'hidden',
-                      width: Math.hypot(dx, dy),
-                      transform: `translate(${x}px, ${y}px) rotate(${Math.atan2(dy, dx)}rad)`,
+                      transform: `translate(${x}px, ${y}px) rotate(${Math.atan2(dy, dx)}rad) scaleX(${Math.hypot(dx, dy) / 100})`,
                     }}
-                  />
+                  >
+                    <path
+                      d={`M 0 0 Q 50 ${index % 2 ? -60 : 60} 100 0`}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </svg>
                 );
               })}
-            {data.nodes.map((node) => {
+            {data.nodes.map((node, index) => {
               const point = layout.points.get(node.id);
+              // Keep each background bubble in a stable spot across node switches.
+              const radius = Math.sqrt((index + 0.5) / data.nodes.length);
+              const angle = index * Math.PI * (3 - Math.sqrt(5));
+              const x = point?.x ?? radius * Math.cos(angle) * (size.width / fitScale) * 0.47;
+              const y = point?.y ?? radius * Math.sin(angle) * (size.height / fitScale) * 0.45;
               const central = node.id === focusId;
               const parent = node.id === focus.parentId;
               const uploadKind = topicPaths.leafIds.has(node.id)
@@ -276,15 +313,21 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                 <button
                   key={node.id}
                   data-node-id={node.id}
+                  data-node-kind={node.kind}
                   data-upload-kind={uploadKind}
-                  title={node.label}
+                  title={point ? node.label : undefined}
                   className={
                     'km-node' +
                     (central ? ' is-center' : '') +
                     (parent ? ' is-parent' : '') +
-                    (related ? ' is-related' : '')
+                    (related ? ' is-related' : '') +
+                    (!point ? ' is-background' : '')
                   }
-                  aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}${related ? '，当前题目关联' : ''}${uploadMark ? '，' + uploadMark : ''}`}
+                  aria-label={
+                    point
+                      ? `${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}${related ? '，当前题目关联' : ''}${uploadMark ? '，' + uploadMark : ''}`
+                      : undefined
+                  }
                   aria-current={central ? 'true' : undefined}
                   aria-hidden={!point}
                   tabIndex={point ? 0 : -1}
@@ -294,28 +337,44 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                   }
                   style={
                     {
-                      '--node-x': `${point?.x ?? 0}px`,
-                      '--node-y': `${point?.y ?? 0}px`,
-                      '--node-scale': central ? 1 : 0.64,
+                      '--node-x': `${x}px`,
+                      '--node-y': `${y}px`,
+                      '--node-scale': point
+                        ? central
+                          ? 1
+                          : 0.64
+                        : 0.05 + ((index * 7) % 11) * 0.007,
+                      '--float-shift': point ? (central ? '8px' : '6px') : '3px',
+                      '--float-duration': `${4.8 + (index % 6) * 0.5}s`,
+                      '--float-delay': `${-(index % 9) * 0.63}s`,
                       '--node-font':
                         node.label.length > 24 ? '18px' : node.label.length > 16 ? '21px' : '23px',
-                      opacity: point ? 1 : 0,
-                      visibility: point ? 'visible' : 'hidden',
-                      pointerEvents: point ? 'auto' : 'none',
                     } as CSSProperties
                   }
                 >
-                  <span className="km-node-role">
-                    {uploadMark ||
-                      (central ? '当前节点' : parent ? '上级' : related ? '关联下级' : '下级')}
-                  </span>
-                  <strong>{node.label}</strong>
-                  <span className="km-node-hint">
-                    {central
-                      ? layout.children.length
-                        ? `${layout.children.length} 个下级节点`
-                        : '末级节点'
-                      : '点击切换中心'}
+                  <span className="km-bubble">
+                    {point && (
+                      <>
+                        <span className="km-node-role">
+                          {uploadMark ||
+                            (central
+                              ? '当前节点'
+                              : parent
+                                ? '上级'
+                                : related
+                                  ? '关联下级'
+                                  : '下级')}
+                        </span>
+                        <strong>{node.label}</strong>
+                        <span className="km-node-hint">
+                          {central
+                            ? layout.children.length
+                              ? `${layout.children.length} 个下级节点`
+                              : '末级节点'
+                            : '点击切换中心'}
+                        </span>
+                      </>
+                    )}
                   </span>
                 </button>
               );

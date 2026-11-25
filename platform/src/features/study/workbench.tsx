@@ -7,6 +7,7 @@ import { request, errorMessage } from '@/shared/api/client';
 import { AI_REQUEST_TIMEOUT_MS, HINT_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { preparePhoto } from '@/shared/prepare-photo';
 import type { StudyProblem, StudyGuidance } from '@/shared/study-contract';
+import { StudyKnowledgeLinks } from './study-knowledge-links';
 import './workbench.css';
 import { VisualizeButton } from '@/features/geometry/visualize-button';
 import { DiagramRedraw } from '@/shared/ui/diagram-redraw';
@@ -293,6 +294,7 @@ export function StudyWorkbench() {
                 />{' '}
                 我已核对题干、条件与分问，已修正或明确标注不确定项
               </label>
+              {confirmed && <StudyKnowledgeLinks problem={problem} disabled={busy} />}
             </>
           )}
         </section>

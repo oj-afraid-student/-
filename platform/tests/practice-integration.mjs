@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
 import pg from 'pg';
+import { readContentRelease } from '../scripts/lib/content.mjs';
 const connection = process.env.ZHIXU_PRACTICE_TEST_DATABASE_URL;
 if (!connection)
   throw new Error('Set ZHIXU_PRACTICE_TEST_DATABASE_URL to a local PostgreSQL test database.');
@@ -147,13 +148,13 @@ try {
   };
   importRelease();
   importRelease();
-  const { units, bank: expansion } = JSON.parse(
-    await read('fixtures/server/geometry-release.json'),
-  );
+  const { units, bank: expansion } = readContentRelease();
   const published = await a.call('/knowledge-map/questions');
   assert.deepEqual(
     published.map((question) => question.id),
-    Array.from({ length: 86 }, (_, index) => 'Q' + String(index + 1).padStart(2, '0')),
+    Array.from({ length: 86 }, (_, index) => 'Q' + String(index + 1).padStart(2, '0')).filter(
+      (id) => id !== 'Q33',
+    ),
   );
   assert.doesNotMatch(
     JSON.stringify(published),
@@ -184,7 +185,7 @@ try {
   await a.call('/practices', 'POST', { mode: 'ALL', userId: 'forged' }, 400);
   await a.call('/practices', 'POST', { mode: 'ALL' }, 400, { Origin: 'http://foreign.invalid' });
   const full = await a.call('/practices', 'POST', { mode: 'ALL' }, 201);
-  assert.equal(full.totalCount, 86);
+  assert.equal(full.totalCount, 85);
   assert.equal(full.items.at(-1).question.id, 'Q86');
   assert.deepEqual(
     full.items.map(({ question }) => question),
@@ -242,17 +243,13 @@ try {
     201,
   );
   const graphResult = await a.call('/me/submissions/' + graphSubmission.submissionId);
-  assert.equal(graphResult.totalCount, 86);
+  assert.equal(graphResult.totalCount, 85);
   assert.deepEqual(
     graphResult.items.map(({ question }) => question),
     published,
   );
-  assert.deepEqual(graphResult.items.find(({ question }) => question.id === 'Q33').evaluation, {
-    status: 'PENDING_REVIEW',
-    isCorrect: null,
-    score: null,
-  });
-  console.log('PASS 图谱公开题目与正式练习一致，86题整组提交及历史回看，Q33待复核');
+  assert.ok(graphResult.items.every(({ question }) => question.id !== 'Q33'));
+  console.log('PASS 图谱公开题目与正式练习一致，85题整组提交及历史回看，Q33暂缓发布');
   const p = await a.call('/practices', 'POST', sampleSelection, 201);
   assert.equal(p.totalCount, 24);
   assert.equal(/correctOptionIds|acceptedValues|reference|grading/.test(JSON.stringify(p)), false);

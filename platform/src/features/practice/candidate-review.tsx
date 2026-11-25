@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { errorMessage, request } from '@/shared/api/client';
-import { HINT_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
+import { requestKnowledgeTags } from '@/shared/api/knowledge-tags';
 import { useResource } from '@/shared/api/use-resource';
 import { difficultyLabels, MathText, PageHead, questionTypeLabels } from '@/shared/ui/common';
 import Image from 'next/image';
@@ -161,15 +161,7 @@ export function CandidateReview() {
   }
 
   async function classify(stem: string, fields: string[]) {
-    const result = await request<{ tags: { id: string; reason: string }[] }>(
-      '/api/v1',
-      '/ai/candidates/tags',
-      {
-        method: 'POST',
-        body: { stem, fields },
-        timeoutMs: HINT_REQUEST_TIMEOUT_MS,
-      },
-    );
+    const result = await requestKnowledgeTags(stem, fields);
     setTagIds(result.tags.map((tag) => tag.id));
     setTagReasons(result.tags);
     setChecked(false);

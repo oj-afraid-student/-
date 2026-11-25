@@ -74,3 +74,40 @@
   background: white;
   border-radius: 8px;
 }
+
+.study-knowledge {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--wash);
+  padding: 14px;
+}
+.study-knowledge > .row {
+  gap: 8px;
+}
+.study-knowledge h3 {
+  margin: 0;
+}
+.study-knowledge .field-hint {
+  margin: 8px 0;
+}
+.study-knowledge-tags {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+.study-knowledge-tags label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px;
+  overflow-wrap: anywhere;
+}
+.study-knowledge-tags small {
+  display: block;
+  color: var(--muted);
+}
+.study-knowledge > .btn {
+  max-width: 100%;
+  white-space: normal;
+}

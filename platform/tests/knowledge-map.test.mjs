@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { readContentRelease } from '../scripts/lib/content.mjs';
 const {
   radialLayout,
   validateStructure,
@@ -11,6 +12,7 @@ const {
   questionsForNode,
   withPublishedQuestions,
   graphFocus,
+  uploadTopicPaths,
 } = await import('../src/features/knowledge-map/graph-model.ts');
 const data = JSON.parse(
   readFileSync(new URL('../public/content/geometry-knowledge-map.json', import.meta.url)),
@@ -37,7 +39,7 @@ test('题目按实际细分标签去重筛选，包含原题与扩充题，空�
   assert.ok(questionsForNode(data, 'unit:SG-01').every((q) => q.unitIds.includes('SG-01')));
   assert.equal(questionsForNode(data, 'missing').length, 0);
 });
-test('原题和扩充题均可练习，Q33保留待核，公开快照不含答案字段', () => {
+test('公开目录保留Q33阅读标记，公开快照不含答案字段', () => {
   assert.deepEqual(
     data.questions.filter((q) => q.readingOnly).map((q) => q.id),
     ['Q33'],
@@ -59,11 +61,11 @@ test('原题和扩充题均可练习，Q33保留待核，公开快照不含答�
     assert.ok(!text.includes('"' + field + '"'));
   assert.ok(!text.includes('展示'));
 });
-test('正式86题均有图谱入口，单元题目与发布清单一致', () => {
-  const read = (file) =>
-    JSON.parse(readFileSync(new URL('../fixtures/server/' + file, import.meta.url)));
-  const { units, bank } = read('geometry-release.json');
-  const official = [...read('question-bank.json'), ...bank].map((record) => record.question);
+test('正式85题均有图谱入口，单元题目与发布清单一致', () => {
+  const { units, bank } = readContentRelease();
+  const official = bank.map((record) => record.question);
+  assert.equal(official.length, 85);
+  assert.ok(official.every((question) => question.id !== 'Q33'));
   const live = withPublishedQuestions(data, official);
   const root = questionsForNode(live, 'overview');
   assert.deepEqual(
@@ -110,6 +112,19 @@ test('图谱以服务端发布结果为准，弃用静态题稿并接收同标�
   assert.equal(graphFocus(live, null, 'Q01').id, 'overview');
 });
 
+test('上传题定位保留不同分支的叶子和全部祖先，去重且忽略无效或单元标签', () => {
+  const codes = ['G1-01', 'E1', 'G1-01', 'SG-01', 'missing'];
+  const paths = uploadTopicPaths(data.nodes, codes);
+  assert.deepEqual(paths.leafIds, new Set(['point:G1-01', 'point:E1']));
+  assert.deepEqual(
+    paths.nodeIds,
+    new Set(['overview', 'core', 'unit:SG-01', 'point:G1-01', 'extension', 'unit:E1', 'point:E1']),
+  );
+  assert.equal(paths.nodes.filter(({ id }) => id === 'overview').length, 1);
+  assert.equal(paths.partial, true);
+  assert.equal(uploadTopicPaths(data.nodes, ['E1', 'G1-01']).partial, false);
+  assert.deepEqual(uploadTopicPaths(data.nodes, ['missing']).nodes, []);
+});
 test('1至32个邻居等角排布、间距不重叠，父节点占用独立方位', () => {
   for (let count = 1; count <= 32; count++) {
     const nodes = [

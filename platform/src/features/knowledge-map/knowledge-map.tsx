@@ -10,18 +10,21 @@ import {
 } from 'react';
 import { useSession } from '@/features/auth/session';
 import { useResource } from '@/shared/api/use-resource';
+import { UPLOAD_TOPIC_LIMIT, UPLOAD_TOPIC_PARAM } from '@/shared/api/knowledge-tags';
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
 import {
   ancestors,
   graphFocus,
   questionsForNode,
   radialLayout,
+  uploadTopicPaths,
   validateStructure,
   type GraphStructure,
 } from './graph-model';
 import { loadGraphStructure } from './structure';
 import { KnowledgeChat } from './knowledge-chat';
 import { KnowledgePanel } from './knowledge-panel';
+import { TopicPaths } from './topic-paths';
 
 function observeFocus(listener: () => void) {
   window.addEventListener('popstate', listener);
@@ -56,7 +59,14 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
   const location = useSyncExternalStore(observeFocus, readLocation, () => initialQuery);
   const query = new URLSearchParams(location);
   const questionId = query.get('question');
-  const focus = graphFocus(data, query.get('node'), questionId);
+  const codes = query.getAll(UPLOAD_TOPIC_PARAM).slice(0, UPLOAD_TOPIC_LIMIT);
+  const topicPaths = uploadTopicPaths(data.nodes, codes);
+  const showTopicPaths = topicPaths.leafIds.size > 0;
+  const requestedNode = query.get('node');
+  const focus =
+    showTopicPaths && !topicPaths.nodeIds.has(requestedNode ?? '')
+      ? root
+      : graphFocus(data, requestedNode, questionId);
   const focusId = focus.id;
   const questions = questionsForNode(data, focusId);
   const currentQuestion = questions.find((question) => question.id === questionId) ?? questions[0];
@@ -82,7 +92,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
     );
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [showTopicPaths]);
   useEffect(() => {
     const back = () => {
       setPan({ x: 0, y: 0 });
@@ -91,9 +101,15 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
   }, []);
-  function updateLocation(id: string, question: string | null, moveNode: boolean) {
+  function updateLocation(
+    id: string,
+    question: string | null,
+    moveNode: boolean,
+    clearTopics = false,
+  ) {
     const url = new URL(window.location.href);
     url.searchParams.set('node', id);
+    if (clearTopics) url.searchParams.delete(UPLOAD_TOPIC_PARAM);
     if (question) url.searchParams.set('question', question);
     else url.searchParams.delete('question');
     if (moveNode) window.history.pushState(null, '', url);
@@ -104,7 +120,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
     if (id === focusId && questionId === question) return;
     setPan({ x: 0, y: 0 });
     setZoom(1);
-    updateLocation(id, question, id !== focusId);
+    updateLocation(id, question, id !== focusId, showTopicPaths && !topicPaths.nodeIds.has(id));
   }
   function resetView() {
     setZoom(1);
@@ -116,16 +132,17 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
         <header className="km-heading">
           <div>
             <h1>知识图谱</h1>
-            <p>点击节点，探索上下层关系</p>
+            <p>{showTopicPaths ? '上传题知识点定位' : '点击节点，探索上下层关系'}</p>
           </div>
           <button
             className="btn small"
             onClick={() => {
-              select(root.id);
+              if (codes.length) updateLocation(focusId, questionId, true, true);
+              else select(root.id);
               resetView();
             }}
           >
-            回到总览
+            {codes.length ? '退出定位' : '回到总览'}
           </button>
         </header>
         <nav className="km-breadcrumb" aria-label="当前知识路径">
@@ -147,150 +164,172 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
             结构预览 · 知识内容待接入
           </p>
         )}
-        <div
-          className={'km-viewport' + (dragging ? ' is-dragging' : '')}
-          ref={viewport}
-          aria-label="可平移的知识网络"
-          onPointerDown={(event) => {
-            if (event.button !== 0 || (event.target as HTMLElement).closest('button,a')) return;
-            drag.current = {
-              id: event.pointerId,
-              x: event.clientX,
-              y: event.clientY,
-              startX: pan.x,
-              startY: pan.y,
-            };
-            event.currentTarget.setPointerCapture(event.pointerId);
-            setDragging(true);
-          }}
-          onPointerMove={(event) => {
-            const origin = drag.current;
-            if (origin?.id === event.pointerId)
-              setPan({
-                x: origin.startX + event.clientX - origin.x,
-                y: origin.startY + event.clientY - origin.y,
-              });
-          }}
-          onPointerUp={() => {
-            drag.current = null;
-            setDragging(false);
-          }}
-          onPointerCancel={() => {
-            drag.current = null;
-            setDragging(false);
-          }}
-        >
-          <div
-            className="km-world"
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${Math.max(0.1, scale)})`,
-            }}
-          >
-            {data.nodes
-              .filter((node) => node.parentId)
-              .map((node) => {
-                const from = layout.points.get(node.parentId!);
-                const to = layout.points.get(node.id);
-                const visible =
-                  !!from && !!to && (node.id === focusId || node.parentId === focusId);
-                const x = from?.x ?? 0,
-                  y = from?.y ?? 0;
-                const dx = (to?.x ?? 0) - x,
-                  dy = (to?.y ?? 0) - y;
-                return (
-                  <div
-                    key={'edge-' + node.id}
-                    className="km-edge"
-                    aria-hidden="true"
-                    style={{
-                      opacity: visible ? 1 : 0,
-                      visibility: visible ? 'visible' : 'hidden',
-                      width: Math.hypot(dx, dy),
-                      transform: `translate(${x}px, ${y}px) rotate(${Math.atan2(dy, dx)}rad)`,
-                    }}
-                  />
-                );
-              })}
-            {data.nodes.map((node) => {
-              const point = layout.points.get(node.id);
-              const central = node.id === focusId;
-              const parent = node.id === focus.parentId;
-              const related = !central && node.kind === 'point' && relatedTags.has(node.code ?? '');
-              return (
+        {codes.length > 0 && !showTopicPaths && (
+          <p className="km-placeholder" role="status">
+            当前图谱找不到这些知识点，已打开普通视图。
+          </p>
+        )}
+        {showTopicPaths ? (
+          <TopicPaths
+            nodes={topicPaths.nodes}
+            leafIds={topicPaths.leafIds}
+            partial={topicPaths.partial}
+            focusId={focusId}
+            select={select}
+          />
+        ) : (
+          <>
+            <div
+              className={'km-viewport' + (dragging ? ' is-dragging' : '')}
+              ref={viewport}
+              aria-label="可平移的知识网络"
+              onPointerDown={(event) => {
+                if (event.button !== 0 || (event.target as HTMLElement).closest('button,a')) return;
+                drag.current = {
+                  id: event.pointerId,
+                  x: event.clientX,
+                  y: event.clientY,
+                  startX: pan.x,
+                  startY: pan.y,
+                };
+                event.currentTarget.setPointerCapture(event.pointerId);
+                setDragging(true);
+              }}
+              onPointerMove={(event) => {
+                const origin = drag.current;
+                if (origin?.id === event.pointerId)
+                  setPan({
+                    x: origin.startX + event.clientX - origin.x,
+                    y: origin.startY + event.clientY - origin.y,
+                  });
+              }}
+              onPointerUp={() => {
+                drag.current = null;
+                setDragging(false);
+              }}
+              onPointerCancel={() => {
+                drag.current = null;
+                setDragging(false);
+              }}
+            >
+              <div
+                className="km-world"
+                style={{
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${Math.max(0.1, scale)})`,
+                }}
+              >
+                {data.nodes
+                  .filter((node) => node.parentId)
+                  .map((node) => {
+                    const from = layout.points.get(node.parentId!);
+                    const to = layout.points.get(node.id);
+                    const visible =
+                      !!from && !!to && (node.id === focusId || node.parentId === focusId);
+                    const x = from?.x ?? 0,
+                      y = from?.y ?? 0;
+                    const dx = (to?.x ?? 0) - x,
+                      dy = (to?.y ?? 0) - y;
+                    return (
+                      <div
+                        key={'edge-' + node.id}
+                        className="km-edge"
+                        aria-hidden="true"
+                        style={{
+                          opacity: visible ? 1 : 0,
+                          visibility: visible ? 'visible' : 'hidden',
+                          width: Math.hypot(dx, dy),
+                          transform: `translate(${x}px, ${y}px) rotate(${Math.atan2(dy, dx)}rad)`,
+                        }}
+                      />
+                    );
+                  })}
+                {data.nodes.map((node) => {
+                  const point = layout.points.get(node.id);
+                  const central = node.id === focusId;
+                  const parent = node.id === focus.parentId;
+                  const related =
+                    !central && node.kind === 'point' && relatedTags.has(node.code ?? '');
+                  return (
+                    <button
+                      key={node.id}
+                      data-node-id={node.id}
+                      title={node.label}
+                      className={
+                        'km-node' +
+                        (central ? ' is-center' : '') +
+                        (parent ? ' is-parent' : '') +
+                        (related ? ' is-related' : '')
+                      }
+                      aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}${related ? '，当前题目关联' : ''}`}
+                      aria-current={central ? 'true' : undefined}
+                      aria-hidden={!point}
+                      tabIndex={point ? 0 : -1}
+                      disabled={!point}
+                      onClick={() =>
+                        !central && select(node.id, related ? currentQuestion?.id : undefined)
+                      }
+                      style={
+                        {
+                          '--node-x': `${point?.x ?? 0}px`,
+                          '--node-y': `${point?.y ?? 0}px`,
+                          '--node-scale': central ? 1 : 0.64,
+                          '--node-font':
+                            node.label.length > 24
+                              ? '18px'
+                              : node.label.length > 16
+                                ? '21px'
+                                : '23px',
+                          opacity: point ? 1 : 0,
+                          visibility: point ? 'visible' : 'hidden',
+                          pointerEvents: point ? 'auto' : 'none',
+                        } as CSSProperties
+                      }
+                    >
+                      <span className="km-node-role">
+                        {central ? '当前节点' : parent ? '上级' : related ? '关联下级' : '下级'}
+                      </span>
+                      <strong>{node.label}</strong>
+                      <span className="km-node-hint">
+                        {central
+                          ? layout.children.length
+                            ? `${layout.children.length} 个下级节点`
+                            : '末级节点'
+                          : '点击切换中心'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {!layout.children.length && (
+                <p className="km-leaf-note">已到达当前分支末级，可点击上级返回。</p>
+              )}
+            </div>
+            <footer className="km-toolbar">
+              <p>大圆：当前节点 · 浅蓝：上级 · 浅紫：下级</p>
+              <span>点击切换 · 拖动平移</span>
+              <div className="km-zoom">
                 <button
-                  key={node.id}
-                  data-node-id={node.id}
-                  title={node.label}
-                  className={
-                    'km-node' +
-                    (central ? ' is-center' : '') +
-                    (parent ? ' is-parent' : '') +
-                    (related ? ' is-related' : '')
-                  }
-                  aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}${related ? '，当前题目关联' : ''}`}
-                  aria-current={central ? 'true' : undefined}
-                  aria-hidden={!point}
-                  tabIndex={point ? 0 : -1}
-                  disabled={!point}
-                  onClick={() =>
-                    !central && select(node.id, related ? currentQuestion?.id : undefined)
-                  }
-                  style={
-                    {
-                      '--node-x': `${point?.x ?? 0}px`,
-                      '--node-y': `${point?.y ?? 0}px`,
-                      '--node-scale': central ? 1 : 0.64,
-                      '--node-font':
-                        node.label.length > 24 ? '18px' : node.label.length > 16 ? '21px' : '23px',
-                      opacity: point ? 1 : 0,
-                      visibility: point ? 'visible' : 'hidden',
-                      pointerEvents: point ? 'auto' : 'none',
-                    } as CSSProperties
-                  }
+                  aria-label="缩小图谱"
+                  disabled={zoom <= 0.55}
+                  onClick={() => setZoom((value) => Math.max(0.55, value - 0.15))}
                 >
-                  <span className="km-node-role">
-                    {central ? '当前节点' : parent ? '上级' : related ? '关联下级' : '下级'}
-                  </span>
-                  <strong>{node.label}</strong>
-                  <span className="km-node-hint">
-                    {central
-                      ? layout.children.length
-                        ? `${layout.children.length} 个下级节点`
-                        : '末级节点'
-                      : '点击切换中心'}
-                  </span>
+                  −
                 </button>
-              );
-            })}
-          </div>
-          {!layout.children.length && (
-            <p className="km-leaf-note">已到达当前分支末级，可点击上级返回。</p>
-          )}
-        </div>
-        <footer className="km-toolbar">
-          <p>大圆：当前节点 · 浅蓝：上级 · 浅紫：下级</p>
-          <span>点击切换 · 拖动平移</span>
-          <div className="km-zoom">
-            <button
-              aria-label="缩小图谱"
-              disabled={zoom <= 0.55}
-              onClick={() => setZoom((value) => Math.max(0.55, value - 0.15))}
-            >
-              −
-            </button>
-            <output aria-label="图谱缩放比例">{Math.round(zoom * 100)}%</output>
-            <button
-              aria-label="放大图谱"
-              disabled={zoom >= 1.75}
-              onClick={() => setZoom((value) => Math.min(1.75, value + 0.15))}
-            >
-              ＋
-            </button>
-            <button aria-label="复位视图" title="复位视图" onClick={resetView}>
-              ⛶
-            </button>
-          </div>
-        </footer>
+                <output aria-label="图谱缩放比例">{Math.round(zoom * 100)}%</output>
+                <button
+                  aria-label="放大图谱"
+                  disabled={zoom >= 1.75}
+                  onClick={() => setZoom((value) => Math.min(1.75, value + 0.15))}
+                >
+                  ＋
+                </button>
+                <button aria-label="复位视图" title="复位视图" onClick={resetView}>
+                  ⛶
+                </button>
+              </div>
+            </footer>
+          </>
+        )}
       </section>
       <aside className="km-right" aria-label="关联题目与学习助手">
         <KnowledgePanel

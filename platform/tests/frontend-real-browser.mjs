@@ -8,6 +8,7 @@ import { once } from 'node:events';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import pg from 'pg';
+import { readContentRelease } from '../scripts/lib/content.mjs';
 
 const connection = process.env.ZHIXU_FRONTEND_TEST_DATABASE_URL;
 if (!connection)
@@ -222,7 +223,7 @@ try {
   assert.equal(await page.locator('.development-banner').count(), 0);
   check('关闭开发样例：真实注册不自动登录，真实 Cookie 登录成功');
 
-  const { units } = await read('fixtures/server/geometry-release.json');
+  const { units } = readContentRelease();
   await page.goto(origin + '/learn');
   await page.locator('.unit-card').last().waitFor();
   assert.equal(await page.locator('.unit-card').count(), 15);
@@ -330,10 +331,10 @@ try {
   check('EXPLICIT 保留题序，单元筛选按公开单元 ID 接入');
 
   await page.goto(origin + '/knowledge-map');
-  await page.getByRole('button', { name: '练习本节点全部 86 题' }).click();
+  await page.getByRole('button', { name: '练习本节点全部 85 题' }).click();
   await page.waitForURL('**/practice/**');
   await page.locator('.question-numbers button').last().waitFor();
-  assert.equal(await page.locator('.question-numbers button').count(), 86);
+  assert.equal(await page.locator('.question-numbers button').count(), 85);
 
   await page.goto(origin + '/knowledge-map?node=point%3AG5-04');
   const picker = page.getByLabel('选择关联题目');
@@ -385,10 +386,80 @@ try {
     .getByText(/Q36 · 第/)
     .waitFor();
   await page.getByRole('navigation', { name: '当前知识路径' }).locator('[aria-current]').waitFor();
-  check('图谱总览启动86题，细分节点保留选题，扩充题可提交并回到关联知识点');
+  check('图谱总览启动85题，细分节点保留选题，扩充题可提交并回到关联知识点');
+
+  await page.goto(origin + '/study');
+  const recognized = {
+    title: '空间关系与综合方法',
+    text: '在空间中考察线面关系和几何体的翻折。',
+    conditions: ['底面为平面图形'],
+    questions: ['说明线面位置关系。', '说明翻折前后不变的量。'],
+    uncertainties: [],
+  };
+  await page.route('**/api/v1/ai/study', (route) =>
+    route.fulfill({ json: { data: recognized, error: null } }),
+  );
+  const recommended = [
+    { id: 'G1-01', title: '已知知识点一', reason: '对应第 1 问。' },
+    { id: 'E1', title: '已知知识点二', reason: '对应第 2 问。' },
+    { id: 'E2', title: '待排除标签', reason: '请学生核对。' },
+  ];
+  let tagRequests = 0;
+  await page.route('**/api/v1/ai/candidates/tags', (route) => {
+    assert.deepEqual(route.request().postDataJSON(), {
+      stem: recognized.text,
+      fields: recognized.questions,
+    });
+    return route.fulfill({
+      json: { data: { tags: tagRequests++ ? recommended : [] }, error: null },
+    });
+  });
+  await page.getByLabel('题目文字或补充说明').fill(recognized.text);
+  await page.getByRole('button', { name: '识别并整理题目' }).click();
+  await page.getByLabel(/我已核对题干、条件与分问/).check();
+  await page.getByRole('button', { name: '推荐知识点标签', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '暂未匹配到知识点' }).waitFor();
+  const graphLinkLabel = '查看本题涉及知识点在知识图谱中位置';
+  assert.ok(await page.getByRole('button', { name: graphLinkLabel }).isDisabled());
+  await page.getByRole('button', { name: '重新推荐标签' }).click();
+  await page.getByRole('checkbox', { name: '待排除标签 请学生核对。' }).uncheck();
+  await page.getByRole('link', { name: graphLinkLabel }).click();
+  await page.waitForURL('**/knowledge-map?topic=G1-01&topic=E1');
+  await page.unroute('**/api/v1/ai/study');
+  await page.unroute('**/api/v1/ai/candidates/tags');
+  const paths = page.getByRole('region', { name: '上传题知识点路径' });
+  await paths.waitFor();
+  const nodeIds = (selector) =>
+    paths.locator(selector).evaluateAll((nodes) => nodes.map((node) => node.dataset.nodeId));
+  assert.deepEqual(
+    new Set(await nodeIds('[data-topic-kind="match"]')),
+    new Set(['point:G1-01', 'point:E1']),
+  );
+  assert.deepEqual(
+    new Set(await nodeIds('[data-topic-kind="ancestor"]')),
+    new Set(['overview', 'core', 'unit:SG-01', 'extension', 'unit:E1']),
+  );
+  assert.equal(await paths.locator('[data-node-id="overview"]').count(), 1);
+  await paths.locator('[data-node-id="point:E1"]').click();
+  await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
+  assert.equal(await page.locator('.km-right > .km-questions').count(), 1);
+  await page.reload();
+  await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
+  const previousViewport = page.viewportSize();
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+  await page.setViewportSize(previousViewport);
+  await page.getByRole('button', { name: '退出定位' }).click();
+  await page.locator('.km-node.is-center[data-node-id="point:E1"]').waitFor();
+  await page.goBack();
+  await paths.waitFor();
+  await page.goto(origin + '/knowledge-map?topic=missing');
+  await page.getByRole('status').filter({ hasText: '当前图谱找不到这些知识点' }).waitFor();
+  await page.locator('.km-node.is-center[data-node-id="overview"]').waitFor();
+  check('上传题推荐空结果、核对多标签、双分支祖先路径、退出与返回、窄屏定位可用');
 
   const fullBank = await create(page);
-  assert.equal(fullBank.totalCount, 86);
+  assert.equal(fullBank.totalCount, 85);
   const all = await create(page, 'EXPLICIT', [...answers.keys()].join('、'));
   assert.equal(all.totalCount, 24);
   await page

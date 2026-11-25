@@ -723,3 +723,66 @@
 .km-questions {
   overflow-anchor: none;
 }
+
+.km-topic-paths {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px clamp(16px, 3vw, 32px) 24px;
+  background: linear-gradient(145deg, #f7f3ff, #faf8ff);
+}
+.km-topic-paths > p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.km-topic-paths ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.km-topic-paths li {
+  position: relative;
+  margin: 7px 0;
+}
+.km-topic-paths li > ul {
+  margin-left: 12px;
+  padding-left: clamp(12px, 2vw, 24px);
+  border-left: 2px solid #b57217;
+}
+.km-topic-paths li li::before {
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: calc(-1 * clamp(12px, 2vw, 24px));
+  width: clamp(12px, 2vw, 24px);
+  border-top: 2px solid #b57217;
+}
+.km-topic-node {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 9px;
+  max-width: 100%;
+  min-height: 35px;
+  padding: 4px 10px;
+  border: 1px solid #cb9b4a;
+  border-radius: 8px;
+  background: #fff8e9;
+  color: #56350b;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.km-topic-node:hover {
+  background: #fff0d0;
+}
+.km-topic-node[data-topic-kind='match'] {
+  background: #ffe4ae;
+  border-color: #b57217;
+  font-weight: 700;
+}
+.km-topic-node[aria-current] {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.km-topic-node small {
+  font-size: 10px;
+}

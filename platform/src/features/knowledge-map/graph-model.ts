@@ -46,6 +46,21 @@ export function ancestors(nodes: GraphNode[], id: string): GraphNode[] {
   }
   return path;
 }
+export function uploadTopicPaths(nodes: GraphNode[], codes: readonly string[]) {
+  const requested = new Set(codes);
+  const leaves = nodes.filter((node) => node.kind === 'point' && requested.has(node.code ?? ''));
+  const leafIds = new Set(leaves.map((node) => node.id));
+  const nodeIds = new Set(
+    leaves.flatMap((node) => ancestors(nodes, node.id).map((entry) => entry.id)),
+  );
+  return {
+    leafIds,
+    nodeIds,
+    nodes: nodes.filter((node) => nodeIds.has(node.id)),
+    partial: leafIds.size < requested.size,
+  };
+}
+
 export function radialLayout(nodes: GraphNode[], focusId: string) {
   const focus = nodes.find((node) => node.id === focusId);
   if (!focus) throw new Error('当前知识节点不存在。');

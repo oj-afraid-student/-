@@ -323,3 +323,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+.geo-mint {
+  background: radial-gradient(ellipse at center, #ffffff 10%, #e3f0e9 100%);
+}
+.geo-mint .geo-point {
+  background: #f3faf5de;
+  color: #314f5c;
+  border: 1px solid #a8c5c4;
+  box-shadow: 0 1px 5px #31596814;
+}
+.geo-point.draggable {
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  border: 1px solid #5c9fa8;
+}
+.geo-point.draggable:active {
+  cursor: grabbing;
+}
+.geo-point.draggable span {
+  color: #7560a6;
+  font-size: 0.85em;
+}
+.geo-point:focus-visible {
+  outline: 3px solid #8b6ac5;
+  outline-offset: 2px;
+}

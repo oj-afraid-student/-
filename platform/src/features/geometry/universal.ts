@@ -116,6 +116,7 @@ export const universalSchema = z
     skills: z.array(skillSchema).max(20).optional(),
     segments: sceneSchema.shape.segments,
     faces: sceneSchema.shape.faces,
+    solids: sceneSchema.shape.solids,
     metrics: z
       .array(
         z.union([
@@ -155,6 +156,7 @@ export function evaluateUniversal(input: UniversalPlan, values: Record<string, n
     ...plan.nodes,
     ...plan.segments,
     ...plan.faces,
+    ...(plan.solids ?? []),
     ...plan.metrics,
     ...plan.parameters,
   ].map((x) => x.id);
@@ -277,6 +279,7 @@ export function evaluateUniversal(input: UniversalPlan, values: Record<string, n
     segments,
     faces,
     constraints: [],
+    solids: plan.solids,
     metrics: plan.metrics.filter((m) => m.type !== 'point_line'),
   });
   const metrics = evaluateMetrics(scene.metrics, p);

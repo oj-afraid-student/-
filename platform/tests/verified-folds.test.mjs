@@ -52,3 +52,10 @@ test('benchmark selection requires matching dimensions and mechanism', () => {
     null,
   );
 });
+test('explicit wrong diagram incidence cannot match verified rectangle recipe', () => {
+  const bad = {
+    ...foldProblems.ratio,
+    conditions: [...foldProblems.ratio.conditions, 'F在边AD上'],
+  };
+  assert.equal(matchVerifiedFold(bad), null);
+});

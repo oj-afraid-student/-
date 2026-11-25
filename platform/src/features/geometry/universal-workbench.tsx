@@ -1,6 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
-import { Component, useRef, useEffect, useState, type ReactNode } from 'react';
+import { Component, useRef, useEffect, useState, useMemo, type ReactNode } from 'react';
 import type { StudyProblem } from '@/shared/study-contract';
 import { request, errorMessage } from '@/shared/api/client';
 import { GEOMETRY_SKILLS } from './skill-library';
@@ -8,6 +8,7 @@ import { evaluateUniversal, type UniversalPlan } from './universal';
 import type { Positions, Vec3 } from './scene';
 import { distance } from './geometry';
 import './workbench.css';
+import { pointDragBindings, buildPointDragPath, planDisplayTransform } from './point-drag';
 const Renderer = dynamic(() => import('./scene-renderer'), {
   ssr: false,
   loading: () => <p>正在载入三维视图…</p>,
@@ -45,6 +46,7 @@ export function UniversalWorkbench({
     [view, setView] = useState<'iso' | 'top' | 'front'>('iso'),
     [revision, setRevision] = useState(0),
     [opacity, setOpacity] = useState(0.4),
+    [theme, setTheme] = useState<'mint' | 'original'>('mint'),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [hint, setHint] = useState(''),
@@ -113,23 +115,15 @@ export function UniversalWorkbench({
         );
   }
   const traceLength = trace.slice(1).reduce((sum, p, i) => sum + distance(p, trace[i]), 0);
-  let renderedTrace: Vec3[] = [];
-  let rendered: Positions = {};
-  if (evaluation) {
-    const all = [...Object.values(evaluation.positions), ...trace];
-    const lo = [0, 1, 2].map((i) => Math.min(...all.map((p) => p[i]))),
-      hi = [0, 1, 2].map((i) => Math.max(...all.map((p) => p[i])));
-    const k = 4 / Math.max(1e-6, ...hi.map((v, i) => v - lo[i]));
-    renderedTrace = trace.map(
-      (p) => p.map((v, i) => (v - (lo[i] + hi[i]) / 2) * k + [2, 2, 0.6][i]) as Vec3,
-    );
-    rendered = Object.fromEntries(
-      Object.entries(evaluation.positions).map(([id, p]) => [
-        id,
-        p.map((v, i) => (v - (lo[i] + hi[i]) / 2) * k + [2, 2, 0.6][i]) as Vec3,
-      ]),
-    );
-  }
+  const transform = useMemo(() => (result ? planDisplayTransform(result.plan) : null), [result]);
+  const bindings = useMemo(() => (result ? pointDragBindings(result.plan) : {}), [result]);
+  const renderedTrace = transform ? trace.map(transform) : [];
+  const rendered: Positions =
+    evaluation && transform
+      ? Object.fromEntries(
+          Object.entries(evaluation.positions).map(([id, p]) => [id, transform(p)]),
+        )
+      : {};
   return (
     <section className="panel universal-lab">
       <h2>本题的交互探索</h2>
@@ -189,6 +183,30 @@ export function UniversalWorkbench({
                 <div className="geo-canvas" style={{ height: 460 }}>
                   <Boundary key={revision}>
                     <Renderer
+                      theme={theme}
+                      draggablePoints={busy ? [] : Object.keys(bindings)}
+                      getDragPath={(id) => {
+                        if (!transform || !bindings[id]) return null;
+                        const path = buildPointDragPath(result.plan, values, id, bindings[id]);
+                        return {
+                          ...path,
+                          samples: path.samples.map((s) => ({
+                            ...s,
+                            position: transform(s.position),
+                          })),
+                        };
+                      }}
+                      onPointDrag={(parameter, value) => {
+                        const next = { ...values, [parameter]: value };
+                        try {
+                          evaluateUniversal(result.plan, next);
+                          setValues(next);
+                          setHint('');
+                          setError('');
+                        } catch (e) {
+                          setError(errorMessage(e));
+                        }
+                      }}
                       traces={renderedTrace.length ? [renderedTrace] : []}
                       scene={{
                         ...evaluation.scene,
@@ -233,10 +251,21 @@ export function UniversalWorkbench({
                     重置视角
                   </button>
                 </div>
-                <p>拖动旋转 · 滚轮缩放 · 选择两个点查看距离或连接辅助线</p>
+                <p>拖动带 ↔ 的点名改变构型 · 拖动空白旋转 · 滚轮缩放 · 点击两点测距</p>
               </div>
               <aside>
                 <h3>探索参数</h3>
+                <label className="field">
+                  配色风格
+                  <select
+                    aria-label="配色风格"
+                    value={theme}
+                    onChange={(e) => setTheme(e.target.value as 'mint' | 'original')}
+                  >
+                    <option value="mint">薄荷青蓝 · 半透明</option>
+                    <option value="original">原始配色</option>
+                  </select>
+                </label>
                 {result.plan.parameters.length === 0 && (
                   <p>本题为固定构型，可旋转观察并添加辅助线。</p>
                 )}

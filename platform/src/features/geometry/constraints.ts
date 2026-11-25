@@ -18,15 +18,23 @@ export function initialPositions(scene: GeometryScene): Positions {
 }
 export function parseScene(input: unknown): GeometryScene {
   const scene = sceneSchema.parse(input);
-  const all = [...scene.points, ...scene.segments, ...scene.faces, ...scene.metrics].map(
-    (e) => e.id,
-  );
+  const all = [
+    ...scene.points,
+    ...scene.segments,
+    ...scene.faces,
+    ...(scene.solids ?? []),
+    ...scene.metrics,
+  ].map((e) => e.id);
   if (new Set(all).size !== all.length) throw new Error('场景对象 ID 重复。');
   const points = new Set(scene.points.map((p) => p.id));
   const refs = (ids: string[]) => {
     if (ids.some((id) => !points.has(id))) throw new Error('场景引用了不存在的点。');
     if (new Set(ids).size !== ids.length) throw new Error('几何对象含重复点。');
   };
+  for (const s of scene.solids ?? []) {
+    if (s.type === 'cylinder') refs(s.ends);
+    else refs([s.center]);
+  }
   for (const s of scene.segments) refs(s.points);
   for (const f of scene.faces) refs(f.vertices);
   for (const c of scene.constraints) {
@@ -52,6 +60,9 @@ export function parseScene(input: unknown): GeometryScene {
     throw new Error('坐标超过第一阶段计算范围。');
   for (const s of scene.segments)
     if (distance(p[s.points[0]], p[s.points[1]]) < EPS) throw new Error('退化线段。');
+  for (const s of scene.solids ?? [])
+    if (s.type === 'cylinder' && distance(p[s.ends[0]], p[s.ends[1]]) < EPS)
+      throw new Error('圆柱轴退化');
   validateConstraints(scene, p);
   return scene;
 }

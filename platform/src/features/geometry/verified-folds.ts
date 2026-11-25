@@ -185,6 +185,16 @@ export function matchVerifiedFold(problem: StudyProblem): 'trajectory' | 'ratio'
     .replace(/\s/g, '')
     .replace(/[′’]/g, "'");
   if (!s.includes('矩形')) return null;
+  // Explicit contradictory incidences must never enter a pre-verified recipe.
+  const sides = (point: string) =>
+    [
+      ...s.matchAll(new RegExp(point + '(?:点)?(?:在|位于)(?:线段|边)?([A-D]{2})(?![A-D])', 'g')),
+    ].map((m) => m[1]);
+  if (
+    sides('E').some((side) => !['AB', 'BA'].includes(side)) ||
+    sides('F').some((side) => !['CD', 'DC'].includes(side))
+  )
+    return null;
   if (
     /AB[=＝]4(?![\d.])/.test(s) &&
     /BC[=＝]2(?![\d.])/.test(s) &&

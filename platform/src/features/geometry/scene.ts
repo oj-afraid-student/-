@@ -42,6 +42,40 @@ export const sceneSchema = z
           .strict(),
       )
       .max(16),
+    solids: z
+      .array(
+        z.discriminatedUnion('type', [
+          z
+            .object({
+              id,
+              type: z.literal('sphere'),
+              center: id,
+              radius: z.number().positive().max(10000),
+              color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+            })
+            .strict(),
+          z
+            .object({
+              id,
+              type: z.literal('hemisphere'),
+              center: id,
+              radius: z.number().positive().max(10000),
+              color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+            })
+            .strict(),
+          z
+            .object({
+              id,
+              type: z.literal('cylinder'),
+              ends: pair,
+              radius: z.number().positive().max(10000),
+              color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+            })
+            .strict(),
+        ]),
+      )
+      .max(12)
+      .optional(),
     constraints: z
       .array(
         z.discriminatedUnion('type', [

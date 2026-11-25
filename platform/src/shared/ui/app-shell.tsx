@@ -55,6 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </>
     );
+  if (pathname === '/geometry') return <>{children}</>;
   if (pathname === '/knowledge-map')
     return (
       <div className="graph-app">

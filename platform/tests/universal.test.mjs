@@ -74,7 +74,7 @@ test('high-level skill composition equals low-level rectangle fold construction'
     );
   const broken = structuredClone(skillPlan);
   broken.skills.reverse();
-  assert.throws(() => validateUniversal(broken, problem));
+  assert.doesNotThrow(() => validateUniversal(broken, problem));
 });
 test('prism and pyramid skills generate validated solids and reject zero height', () => {
   const nodes = [

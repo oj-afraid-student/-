@@ -29,6 +29,7 @@ export const skillSchema = z.discriminatedUnion('skill', [
   z
     .object({
       skill: z.literal('rectangle'),
+      label: label.optional(),
       wireframe: z.boolean().optional(),
       id,
       points: z.tuple([id, id, id, id]),
@@ -39,6 +40,7 @@ export const skillSchema = z.discriminatedUnion('skill', [
   z
     .object({
       skill: z.literal('box'),
+      label: label.optional(),
       id,
       points: z.tuple([id, id, id, id, id, id, id, id]),
       width: length,
@@ -46,17 +48,33 @@ export const skillSchema = z.discriminatedUnion('skill', [
       height: length,
     })
     .strict(),
-  z.object({ skill: z.literal('pyramid'), id, base: z.array(id).min(3).max(4), apex: id }).strict(),
+  z
+    .object({
+      skill: z.literal('pyramid'),
+      label: label.optional(),
+      id,
+      base: z.array(id).min(3).max(4),
+      apex: id,
+    })
+    .strict(),
   z
     .object({
       skill: z.literal('prism'),
+      label: label.optional(),
       id,
       base: z.array(id).min(3).max(4),
       top: z.array(id).min(3).max(4),
       vector: z.tuple([z.number().finite(), z.number().finite(), z.number().finite()]),
     })
     .strict(),
-  z.object({ skill: z.literal('polygon'), id, points: z.array(id).min(3).max(4) }).strict(),
+  z
+    .object({
+      skill: z.literal('polygon'),
+      label: label.optional(),
+      id,
+      points: z.array(id).min(3).max(4),
+    })
+    .strict(),
   z.object({ skill: z.literal('midpoint'), id, label, ends: pair }).strict(),
   z.object({ skill: z.literal('edge_point'), id, label, ends: pair, t: scalar }).strict(),
   z
@@ -65,6 +83,7 @@ export const skillSchema = z.discriminatedUnion('skill', [
   z
     .object({
       skill: z.literal('rotate_group'),
+      label: label.optional(),
       id,
       axis: pair,
       angle: scalar,
@@ -74,8 +93,15 @@ export const skillSchema = z.discriminatedUnion('skill', [
         .max(12),
     })
     .strict(),
-  z.object({ skill: z.literal('triangle'), id, points: z.tuple([id, id, id]) }).strict(),
-  z.object({ skill: z.literal('connect'), id, points: pair }).strict(),
+  z
+    .object({
+      skill: z.literal('triangle'),
+      label: label.optional(),
+      id,
+      points: z.tuple([id, id, id]),
+    })
+    .strict(),
+  z.object({ skill: z.literal('connect'), label: label.optional(), id, points: pair }).strict(),
 ]);
 export type GeometrySkill = z.infer<typeof skillSchema>;
 export const GEOMETRY_SKILLS = [
@@ -162,15 +188,16 @@ export function expandSkills(plan: UniversalPlan) {
     faces: UniversalPlan['faces'] = [...plan.faces],
     checks: UniversalPlan['checks'] = [...plan.checks];
   const known = new Set(nodes.map((n) => n.id));
+  if (known.size !== nodes.length) throw new Error('场景对象标识重复');
   const skillIds = new Set<string>();
   const addPoint = (n: UniversalPlan['nodes'][number]) => {
     if (known.has(n.id)) throw new Error('skill输出点重复：' + n.id);
     known.add(n.id);
     nodes.push(n);
   };
+  const references: string[] = [];
   const requirePoints = (ids: string[]) => {
-    if (ids.some((id) => !known.has(id)))
-      throw new Error('skill依赖尚未生成的点：' + ids.join(','));
+    references.push(...ids);
   };
   for (const s of plan.skills ?? []) {
     if (skillIds.has(s.id)) throw new Error('skill步骤ID重复');
@@ -322,5 +349,34 @@ export function expandSkills(plan: UniversalPlan) {
   }
   if (nodes.length > 32 || segments.length > 64 || faces.length > 16 || checks.length > 60)
     throw new Error('技能组合超过场景预算');
-  return { ...plan, nodes, segments, faces, checks };
+  const missing = references.filter((id) => !known.has(id));
+  if (missing.length) throw new Error('skill引用不存在的点：' + [...new Set(missing)].join(','));
+  const ordered: typeof nodes = [];
+  const ready = new Set<string>();
+  let pending = [...nodes];
+  while (pending.length) {
+    const next = pending.filter((n) => {
+      const deps =
+        n.type === 'fixed'
+          ? []
+          : n.type === 'translate'
+            ? [n.source]
+            : n.type === 'lerp'
+              ? n.ends
+              : n.type === 'ratio_point'
+                ? [...n.ends, ...n.reference]
+                : n.type === 'rotate'
+                  ? [n.source, ...n.axis]
+                  : [n.source, ...n.plane];
+      return deps.every((id) => ready.has(id));
+    });
+    if (!next.length)
+      throw new Error('构造依赖循环或引用缺失：' + pending.map((n) => n.id).join(','));
+    next.forEach((n) => {
+      ordered.push(n);
+      ready.add(n.id);
+    });
+    pending = pending.filter((n) => !ready.has(n.id));
+  }
+  return { ...plan, nodes: ordered, segments, faces, checks };
 }

@@ -165,6 +165,8 @@
   --bubble-core: #fffdfd;
   --bubble-fill: #eee4ff;
   --bubble-rim: #c6b2f4;
+  --bubble-fill-opacity: 48%;
+  --bubble-rim-opacity: 70%;
   --bubble-border: #8971d8;
   --bubble-border-width: 1.6px;
   position: absolute;
@@ -194,31 +196,45 @@
   border: var(--bubble-border-width) solid var(--bubble-border);
   text-align: center;
   background:
-    radial-gradient(ellipse at 25% 15%, #ffffffc9, #fff0 48%),
+    radial-gradient(ellipse at 24% 14%, #ffffffe0, #fff5 23%, #fff0 48%),
+    radial-gradient(ellipse at 69% 83%, #fff8, #fff0 38%),
     radial-gradient(
-      circle at 36% 30%,
-      var(--bubble-core),
-      var(--bubble-fill) 70%,
-      var(--bubble-rim)
+      circle at 46% 37%,
+      color-mix(in srgb, var(--bubble-core) 22%, transparent) 12%,
+      color-mix(in srgb, var(--bubble-fill) var(--bubble-fill-opacity), transparent) 67%,
+      color-mix(in srgb, var(--bubble-rim) var(--bubble-rim-opacity), transparent) 100%
     );
   box-shadow:
-    inset 0 2px 5px #fff8,
-    inset -7px -10px 19px #42276515,
-    0 8px 19px #34255e25;
+    inset 0 2px 5px #fff9,
+    inset -5px -8px 14px #4227650d,
+    0 6px 16px #34255e20;
   pointer-events: none;
   animation: km-bubble-float var(--float-duration) ease-in-out var(--float-delay) infinite;
   transition: box-shadow 400ms;
 }
-.km-bubble::before {
+.km-node:not(.is-background) .km-bubble {
+  backdrop-filter: blur(1.2px);
+}
+.km-bubble::before,
+.km-bubble::after {
   content: '';
   position: absolute;
-  top: 12%;
-  left: 18%;
-  width: 19%;
-  height: 8%;
   border-radius: 50%;
-  transform: rotate(-28deg);
-  background: radial-gradient(ellipse, #fff9, #fff0 71%);
+  transform: rotate(-29deg);
+}
+.km-bubble::before {
+  top: 10%;
+  left: 15%;
+  width: 30%;
+  height: 12%;
+  background: radial-gradient(ellipse, #ffffffe8, #fff0 72%);
+}
+.km-bubble::after {
+  right: 12%;
+  bottom: 9%;
+  width: 26%;
+  height: 11%;
+  border-bottom: 1.5px solid #fffc;
 }
 @keyframes km-bubble-float {
   0%,
@@ -232,7 +248,9 @@
 .km-node.is-background {
   --bubble-fill: #d8c7fb;
   --bubble-rim: #a789e1;
-  opacity: 0.53;
+  --bubble-fill-opacity: 63%;
+  --bubble-rim-opacity: 85%;
+  opacity: 0.59;
   pointer-events: none;
   z-index: 0;
 }
@@ -249,6 +267,7 @@
   --bubble-border-width: 2.5px;
   --bubble-fill: #d8c8ff;
   --bubble-rim: #b8a1ed;
+  --bubble-fill-opacity: 61%;
   z-index: 3;
 }
 .km-node.is-center .km-bubble {
@@ -262,6 +281,7 @@
   --bubble-border-width: 2px;
   --bubble-fill: #cce4ff;
   --bubble-rim: #a1c9f1;
+  --bubble-fill-opacity: 57%;
 }
 .km-node.is-related {
   --bubble-border: #b57217;
@@ -279,6 +299,7 @@
   --bubble-border-width: 3px;
   --bubble-fill: var(--km-upload-fill);
   --bubble-rim: #72c1b5;
+  --bubble-fill-opacity: 62%;
 }
 .km-node[data-upload-kind].is-center .km-bubble {
   box-shadow:
@@ -341,7 +362,8 @@
   overflow: visible;
   fill: none;
   stroke: #8468ca;
-  stroke-width: 1.6px;
+  stroke-opacity: 0.43;
+  stroke-width: 1.35px;
   stroke-linecap: round;
   transform-origin: 0 50%;
   transition:
@@ -352,7 +374,8 @@
 }
 .km-edge.is-upload {
   stroke: var(--km-upload-line);
-  stroke-width: 2.3px;
+  stroke-opacity: 0.58;
+  stroke-width: 1.8px;
 }
 .km-leaf-note {
   position: absolute;

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import {
   useCallback,
   useEffect,
@@ -10,7 +12,13 @@ import {
 } from 'react';
 import { useSession } from '@/features/auth/session';
 import { useResource } from '@/shared/api/use-resource';
-import { UPLOAD_TOPIC_LIMIT, UPLOAD_TOPIC_PARAM } from '@/shared/api/knowledge-tags';
+import {
+  STUDY_RETURN_PARAM,
+  UPLOAD_TOPIC_LIMIT,
+  UPLOAD_TOPIC_PARAM,
+  studyReturnHref,
+} from '@/shared/api/knowledge-tags';
+import { readStudyReturn } from '@/features/study/study-return';
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
 import {
   ancestors,
@@ -58,6 +66,10 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
   const root = data.nodes.find((node) => node.parentId === null)!;
   const location = useSyncExternalStore(observeFocus, readLocation, () => initialQuery);
   const query = new URLSearchParams(location);
+  const { user } = useSession();
+  const studyReturn = query.get(STUDY_RETURN_PARAM);
+  const returnHref =
+    studyReturn && readStudyReturn(user?.id, studyReturn) ? studyReturnHref(studyReturn) : null;
   const questionId = query.get('question');
   const codes = query.getAll(UPLOAD_TOPIC_PARAM).slice(0, UPLOAD_TOPIC_LIMIT);
   const topicPaths = uploadTopicPaths(data.nodes, codes);
@@ -134,16 +146,23 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
             <h1>知识图谱</h1>
             <p>{showTopicPaths ? '上传题知识点定位' : '点击节点，探索上下层关系'}</p>
           </div>
-          <button
-            className="btn small"
-            onClick={() => {
-              if (codes.length) updateLocation(focusId, questionId, true, true);
-              else select(root.id);
-              resetView();
-            }}
-          >
-            {codes.length ? '退出定位' : '回到总览'}
-          </button>
+          <div className="km-heading-actions">
+            {returnHref && (
+              <Link className="btn small" href={returnHref} scroll={false}>
+                返回拍照学题
+              </Link>
+            )}
+            <button
+              className="btn small"
+              onClick={() => {
+                if (codes.length) updateLocation(focusId, questionId, true, true);
+                else select(root.id);
+                resetView();
+              }}
+            >
+              {codes.length ? '退出定位' : '回到总览'}
+            </button>
+          </div>
         </header>
         <nav className="km-breadcrumb" aria-label="当前知识路径">
           {path.map((node, index) => (

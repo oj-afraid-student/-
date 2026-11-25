@@ -79,6 +79,13 @@
   align-items: baseline;
   gap: 20px;
 }
+.km-heading .km-heading-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
 .km-heading h1 {
   font-size: 25px;
   margin: 0;

@@ -1,35 +1,86 @@
 'use client';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { MathText, PageHead } from '@/shared/ui/common';
 import { request, errorMessage } from '@/shared/api/client';
 import { AI_REQUEST_TIMEOUT_MS, HINT_REQUEST_TIMEOUT_MS } from '@/shared/api/timeouts';
 import { preparePhoto } from '@/shared/prepare-photo';
 import type { StudyProblem, StudyGuidance } from '@/shared/study-contract';
+import { useSession } from '@/features/auth/session';
+import {
+  STUDY_RETURN_PARAM,
+  studyReturnHref,
+  uploadedTopicHref,
+} from '@/shared/api/knowledge-tags';
 import { StudyKnowledgeLinks } from './study-knowledge-links';
+import {
+  readStudyReturn,
+  saveStudyReturn,
+  STUDY_KNOWLEDGE_ANCHOR,
+  type StudyKnowledgeSelection,
+} from './study-return';
 import './workbench.css';
 import { VisualizeButton } from '@/features/geometry/visualize-button';
 import { DiagramRedraw } from '@/shared/ui/diagram-redraw';
 import type { CandidateDiagram } from '@/shared/candidate-diagram';
 export function StudyWorkbench() {
   const router = useRouter();
-  const [text, setText] = useState(''),
-    [photo, setPhoto] = useState(''),
-    [photoName, setPhotoName] = useState(''),
+  const searchParams = useSearchParams();
+  const { user } = useSession();
+  const [restored] = useState(() =>
+    readStudyReturn(user?.id, searchParams.get(STUDY_RETURN_PARAM)),
+  );
+  const [text, setText] = useState(restored?.text ?? ''),
+    [photo, setPhoto] = useState(restored?.photo ?? ''),
+    [photoName, setPhotoName] = useState(restored?.photoName ?? ''),
     [preparingPhoto, setPreparingPhoto] = useState(false),
     [photoError, setPhotoError] = useState(''),
-    [problem, setProblem] = useState<StudyProblem | null>(null),
-    [confirmed, setConfirmed] = useState(false),
-    [selected, setSelected] = useState(0),
-    [answers, setAnswers] = useState<Record<number, string>>({}),
-    [followup, setFollowup] = useState(''),
-    [guidance, setGuidance] = useState<StudyGuidance | null>(null),
+    [problem, setProblem] = useState<StudyProblem | null>(restored?.problem ?? null),
+    [confirmed, setConfirmed] = useState(!!restored),
+    [selected, setSelected] = useState(restored?.selectedQuestion ?? 0),
+    [answers, setAnswers] = useState<Record<number, string>>(restored?.answers ?? {}),
+    [followup, setFollowup] = useState(restored?.followup ?? ''),
+    [guidance, setGuidance] = useState<StudyGuidance | null>(restored?.guidance ?? null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const pending = useRef<AbortController | null>(null);
-  const [redrawn, setRedrawn] = useState<{ diagram: CandidateDiagram; photo: string } | null>(null);
+  const [redrawn, setRedrawn] = useState<{ diagram: CandidateDiagram; photo: string } | null>(
+    restored?.redrawn ?? null,
+  );
   useEffect(() => () => pending.current?.abort(), []);
+  useEffect(() => {
+    if (!restored) return;
+    const frame = window.requestAnimationFrame(() => {
+      const anchor = document.getElementById(STUDY_KNOWLEDGE_ANCHOR);
+      if (anchor)
+        window.scrollBy({
+          top: anchor.getBoundingClientRect().top - restored.anchorTop,
+          behavior: 'instant',
+        });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [restored]);
+
+  function locateKnowledge(knowledge: StudyKnowledgeSelection) {
+    if (!problem || !confirmed || !user) return;
+    const anchor = document.getElementById(STUDY_KNOWLEDGE_ANCHOR);
+    const returnId = saveStudyReturn(user.id, {
+      text,
+      photo,
+      photoName,
+      problem,
+      selectedQuestion: selected,
+      answers,
+      followup,
+      guidance,
+      redrawn,
+      knowledge,
+      anchorTop: anchor?.getBoundingClientRect().top ?? 0,
+    });
+    window.history.replaceState(null, '', studyReturnHref(returnId));
+    router.push(uploadedTopicHref(knowledge.selected, returnId));
+  }
   async function choose(file: File) {
     setBusy(true);
     setPreparingPhoto(true);
@@ -294,7 +345,16 @@ export function StudyWorkbench() {
                 />{' '}
                 我已核对题干、条件与分问，已修正或明确标注不确定项
               </label>
-              {confirmed && <StudyKnowledgeLinks problem={problem} disabled={busy} />}
+              {confirmed && (
+                <StudyKnowledgeLinks
+                  problem={problem}
+                  disabled={busy}
+                  initial={
+                    restored && restored.problem === problem ? restored.knowledge : undefined
+                  }
+                  onLocate={locateKnowledge}
+                />
+              )}
             </>
           )}
         </section>

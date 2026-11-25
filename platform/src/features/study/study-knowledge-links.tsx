@@ -1,22 +1,26 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { errorMessage } from '@/shared/api/client';
-import { requestKnowledgeTags, uploadedTopicHref } from '@/shared/api/knowledge-tags';
+import { requestKnowledgeTags } from '@/shared/api/knowledge-tags';
 import type { StudyProblem } from '@/shared/study-contract';
+import { STUDY_KNOWLEDGE_ANCHOR, type StudyKnowledgeSelection } from './study-return';
 
 export function StudyKnowledgeLinks({
   problem,
   disabled,
+  initial,
+  onLocate,
 }: {
   problem: StudyProblem;
   disabled: boolean;
+  initial?: StudyKnowledgeSelection;
+  onLocate: (selection: StudyKnowledgeSelection) => void;
 }) {
-  const [result, setResult] = useState<Awaited<ReturnType<typeof requestKnowledgeTags>> | null>(
-    null,
+  const [result, setResult] = useState<StudyKnowledgeSelection['result'] | null>(
+    initial?.result ?? null,
   );
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(initial?.selected ?? []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const pending = useRef<AbortController | null>(null);
@@ -45,9 +49,9 @@ export function StudyKnowledgeLinks({
   }
 
   return (
-    <section className="study-knowledge" aria-labelledby="study-knowledge-title">
+    <section className="study-knowledge" aria-labelledby={STUDY_KNOWLEDGE_ANCHOR}>
       <div className="row wrap">
-        <h3 id="study-knowledge-title">本题涉及的知识点</h3>
+        <h3 id={STUDY_KNOWLEDGE_ANCHOR}>本题涉及的知识点</h3>
         <button
           className="btn small"
           type="button"
@@ -90,15 +94,14 @@ export function StudyKnowledgeLinks({
         ) : (
           <p role="status">暂未匹配到知识点。可检查题干和分问后重新推荐。</p>
         ))}
-      {selected.length > 0 && !loading ? (
-        <Link className="btn primary" href={uploadedTopicHref(selected)}>
-          查看本题涉及知识点在知识图谱中位置
-        </Link>
-      ) : (
-        <button className="btn primary" type="button" disabled>
-          查看本题涉及知识点在知识图谱中位置
-        </button>
-      )}
+      <button
+        className="btn primary"
+        type="button"
+        disabled={disabled || loading || !result || selected.length === 0}
+        onClick={() => result && onLocate({ result, selected })}
+      >
+        查看本题涉及知识点在知识图谱中位置
+      </button>
     </section>
   );
 }

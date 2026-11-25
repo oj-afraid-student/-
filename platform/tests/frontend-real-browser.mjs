@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import pg from 'pg';
 import { readContentRelease } from '../scripts/lib/content.mjs';
@@ -415,6 +415,10 @@ try {
     });
   });
   await page.getByLabel('题目文字或补充说明').fill(recognized.text);
+  await page
+    .getByLabel('上传题目图片')
+    .setInputFiles(fileURLToPath(new URL('../public/geometry/q38-v1.png', import.meta.url)));
+  await page.getByAltText('待识别题图：q38-v1.png').waitFor();
   await page.getByRole('button', { name: '识别并整理题目' }).click();
   await page.getByLabel(/我已核对题干、条件与分问/).check();
   await page.getByRole('button', { name: '推荐知识点标签', exact: true }).click();
@@ -423,8 +427,60 @@ try {
   assert.ok(await page.getByRole('button', { name: graphLinkLabel }).isDisabled());
   await page.getByRole('button', { name: '重新推荐标签' }).click();
   await page.getByRole('checkbox', { name: '待排除标签 请学生核对。' }).uncheck();
-  await page.getByRole('link', { name: graphLinkLabel }).click();
-  await page.waitForURL('**/knowledge-map?topic=G1-01&topic=E1');
+  await page.getByRole('button', { name: '第 2 问', exact: true }).click();
+  await page.getByLabel('我的思路与已完成步骤').fill('先找翻折前后不变的棱。');
+  await page.getByLabel('我想追问（可选）').fill('哪个角度保持不变？');
+  const locate = page.getByRole('button', { name: graphLinkLabel, exact: true });
+  const returnToStudy = page.getByRole('link', { name: '返回拍照学题', exact: true });
+  const studyAnchor = page.getByRole('heading', { name: '本题涉及的知识点', exact: true });
+  await locate.scrollIntoViewIfNeeded();
+  const viewportTop = await studyAnchor.evaluate((node) => node.getBoundingClientRect().top);
+  async function enterGraph() {
+    await locate.click();
+    await page.waitForURL(
+      (url) =>
+        url.pathname === '/knowledge-map' &&
+        url.searchParams.getAll('topic').join(',') === 'G1-01,E1' &&
+        Boolean(url.searchParams.get('studyReturn')),
+    );
+    await returnToStudy.waitFor();
+  }
+  async function verifyStudyReturn() {
+    await page.waitForURL(
+      (url) => url.pathname === '/study' && Boolean(url.searchParams.get('studyReturn')),
+    );
+    await studyAnchor.waitFor();
+    assert.equal(await page.getByLabel('完整题干').inputValue(), recognized.text);
+    assert.ok(await page.getByLabel(/我已核对题干、条件与分问/).isChecked());
+    assert.ok(await page.getByAltText('待识别题图：q38-v1.png').isVisible());
+    assert.equal(
+      await page.getByRole('button', { name: '第 2 问', exact: true }).getAttribute('aria-pressed'),
+      'true',
+    );
+    assert.equal(
+      await page.getByLabel('我的思路与已完成步骤').inputValue(),
+      '先找翻折前后不变的棱。',
+    );
+    assert.equal(await page.getByLabel('我想追问（可选）').inputValue(), '哪个角度保持不变？');
+    assert.ok(await page.getByRole('checkbox', { name: '已知知识点一 对应第 1 问。' }).isChecked());
+    assert.equal(
+      await page.getByRole('checkbox', { name: '待排除标签 请学生核对。' }).isChecked(),
+      false,
+    );
+    await page.waitForFunction(
+      (top) =>
+        Math.abs(
+          document.querySelector('#study-knowledge-title').getBoundingClientRect().top - top,
+        ) < 12,
+      viewportTop,
+    );
+    assert.equal(tagRequests, 2);
+  }
+  await enterGraph();
+  await page.goBack();
+  await verifyStudyReturn();
+  await enterGraph();
+
   await page.unroute('**/api/v1/ai/study');
   await page.unroute('**/api/v1/ai/candidates/tags');
   const paths = page.getByRole('region', { name: '上传题知识点路径' });
@@ -443,6 +499,12 @@ try {
   await paths.locator('[data-node-id="point:E1"]').click();
   await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
   assert.equal(await page.locator('.km-right > .km-questions').count(), 1);
+  await returnToStudy.click();
+  await verifyStudyReturn();
+  check('上传题返回入口和浏览器后退都恢复题图、选择的分问、原输入、标签及滚动位置');
+  await enterGraph();
+  await paths.locator('[data-node-id="point:E1"]').click();
+  await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
   await page.reload();
   await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
   const previousViewport = page.viewportSize();

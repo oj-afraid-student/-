@@ -13,6 +13,7 @@ import type {
   Practice,
   SubmissionDetail,
 } from '@/shared/contracts';
+import { publicQuestion } from '@/server/practice/catalog';
 import type { QuestionVersionRecord } from '@/server/practice/contracts';
 import { ApiError, success } from '@/server/http';
 import { restoreAnswer, serializeAnswer, validateAnswer } from '@/features/practice/answer-model';
@@ -356,6 +357,8 @@ export async function handleDevelopment(
   const user = currentUser(request);
   if (method === 'GET') await noBody(request);
   if (method === 'GET' && path === 'auth/me') return success(user);
+  if (method === 'GET' && path === 'knowledge-map/questions')
+    return success(bank.map(({ question }) => publicQuestion(question)));
   if (method === 'GET' && path === 'knowledge-points')
     return success(
       units.map((unit) => {

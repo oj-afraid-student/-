@@ -8,12 +8,36 @@ import { errorMessage } from '@/shared/api/client';
 import { Icon } from './icons';
 
 const navigation = [
-  { href: '/study', text: '拍照学题', icon: 'pen', hint: '上传题目 · 核对条件 · AI 提示' },
-  { href: '/learn', text: '知识学习', icon: 'book', hint: '概念 · 条件 · 例题' },
-  { href: '/practice/new', text: '自主练习', icon: 'pen', hint: '选择题组，逐步推理' },
-  { href: '/history', text: '练习记录', icon: 'history', hint: '回顾每一次思考' },
-  { href: '/knowledge-map', text: '知识图谱', icon: 'diamond', hint: '探索知识的上下层关系' },
-  { href: '/geometry', text: '几何实验室', icon: 'diamond', hint: '折叠 · 构造 · 动态量测' },
+  {
+    href: '/study',
+    text: '拍照学题',
+    theme: 'study',
+    icon: 'camera',
+    hint: '上传题目 · 核对条件 · AI 提示',
+  },
+  { href: '/learn', text: '知识学习', theme: 'learn', icon: 'book', hint: '概念 · 条件 · 例题' },
+  {
+    href: '/practice/new',
+    text: '自主练习',
+    theme: 'practice',
+    icon: 'pen',
+    hint: '选择题组，逐步推理',
+  },
+  { href: '/history', text: '练习记录', theme: 'history', icon: 'history', hint: '回顾每一次思考' },
+  {
+    href: '/knowledge-map',
+    text: '知识图谱',
+    theme: 'graph',
+    icon: 'network',
+    hint: '探索知识的上下层关系',
+  },
+  {
+    href: '/geometry',
+    text: '几何实验室',
+    theme: 'geometry',
+    icon: 'diamond',
+    hint: '折叠 · 构造 · 动态量测',
+  },
 ];
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -57,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   if (pathname === '/knowledge-map')
     return (
-      <div className="graph-app">
+      <div className="graph-app" data-theme="graph">
         <header className="graph-topbar">
           <Link className="brand" href="/learn">
             <span className="brandmark">知</span>
@@ -121,7 +145,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ) ?? navigation.find((item) => item.href === '/learn')!;
 
   return (
-    <>
+    <div className="student-app" data-theme={current.theme}>
       <a className="skip-link" href="#main-content">
         跳到主要内容
       </a>
@@ -227,6 +251,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </footer>
         </main>
       </div>
-    </>
+    </div>
   );
 }

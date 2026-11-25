@@ -8,6 +8,7 @@ import type {
   KnowledgeSummary,
   LogoutResult,
   Practice,
+  PublicQuestion,
   SubmissionDetail,
   SubmitPracticeRequest,
   SubmitPracticeResult,
@@ -26,6 +27,8 @@ export function createLearningApi(base = '/api/v1') {
     knowledgePoints: (signal?: AbortSignal) => get<KnowledgeSummary[]>('/knowledge-points', signal),
     knowledgePoint: (id: string, signal?: AbortSignal) =>
       get<KnowledgeDetail>(`/knowledge-points/${encodeURIComponent(id)}`, signal),
+    publishedGraphQuestions: (signal?: AbortSignal) =>
+      get<PublicQuestion[]>('/knowledge-map/questions', signal),
     createPractice: (selection: CreatePracticeRequest) => post<Practice>('/practices', selection),
     practice: (id: string, signal?: AbortSignal) =>
       get<Practice>(`/practices/${encodeURIComponent(id)}`, signal),

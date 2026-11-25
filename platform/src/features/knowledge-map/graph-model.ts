@@ -1,4 +1,4 @@
-import type { Figure } from '@/shared/contracts';
+import type { Figure, PublicQuestion } from '@/shared/contracts';
 
 export interface GraphNode {
   id: string;
@@ -81,4 +81,46 @@ export function questionsForNode(data: GraphStructure, id: string): GraphQuestio
   );
   const tags = new Set(subtree.flatMap((n) => n.knowledgeIds ?? []));
   return (data.questions ?? []).filter((q) => q.knowledgeIds.some((tag) => tags.has(tag)));
+}
+
+/** Keep the authored graph layout and review notes. The catalog supplies the live questions. */
+export function withPublishedQuestions(
+  directory: GraphStructure,
+  questions: PublicQuestion[],
+): GraphStructure {
+  const underReview = new Map(
+    directory.questions?.filter((q) => q.needsReview).map((q) => [q.id, q.version]),
+  );
+  return {
+    ...directory,
+    questions: questions.map((q) => ({
+      id: q.id,
+      version: q.version,
+      title: q.title,
+      stem: q.stem,
+      knowledgeIds: q.knowledgeIds,
+      unitIds: q.unitIds,
+      figures: q.figures,
+      options: 'options' in q ? q.options : undefined,
+      prompts: 'parts' in q ? q.parts : 'statements' in q ? q.statements : undefined,
+      readingOnly: false,
+      needsReview: underReview.get(q.id) === q.version,
+    })),
+  };
+}
+
+export function graphFocus(
+  data: GraphStructure,
+  requestedNode: string | null,
+  requestedQuestion: string | null,
+): GraphNode {
+  const explicit = data.nodes.find((node) => node.id === requestedNode);
+  if (explicit) return explicit;
+  const question = data.questions?.find((q) => q.id === requestedQuestion);
+  const point =
+    question &&
+    data.nodes.find(
+      (node) => node.kind === 'point' && node.code && question.knowledgeIds.includes(node.code),
+    );
+  return point || data.nodes.find((node) => node.parentId === null)!;
 }

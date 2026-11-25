@@ -8,10 +8,19 @@ import {
   useSyncExternalStore,
   type CSSProperties,
 } from 'react';
+import { useSession } from '@/features/auth/session';
 import { useResource } from '@/shared/api/use-resource';
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
-import { ancestors, radialLayout, validateStructure, type GraphStructure } from './graph-model';
+import {
+  ancestors,
+  graphFocus,
+  questionsForNode,
+  radialLayout,
+  validateStructure,
+  type GraphStructure,
+} from './graph-model';
 import { loadGraphStructure } from './structure';
+import { KnowledgeChat } from './knowledge-chat';
 import { KnowledgePanel } from './knowledge-panel';
 
 function observeFocus(listener: () => void) {
@@ -22,20 +31,16 @@ function observeFocus(listener: () => void) {
     window.removeEventListener('zhixu:graph-focus', listener);
   };
 }
-function readFocus() {
-  return new URLSearchParams(window.location.search).get('node');
+function readLocation() {
+  return window.location.search;
 }
 
-export function KnowledgeMap({
-  initialId,
-  loader = loadGraphStructure,
-}: {
-  initialId?: string;
-  loader?: (signal: AbortSignal) => Promise<GraphStructure>;
-}) {
+export function KnowledgeMap({ initialQuery }: { initialQuery: string }) {
+  const { api } = useSession();
   const read = useCallback(
-    async (signal: AbortSignal) => validateStructure(await loader(signal)),
-    [loader],
+    async (signal: AbortSignal) =>
+      validateStructure(await loadGraphStructure(api.publishedGraphQuestions, signal)),
+    [api],
   );
   const state = useResource(read);
   if (state.loading) return <LoadingState text="正在整理知识结构…" />;
@@ -44,12 +49,18 @@ export function KnowledgeMap({
     return (
       <EmptyState title="知识目录尚未准备好">知识内容接入后，可从这里探索上下层关系。</EmptyState>
     );
-  return <GraphWorkspace data={state.data} initialId={initialId} />;
+  return <GraphWorkspace data={state.data} initialQuery={initialQuery} />;
 }
-function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?: string }) {
+function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQuery: string }) {
   const root = data.nodes.find((node) => node.parentId === null)!;
-  const requestedId = useSyncExternalStore(observeFocus, readFocus, () => initialId ?? null);
-  const focusId = data.nodes.some((node) => node.id === requestedId) ? requestedId! : root.id;
+  const location = useSyncExternalStore(observeFocus, readLocation, () => initialQuery);
+  const query = new URLSearchParams(location);
+  const questionId = query.get('question');
+  const focus = graphFocus(data, query.get('node'), questionId);
+  const focusId = focus.id;
+  const questions = questionsForNode(data, focusId);
+  const currentQuestion = questions.find((question) => question.id === questionId) ?? questions[0];
+  const relatedTags = new Set(currentQuestion?.knowledgeIds ?? []);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 850, height: 650 });
@@ -58,7 +69,7 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
   const drag = useRef<{ id: number; x: number; y: number; startX: number; startY: number } | null>(
     null,
   );
-  const focus = data.nodes.find((node) => node.id === focusId)!;
+
   const layout = radialLayout(data.nodes, focusId);
   const path = ancestors(data.nodes, focusId);
   const scale =
@@ -80,14 +91,20 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
     window.addEventListener('popstate', back);
     return () => window.removeEventListener('popstate', back);
   }, []);
-  function select(id: string) {
-    if (id === focusId) return;
-    setPan({ x: 0, y: 0 });
-    setZoom(1);
+  function updateLocation(id: string, question: string | null, moveNode: boolean) {
     const url = new URL(window.location.href);
     url.searchParams.set('node', id);
-    window.history.pushState(null, '', url.pathname + url.search);
+    if (question) url.searchParams.set('question', question);
+    else url.searchParams.delete('question');
+    if (moveNode) window.history.pushState(null, '', url);
+    else window.history.replaceState(null, '', url);
     window.dispatchEvent(new Event('zhixu:graph-focus'));
+  }
+  function select(id: string, question: string | null = null) {
+    if (id === focusId && questionId === question) return;
+    setPan({ x: 0, y: 0 });
+    setZoom(1);
+    updateLocation(id, question, id !== focusId);
   }
   function resetView() {
     setZoom(1);
@@ -198,20 +215,26 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
               const point = layout.points.get(node.id);
               const central = node.id === focusId;
               const parent = node.id === focus.parentId;
+              const related = !central && node.kind === 'point' && relatedTags.has(node.code ?? '');
               return (
                 <button
                   key={node.id}
                   data-node-id={node.id}
                   title={node.label}
                   className={
-                    'km-node' + (central ? ' is-center' : '') + (parent ? ' is-parent' : '')
+                    'km-node' +
+                    (central ? ' is-center' : '') +
+                    (parent ? ' is-parent' : '') +
+                    (related ? ' is-related' : '')
                   }
-                  aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}`}
+                  aria-label={`${node.label}，${central ? '当前节点' : parent ? '切换到上级' : '切换到下级'}${related ? '，当前题目关联' : ''}`}
                   aria-current={central ? 'true' : undefined}
                   aria-hidden={!point}
                   tabIndex={point ? 0 : -1}
                   disabled={!point}
-                  onClick={() => select(node.id)}
+                  onClick={() =>
+                    !central && select(node.id, related ? currentQuestion?.id : undefined)
+                  }
                   style={
                     {
                       '--node-x': `${point?.x ?? 0}px`,
@@ -226,7 +249,7 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
                   }
                 >
                   <span className="km-node-role">
-                    {central ? '当前节点' : parent ? '上级' : '下级'}
+                    {central ? '当前节点' : parent ? '上级' : related ? '关联下级' : '下级'}
                   </span>
                   <strong>{node.label}</strong>
                   <span className="km-node-hint">
@@ -245,7 +268,7 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
           )}
         </div>
         <footer className="km-toolbar">
-          <p>大圆：当前节点 · 小圆：相邻层级</p>
+          <p>大圆：当前节点 · 浅蓝：上级 · 浅紫：下级</p>
           <span>点击切换 · 拖动平移</span>
           <div className="km-zoom">
             <button
@@ -270,27 +293,16 @@ function GraphWorkspace({ data, initialId }: { data: GraphStructure; initialId?:
         </footer>
       </section>
       <aside className="km-right" aria-label="关联题目与学习助手">
-        <KnowledgePanel key={focusId} data={data} focus={focus} select={select} />
-        <section className="km-chat" aria-label="AI 对话预留区">
-          <header>
-            <h2>
-              <span aria-hidden="true">✧</span> AI 学习助手
-            </h2>
-            <span className="tag">预留</span>
-          </header>
-          <div className="km-chat-context">
-            <span>当前知识点</span>
-            <span>当前题目</span>
-          </div>
-          <p>选中知识点或题目后，在这里提问。</p>
-          <div className="km-chat-input">
-            <textarea aria-label="AI 提问（待接入）" placeholder="输入你的问题…" disabled />
-            <button aria-label="发送问题（待接入）" disabled>
-              ↑
-            </button>
-          </div>
-          <small>对话功能待接入</small>
-        </section>
+        <KnowledgePanel
+          key={'questions:' + focusId}
+          data={data}
+          focus={focus}
+          questions={questions}
+          select={select}
+          questionId={questionId}
+          selectQuestion={(id) => updateLocation(focusId, id, false)}
+        />
+        <KnowledgeChat key={'chat:' + focusId} focus={focus} question={currentQuestion} />
       </aside>
     </div>
   );

@@ -368,7 +368,7 @@ function PracticeEditor({ practice, userId }: { practice: Practice; userId: stri
               </button>
             ))}
           </div>
-          <p className="field-hint">绿色表示已填写完整，未代表答案正确。</p>
+          <p className="field-hint">填写完整即计入作答进度。提交后可查看判题结果。</p>
           <hr />
           <p className="draft-note">
             <Icon name="clock" />

@@ -43,6 +43,20 @@ export function Icon({ name, className = '' }: { name: string; className?: strin
         <path d="m3 7 9 5 9-5m-9 5v10m0-10V2" />
       </>
     ),
+    camera: (
+      <>
+        <path d="M3 7h4l2-3h6l2 3h4v13H3Z" />
+        <circle cx="12" cy="13" r="3.5" />
+      </>
+    ),
+    network: (
+      <>
+        <path d="m11 8-4 7m6-7 4 7M9 18h6" />
+        <circle cx="12" cy="5" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="18" r="3" />
+      </>
+    ),
     alert: (
       <>
         <path d="m12 3 10 18H2Z" />

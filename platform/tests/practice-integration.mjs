@@ -135,6 +135,8 @@ try {
   await a.call('/practices', 'POST', { mode: 'ALL' }, 404);
   await anonymous.call('/knowledge-points', 'GET', undefined, 401);
   assert.deepEqual(await a.call('/knowledge-points'), []);
+  await anonymous.call('/knowledge-map/questions', 'GET', undefined, 401);
+  assert.deepEqual(await a.call('/knowledge-map/questions'), []);
   const importRelease = () => {
     const imported = spawnSync(process.execPath, ['scripts/db.mjs', 'import-content'], {
       cwd: new URL('../', import.meta.url),
@@ -145,7 +147,18 @@ try {
   };
   importRelease();
   importRelease();
-  const { units } = JSON.parse(await read('fixtures/server/geometry-release.json'));
+  const { units, bank: expansion } = JSON.parse(
+    await read('fixtures/server/geometry-release.json'),
+  );
+  const published = await a.call('/knowledge-map/questions');
+  assert.deepEqual(
+    published.map((question) => question.id),
+    Array.from({ length: 86 }, (_, index) => 'Q' + String(index + 1).padStart(2, '0')),
+  );
+  assert.doesNotMatch(
+    JSON.stringify(published),
+    /"(reference|grading|answerText|correctOptionIds|acceptedValues)":/,
+  );
   assert.deepEqual(
     await a.call('/knowledge-points'),
     units.map(({ sections, figures, ...summary }) => summary),
@@ -173,6 +186,73 @@ try {
   const full = await a.call('/practices', 'POST', { mode: 'ALL' }, 201);
   assert.equal(full.totalCount, 86);
   assert.equal(full.items.at(-1).question.id, 'Q86');
+  assert.deepEqual(
+    full.items.map(({ question }) => question),
+    published,
+  );
+  const graphPractice = await a.call(
+    '/practices',
+    'POST',
+    {
+      mode: 'EXPLICIT',
+      questionIds: published.map(({ id }) => id),
+    },
+    201,
+  );
+  const originals = new Map(examples.items.map(({ question, answer }) => [question.id, answer]));
+  const expanded = new Map(expansion.map((entry) => [entry.question.id, entry]));
+  const graphAnswers = graphPractice.items.map(({ id, question }) => {
+    let answer = originals.get(question.id);
+    if (!answer) {
+      const { grading } = expanded.get(question.id);
+      const { type } = question;
+      if (type === 'SINGLE_CHOICE')
+        answer = { type, selectedOptionId: grading.correctOptionIds[0] };
+      else if (type === 'MULTIPLE_CHOICE')
+        answer = { type, selectedOptionIds: grading.correctOptionIds };
+      else if (type === 'FILL_BLANK')
+        answer = {
+          type,
+          blanks: question.blanks.map((blank) => ({
+            blankId: blank.id,
+            values: Array.from(
+              { length: blank.valueCount },
+              (_, index) =>
+                grading.blanks?.find((part) => part.blankId === blank.id)?.acceptedValues[
+                  index
+                ]?.[0] ?? '待复核的测试作答',
+            ),
+          })),
+        };
+      else
+        answer = {
+          type,
+          parts: question.parts.map((part) => ({
+            partId: part.id,
+            text: '供验证保存和待复核流程的测试过程。',
+          })),
+        };
+    }
+    return { practiceItemId: id, answer };
+  });
+  const graphSubmission = await a.call(
+    '/practices/' + graphPractice.id + '/submit',
+    'POST',
+    { answers: graphAnswers },
+    201,
+  );
+  const graphResult = await a.call('/me/submissions/' + graphSubmission.submissionId);
+  assert.equal(graphResult.totalCount, 86);
+  assert.deepEqual(
+    graphResult.items.map(({ question }) => question),
+    published,
+  );
+  assert.deepEqual(graphResult.items.find(({ question }) => question.id === 'Q33').evaluation, {
+    status: 'PENDING_REVIEW',
+    isCorrect: null,
+    score: null,
+  });
+  console.log('PASS 图谱公开题目与正式练习一致，86题整组提交及历史回看，Q33待复核');
   const p = await a.call('/practices', 'POST', sampleSelection, 201);
   assert.equal(p.totalCount, 24);
   assert.equal(/correctOptionIds|acceptedValues|reference|grading/.test(JSON.stringify(p)), false);
@@ -281,7 +361,9 @@ try {
     2,
   );
   assert.equal((await a.call(`/me/submissions/${sid}`)).items[0].question.version, 1);
+  assert.equal((await a.call('/knowledge-map/questions')).find((q) => q.id === 'Q01').version, 2);
   await pool.query("UPDATE question_version SET is_published=false WHERE question_key='Q01'");
+  assert.ok(!(await a.call('/knowledge-map/questions')).some((q) => q.id === 'Q01'));
   assert.ok(!(await a.call('/knowledge-points/SG-01')).questionIds.includes('Q01'));
   await a.call('/practices', 'POST', { mode: 'EXPLICIT', questionIds: ['Q01'] }, 404);
   assert.deepEqual(await a.call(`/me/submissions/${sid}`), result);

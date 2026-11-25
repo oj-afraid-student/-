@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { readContentRelease } from '../scripts/lib/content.mjs';
 const {
   radialLayout,
+  backgroundLayout,
   validateStructure,
   ancestors,
   questionsForNode,
@@ -26,6 +27,17 @@ test('真实目录39个知识点具有稳定命名空间，E1单元与细分点�
     ['overview', 'extension', 'unit:E1', 'point:E1'],
   );
   assert.equal(radialLayout(data.nodes, 'point:G5-04').children.length, 0);
+});
+test('背景坐标覆盖所有节点且按层级由内向外分布', () => {
+  const layout = backgroundLayout(data.nodes);
+  assert.equal(layout.size, data.nodes.length);
+  assert.deepEqual(layout.get('overview'), { x: 0, y: 0 });
+  assert.deepEqual(layout, backgroundLayout(data.nodes));
+  assert.equal(backgroundLayout([]).size, 0);
+  const radius = (id) => Math.hypot(layout.get(id).x, layout.get(id).y);
+  for (const { id, parentId } of data.nodes) {
+    if (parentId) assert.ok(radius(id) > radius(parentId), id);
+  }
 });
 test('题目按实际细分标签去重筛选，包含原题与扩充题，空专题不误配', () => {
   assert.equal(questionsForNode(data, 'overview').length, 86);

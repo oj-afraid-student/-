@@ -61,6 +61,51 @@ export function uploadTopicPaths(nodes: GraphNode[], codes: readonly string[]) {
   };
 }
 
+export function backgroundLayout(nodes: GraphNode[]) {
+  const children = new Map<string, GraphNode[]>();
+  for (const node of nodes) {
+    if (node.parentId === null) continue;
+    const siblings = children.get(node.parentId) ?? [];
+    siblings.push(node);
+    children.set(node.parentId, siblings);
+  }
+
+  const weights = new Map<string, number>();
+  function countLeaves(id: string): number {
+    const weight = Math.max(
+      1,
+      (children.get(id) ?? []).reduce((sum, child) => sum + countLeaves(child.id), 0),
+    );
+    weights.set(id, weight);
+    return weight;
+  }
+
+  const positions = new Map<string, { x: number; y: number }>();
+  let maxDepth = 1;
+  function place(id: string, start: number, sweep: number, depth: number) {
+    const angle = start + sweep / 2;
+    const radius = depth ? depth + 0.14 * Math.sin(angle * 7 + depth) : 0;
+    positions.set(id, { x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
+    maxDepth = Math.max(maxDepth, depth);
+
+    let nextAngle = start;
+    for (const child of children.get(id) ?? []) {
+      const arc = (sweep * weights.get(child.id)!) / weights.get(id)!;
+      place(child.id, nextAngle, arc, depth + 1);
+      nextAngle += arc;
+    }
+  }
+
+  const root = nodes.find((node) => node.parentId === null);
+  if (root) {
+    countLeaves(root.id);
+    place(root.id, -Math.PI, 2 * Math.PI, 0);
+  }
+  return new Map(
+    [...positions].map(([id, { x, y }]) => [id, { x: x / maxDepth, y: y / maxDepth }]),
+  );
+}
+
 export function radialLayout(nodes: GraphNode[], focusId: string) {
   const focus = nodes.find((node) => node.id === focusId);
   if (!focus) throw new Error('当前知识节点不存在。');

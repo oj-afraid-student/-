@@ -520,21 +520,54 @@ try {
     await bubbleSkin.evaluate((node) => getComputedStyle(node).animationName),
     'km-bubble-float',
   );
+  const floatDistance = (bubble) =>
+    bubble.evaluate((node) => {
+      const [animation] = node.getAnimations();
+      const previousTime = animation.currentTime;
+      const { delay, duration } = animation.effect.getTiming();
+      animation.currentTime = delay;
+      const bottom = node.getBoundingClientRect().top;
+      animation.currentTime = delay + duration / 2;
+      const top = node.getBoundingClientRect().top;
+      animation.currentTime = previousTime;
+      return bottom - top;
+    });
+  const neighborFloat = await floatDistance(bubbleSkin);
+  assert.ok(neighborFloat > 5 && neighborFloat < 8, `neighbor float: ${neighborFloat}`);
+  const backgroundFloat = await floatDistance(background.first().locator('.km-bubble'));
+  assert.ok(backgroundFloat > 2.5 && backgroundFloat < 4.5, `background float: ${backgroundFloat}`);
   const visibleCurves = graph.locator('.km-edge[style*="opacity: 1"] path');
   assert.ok((await visibleCurves.count()) > 0);
   assert.ok(
     await visibleCurves.evaluateAll((paths) =>
-      paths.every(
-        (curve) =>
-          / Q 50 -?60 100 0$/.test(curve.getAttribute('d')) &&
-          Number.parseFloat(getComputedStyle(curve.ownerSVGElement).width) > 0,
-      ),
+      paths.every((curve) => {
+        const length = curve.getTotalLength();
+        const first = curve.getPointAtLength(length * 0.25).y;
+        const second = curve.getPointAtLength(length * 0.75).y;
+        return (
+          first * second < 0 &&
+          [first, second].every((y) => Math.abs(y) > 6 && Math.abs(y) < 13) &&
+          Number.parseFloat(getComputedStyle(curve.ownerSVGElement).width) > 0
+        );
+      }),
     ),
   );
   assert.equal(
     await bubbleSkin.evaluate((node) => getComputedStyle(node).borderTopColor),
     'rgb(7, 84, 82)',
   );
+  const backgroundPositions = async () =>
+    new Map(
+      await background.evaluateAll((nodes) =>
+        nodes.map((node) => [
+          node.dataset.nodeId,
+          ['--node-x', '--node-y'].map((name) =>
+            Number.parseFloat(node.style.getPropertyValue(name)),
+          ),
+        ]),
+      ),
+    );
+  const beforeShift = await backgroundPositions();
   const normalNeighbor = graph.locator('.km-node:not([data-upload-kind]):enabled').first();
   await normalNeighbor.click();
   const nextCenter = graph.locator('.km-node.is-center:not([data-upload-kind]):enabled');
@@ -549,6 +582,22 @@ try {
       moving(document.querySelector('.km-node[data-node-id="unit:SG-01"]'), '27px')
     );
   });
+  const afterShift = await backgroundPositions();
+  const shifts = [...beforeShift]
+    .filter(([id]) => afterShift.has(id))
+    .map(([id, [x, y]]) => {
+      const [nextX, nextY] = afterShift.get(id);
+      return [nextX - x, nextY - y];
+    });
+  assert.ok(shifts.length > 5);
+  assert.ok(Math.hypot(...shifts[0]) > 10);
+  assert.ok(shifts.every(([dx, dy]) => Math.hypot(dx - shifts[0][0], dy - shifts[0][1]) < 0.01));
+  assert.deepEqual(
+    await nextCenter.evaluate((node) =>
+      ['--node-x', '--node-y'].map((name) => node.style.getPropertyValue(name)),
+    ),
+    ['0px', '0px'],
+  );
   await paths.waitFor();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.equal(
@@ -603,7 +652,7 @@ try {
   await page.goto(origin + '/knowledge-map?topic=missing');
   await page.getByRole('status').filter({ hasText: '当前图谱找不到这些知识点' }).waitFor();
   await page.locator('.km-node.is-center[data-node-id="overview"]').waitFor();
-  check('圈图气泡、非交互背景、曲线、升降切换与减少动态效果通过');
+  check('圈图周边及背景浮动、背景跟随中心、浅S形连线和减少动态效果通过');
   check('上传题栏目承载跨分支路径，圈图标注命中及上级，切换节点、栏目、退出及窄屏定位通过');
 
   const fullBank = await create(page);

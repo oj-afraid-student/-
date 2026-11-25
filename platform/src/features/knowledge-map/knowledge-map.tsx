@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
@@ -23,6 +24,7 @@ import { readStudyReturn } from '@/features/study/study-return';
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/common';
 import {
   ancestors,
+  backgroundLayout,
   graphFocus,
   questionsForNode,
   radialLayout,
@@ -101,6 +103,8 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
     Math.min((size.width - 40) / layout.extent, (size.height - 40) / layout.extent, 1.15),
   );
   const scale = fitScale * zoom;
+  const background = useMemo(() => backgroundLayout(data.nodes), [data.nodes]);
+  const backgroundFocus = background.get(focusId)!;
 
   useLayoutEffect(() => {
     const oldFocus = previousFocus.current;
@@ -268,6 +272,13 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                   y = from?.y ?? 0;
                 const dx = (to?.x ?? 0) - x,
                   dy = (to?.y ?? 0) - y;
+                const angle = Math.atan2(dy, dx);
+                // Draw both bends in the visible gap, with each end tucked under its bubble.
+                const startInset = node.id === focusId ? 47 : 82;
+                const gap = Math.max(0, Math.hypot(dx, dy) - 82 - 47);
+                const startX = x + Math.cos(angle) * startInset;
+                const startY = y + Math.sin(angle) * startInset;
+                const bend = index % 2 ? -14 : 14;
                 const onUploadPath =
                   topicPaths.nodeIds.has(node.parentId!) && topicPaths.nodeIds.has(node.id);
                 return (
@@ -278,11 +289,11 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                     aria-hidden="true"
                     style={{
                       opacity: visible ? 1 : 0,
-                      transform: `translate(${x}px, ${y}px) rotate(${Math.atan2(dy, dx)}rad) scaleX(${Math.hypot(dx, dy) / 100})`,
+                      transform: `translate(${startX}px, ${startY}px) rotate(${angle}rad) scaleX(${gap / 100})`,
                     }}
                   >
                     <path
-                      d={`M 0 0 Q 50 ${index % 2 ? -60 : 60} 100 0`}
+                      d={`M 0 0 C 17 ${-bend} 33 ${-bend} 50 0 C 67 ${bend} 83 ${bend} 100 0`}
                       vectorEffect="non-scaling-stroke"
                     />
                   </svg>
@@ -290,12 +301,15 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
               })}
             {data.nodes.map((node, index) => {
               const point = layout.points.get(node.id);
-              // Keep each background bubble in a stable spot across node switches.
-              const radius = Math.sqrt((index + 0.5) / data.nodes.length);
-              const angle = index * Math.PI * (3 - Math.sqrt(5));
-              const x = point?.x ?? radius * Math.cos(angle) * (size.width / fitScale) * 0.47;
-              const y = point?.y ?? radius * Math.sin(angle) * (size.height / fitScale) * 0.45;
+              const position = background.get(node.id)!;
+              const x =
+                point?.x ?? (position.x - backgroundFocus.x) * (size.width / fitScale) * 0.45;
+              const y =
+                point?.y ?? (position.y - backgroundFocus.y) * (size.height / fitScale) * 0.43;
               const central = node.id === focusId;
+              const nodeScale = point ? (central ? 1 : 0.64) : 0.05 + ((index * 7) % 11) * 0.007;
+              // Compensate for the graph and node scales so even small bubbles visibly float.
+              const floatShift = (point ? (central ? 8 : 6.5) : 3.5) / (nodeScale * fitScale);
               const parent = node.id === focus.parentId;
               const uploadKind = topicPaths.leafIds.has(node.id)
                 ? 'match'
@@ -339,12 +353,8 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
                     {
                       '--node-x': `${x}px`,
                       '--node-y': `${y}px`,
-                      '--node-scale': point
-                        ? central
-                          ? 1
-                          : 0.64
-                        : 0.05 + ((index * 7) % 11) * 0.007,
-                      '--float-shift': point ? (central ? '8px' : '6px') : '3px',
+                      '--node-scale': nodeScale,
+                      '--float-shift': `${floatShift}px`,
                       '--float-duration': `${4.8 + (index % 6) * 0.5}s`,
                       '--float-delay': `${-(index % 9) * 0.63}s`,
                       '--node-font':
@@ -386,7 +396,7 @@ function GraphWorkspace({ data, initialQuery }: { data: GraphStructure; initialQ
         </div>
         <footer className="km-toolbar">
           <p>
-            大圆：当前节点 · 浅蓝：上级 · 浅紫：下级
+            大圆：当前节点 · 浅蓝：上级 · 浅紫：下级 · 小泡泡：其他节点
             {firstTopic && <span className="km-upload-key">青绿：上传题知识点及上级</span>}
           </p>
           <span>点击切换 · 拖动平移</span>

@@ -47,10 +47,16 @@ export function TopicPaths({
 
   return (
     <section className="km-topic-paths" aria-label="上传题知识点路径">
-      <h2>本题涉及的知识路径</h2>
-      <p>已定位 {leafIds.size} 个知识点及其上级。点击节点可查看详情和题库关联题目。</p>
-      {partial && <p role="status">部分标签在当前图谱目录中找不到对应节点。</p>}
-      {branches(null)}
+      <h3>本题涉及的知识路径</h3>
+      {leafIds.size > 0 ? (
+        <>
+          <p>已定位 {leafIds.size} 个知识点及其上级。点击任一节点在圈图中定位。</p>
+          {partial && <p role="status">部分标签在当前图谱目录中找不到对应节点。</p>}
+          {branches(null)}
+        </>
+      ) : (
+        <p role="status">当前图谱找不到这些知识点。</p>
+      )}
     </section>
   );
 }

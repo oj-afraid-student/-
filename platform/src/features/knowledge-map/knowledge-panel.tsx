@@ -1,35 +1,92 @@
 'use client';
 
 import Link from 'next/link';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/features/auth/session';
 import { ApiClientError, errorMessage } from '@/shared/api/client';
 import { GeometryFigure, MathText } from '@/shared/ui/common';
 import type { GraphNode, GraphQuestion, GraphStructure } from './graph-model';
 
-export function KnowledgePanel({
-  data,
-  focus,
-  questions,
-  select,
-  questionId,
-  selectQuestion,
-}: {
+interface QuestionPanelProps {
   data: GraphStructure;
   focus: GraphNode;
   questions: GraphQuestion[];
   select: (id: string, question?: string) => void;
   questionId: string | null;
   selectQuestion: (id: string) => void;
-}) {
+}
+
+interface UploadPanel {
+  active: boolean;
+  onChange: (active: boolean) => void;
+  content: ReactNode;
+}
+
+export function KnowledgePanel({
+  upload,
+  ...props
+}: QuestionPanelProps & { upload?: UploadPanel }) {
+  const panel = useRef<HTMLElement>(null);
+  const uploadActive = upload?.active ?? false;
+
+  useLayoutEffect(() => {
+    panel.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [uploadActive]);
+
+  return (
+    <section className="km-questions" aria-label="关联题目" ref={panel}>
+      <header>
+        <h2>关联题目</h2>
+        {!uploadActive && <span className="tag">{props.questions.length} 道</span>}
+      </header>
+      <div className="km-tabs" role="group" aria-label="关联题目栏目">
+        {upload ? (
+          <>
+            <button
+              type="button"
+              aria-pressed={!uploadActive}
+              onClick={() => upload.onChange(false)}
+            >
+              知识点题目
+            </button>
+            <button type="button" aria-pressed={uploadActive} onClick={() => upload.onChange(true)}>
+              上传题目
+            </button>
+          </>
+        ) : (
+          <>
+            <span aria-current="page">知识点题目</span>
+            <Link href="/study">
+              上传题目 <span aria-hidden="true">→</span>
+            </Link>
+          </>
+        )}
+      </div>
+      {uploadActive ? (
+        upload?.content
+      ) : (
+        <QuestionPanelContent key={props.focus.id} {...props} panel={panel} />
+      )}
+    </section>
+  );
+}
+
+function QuestionPanelContent({
+  data,
+  focus,
+  questions,
+  select,
+  questionId,
+  selectQuestion,
+  panel,
+}: QuestionPanelProps & { panel: RefObject<HTMLElement | null> }) {
   const requestedIndex = questions.findIndex((question) => question.id === questionId);
   const index = Math.max(0, requestedIndex);
   const [busy, setBusy] = useState<'one' | 'group' | null>(null);
   const [error, setError] = useState('');
   const locked = useRef(false);
   const active = useRef(false);
-  const panel = useRef<HTMLElement>(null);
   const { api, expire } = useSession();
   const router = useRouter();
   const question = questions[index];
@@ -41,7 +98,7 @@ export function KnowledgePanel({
   }, []);
   useLayoutEffect(() => {
     panel.current?.scrollTo({ top: 0, behavior: 'instant' });
-  }, [index]);
+  }, [index, panel]);
   const children = data.nodes.filter((n) => n.parentId === focus.id);
   async function practice(mode: 'one' | 'group') {
     if (!question || locked.current || (mode === 'group' && questions.length > 100)) return;
@@ -72,17 +129,7 @@ export function KnowledgePanel({
     setError('');
   }
   return (
-    <section className="km-questions" ref={panel}>
-      <header>
-        <h2>关联题目</h2>
-        <span className="tag">{questions.length} 道</span>
-      </header>
-      <div className="km-tabs">
-        <span aria-current="page">知识点题目</span>
-        <Link href="/study">
-          上传题目 <span aria-hidden="true">→</span>
-        </Link>
-      </div>
+    <>
       <p className="km-context" aria-live="polite">
         当前节点：<b>{focus.label}</b>
       </p>
@@ -204,6 +251,6 @@ export function KnowledgePanel({
           <p>可以先阅读知识详情，或选择其他知识点。</p>
         </div>
       )}
-    </section>
+    </>
   );
 }

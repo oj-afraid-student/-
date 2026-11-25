@@ -483,7 +483,30 @@ try {
 
   await page.unroute('**/api/v1/ai/study');
   await page.unroute('**/api/v1/ai/candidates/tags');
-  const paths = page.getByRole('region', { name: '上传题知识点路径' });
+  const graph = page.getByRole('region', { name: '知识图谱', exact: true });
+  const relatedPanel = page.getByRole('region', { name: '关联题目', exact: true });
+  const paths = relatedPanel.getByRole('region', { name: '上传题知识点路径' });
+  const uploadTab = relatedPanel.getByRole('button', { name: '上传题目', exact: true });
+  await paths.waitFor();
+  assert.equal(await uploadTab.getAttribute('aria-pressed'), 'true');
+  assert.equal(await graph.getByRole('region', { name: '上传题知识点路径' }).count(), 0);
+  const initialCenter = graph.locator(
+    '.km-node.is-center[data-node-id="unit:SG-01"][data-upload-kind="ancestor"]',
+  );
+  await initialCenter.waitFor();
+  assert.equal(await initialCenter.locator('.km-node-role').innerText(), '上传题路径');
+  const firstUploadMatch = graph.locator(
+    '.km-node[data-node-id="point:G1-01"][data-upload-kind="match"]',
+  );
+  await firstUploadMatch.waitFor();
+  assert.equal(await firstUploadMatch.locator('.km-node-role').innerText(), '上传题知识点');
+  assert.equal(
+    await firstUploadMatch.evaluate((node) => getComputedStyle(node).borderTopColor),
+    'rgb(7, 84, 82)',
+  );
+  const normalNeighbor = graph.locator('.km-node:not([data-upload-kind]):enabled').first();
+  await normalNeighbor.click();
+  await graph.locator('.km-node.is-center:not([data-upload-kind]):enabled').waitFor();
   await paths.waitFor();
   const nodeIds = (selector) =>
     paths.locator(selector).evaluateAll((nodes) => nodes.map((node) => node.dataset.nodeId));
@@ -498,7 +521,17 @@ try {
   assert.equal(await paths.locator('[data-node-id="overview"]').count(), 1);
   await paths.locator('[data-node-id="point:E1"]').click();
   await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
-  assert.equal(await page.locator('.km-right > .km-questions').count(), 1);
+  const selectedUploadMatch = graph.locator(
+    '.km-node.is-center[data-node-id="point:E1"][data-upload-kind="match"]',
+  );
+  await selectedUploadMatch.waitFor();
+  assert.equal(await relatedPanel.count(), 1);
+  await relatedPanel.getByRole('button', { name: '知识点题目', exact: true }).click();
+  await relatedPanel.locator('.km-context').waitFor();
+  assert.equal(await paths.count(), 0);
+  await selectedUploadMatch.waitFor();
+  await uploadTab.click();
+  await paths.locator('[data-node-id="point:E1"][aria-current]').waitFor();
   await returnToStudy.click();
   await verifyStudyReturn();
   check('上传题返回入口和浏览器后退都恢复题图、选择的分问、原输入、标签及滚动位置');
@@ -512,13 +545,16 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
   await page.setViewportSize(previousViewport);
   await page.getByRole('button', { name: '退出定位' }).click();
-  await page.locator('.km-node.is-center[data-node-id="point:E1"]').waitFor();
+  await graph
+    .locator('.km-node.is-center[data-node-id="point:E1"]:not([data-upload-kind])')
+    .waitFor();
+  await relatedPanel.getByRole('link', { name: '上传题目' }).waitFor();
   await page.goBack();
   await paths.waitFor();
   await page.goto(origin + '/knowledge-map?topic=missing');
   await page.getByRole('status').filter({ hasText: '当前图谱找不到这些知识点' }).waitFor();
   await page.locator('.km-node.is-center[data-node-id="overview"]').waitFor();
-  check('上传题推荐空结果、核对多标签、双分支祖先路径、退出与返回、窄屏定位可用');
+  check('上传题栏目承载跨分支路径，圈图标注命中及上级，切换节点、栏目、退出及窄屏定位通过');
 
   const fullBank = await create(page);
   assert.equal(fullBank.totalCount, 85);

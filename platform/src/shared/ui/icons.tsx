@@ -18,6 +18,7 @@ export function Icon({ name, className = '' }: { name: string; className?: strin
         <path d="M12 7v5l3 2" />
       </>
     ),
+    chart: <path d="M4 4v16h16M9 15v-3m4 3V9m4 6V6" />,
     arrow: (
       <>
         <path d="M4 12h16m-6-6 6 6-6 6" />

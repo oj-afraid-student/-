@@ -101,6 +101,15 @@ Q06 三个空分别存交线、交线、关系；Q14 一个空内存两个距离
 - 校验、判题、答案保存、结果保存、状态更新必须在同一事务内完成；失败不部分保存。客户端不确定是否保存成功时用原答案重试。
 - 已提交的 GET practice 仍返回无答案题目和 submissionId，解析仅从本人结果接口读取。
 
+## 学习画像
+
+`GET /me/progress`（完整路径 `/api/v1/me/progress`）返回当前登录学生的 `StudentProgress`，不接受请求参数或请求体。接口使用 `private, no-store`，按数据库当前已提交答卷计算。
+
+- `submissionCount` 是已提交练习数。 `overall` 汇总每道题的作答，`points` 按原题版本的知识标签汇总。一次提交中的同一道题最多计一次，在每个关联知识点也各计一次。
+- `attemptCount` 包括待复核题。 `gradedCount` 只纳入已明确判对或判错的题。 `accuracy` 为 `correctCount / gradedCount`，取值 0 到 1，无判定数据时为 `null`。
+- 每个知识点返回样本状态。未作答为 `NO_ATTEMPTS`，有作答但已判定题次少于 `minimumGradedCount`（当前为 3）为 `INSUFFICIENT_EVIDENCE`，达到门槛为 `ENOUGH_EVIDENCE`。最近作答可从 `latestSubmissionId` 回看。
+- 汇总直接使用现有提交、逐题作答和题目版本表，从 002 迁移起即可读取既有记录。新提交或判定更新在事务提交后反映到下一次请求。
+
 ## 历史与错误
 
 page 默认 1、pageSize 默认 20，page≥1，1≤pageSize≤100；不接受小数、负数、非数字字符串和额外查询参数。

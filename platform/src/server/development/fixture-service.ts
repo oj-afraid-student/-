@@ -14,6 +14,7 @@ import type {
   SubmissionDetail,
 } from '@/shared/contracts';
 import type { QuestionVersionRecord } from '@/server/practice/contracts';
+import { buildStudentProgress } from '@/server/progress/model';
 import { ApiError, success } from '@/server/http';
 import { restoreAnswer, serializeAnswer, validateAnswer } from '@/features/practice/answer-model';
 
@@ -458,6 +459,22 @@ export async function handleDevelopment(
         201,
       );
     }
+  }
+  if (method === 'GET' && path === 'me/progress') {
+    if (request.nextUrl.search) invalid('此接口不接受查询参数。');
+    const attempts = [...store.submissions.values()]
+      .filter((entry) => entry.owner === user.id)
+      .map((entry) => entry.detail)
+      .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt) || b.id.localeCompare(a.id))
+      .flatMap((detail) =>
+        detail.items.map((item) => ({
+          submissionId: detail.id,
+          questionId: item.question.id,
+          knowledgeIds: item.question.knowledgeIds,
+          isCorrect: item.evaluation.isCorrect,
+        })),
+      );
+    return success(buildStudentProgress(units, attempts));
   }
   if (method === 'GET' && path === 'me/submissions') {
     if (

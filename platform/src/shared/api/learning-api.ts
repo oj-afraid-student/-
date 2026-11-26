@@ -8,6 +8,7 @@ import type {
   KnowledgeSummary,
   LogoutResult,
   Practice,
+  StudentProgress,
   SubmissionDetail,
   SubmitPracticeRequest,
   SubmitPracticeResult,
@@ -31,6 +32,7 @@ export function createLearningApi(base = '/api/v1') {
       get<Practice>(`/practices/${encodeURIComponent(id)}`, signal),
     submit: (id: string, answers: SubmitPracticeRequest) =>
       post<SubmitPracticeResult>(`/practices/${encodeURIComponent(id)}/submit`, answers),
+    progress: (signal?: AbortSignal) => get<StudentProgress>('/me/progress', signal),
     history: ({ page = 1, pageSize = 20 }: HistoryQuery = {}, signal?: AbortSignal) =>
       get<HistoryPage>(`/me/submissions?page=${page}&pageSize=${pageSize}`, signal),
     submission: (id: string, signal?: AbortSignal) =>

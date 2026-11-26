@@ -18,6 +18,7 @@ const { readJson } = await import('../src/server/practice/request.ts');
 const { generateCandidate, requestHint } = await import('../src/server/ai/learning.ts');
 const { candidateScopes } = await import('../src/server/ai/scope.ts');
 const { publishCandidate } = await import('../src/server/ai/publish.ts');
+const { getStudentProgress } = await import('../src/server/progress/service.ts');
 import { NextRequest } from 'next/server.js';
 const read = async (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const bank = JSON.parse(await read('fixtures/server/question-bank.json'));
@@ -227,6 +228,78 @@ const payload = (practice) => ({
       expected.items.find((entry) => entry.question.id === item.question.id).answer,
     ),
   })),
+});
+
+test('学习画像统计已提交的原题版本，排除待复核分母且按学生隔离', async (t) => {
+  await setup(t);
+  const pointIds = ['G1-01', 'G1-02', 'G1-03'];
+  await db.query(
+    "INSERT INTO knowledge_point (id,title,sort_order,content) VALUES ('SG-01','空间位置关系',1,$1)",
+    [{ knowledgeIds: pointIds, sections: [] }],
+  );
+  const record = structuredClone(bank.find((entry) => entry.question.id === 'Q01'));
+  const firstTag = pointIds[0];
+  record.question.version = 2;
+  record.question.knowledgeIds = [firstTag, firstTag, pointIds[1]];
+  await insertVersion(record, true);
+  await db.query("UPDATE question_version SET is_published=true WHERE question_key='Q24'");
+
+  const [student, other] = users;
+  const first = await createPractice(student, { mode: 'EXPLICIT', questionIds: ['Q01', 'Q24'] });
+  const empty = await getStudentProgress(student);
+  assert.equal(empty.submissionCount, 0);
+  assert.equal(empty.overall.accuracy, null);
+  assert.deepEqual(
+    empty.points.map((point) => point.status),
+    pointIds.map(() => 'NO_ATTEMPTS'),
+  );
+
+  await submitPractice(student, first.id, payload(first));
+  await submitPractice(student, first.id, payload(first));
+  const afterFirst = await getStudentProgress(student);
+  assert.equal(afterFirst.submissionCount, 1);
+  assert.deepEqual(afterFirst.overall, {
+    attemptCount: 2,
+    gradedCount: 1,
+    correctCount: 1,
+    accuracy: 1,
+  });
+  assert.equal(afterFirst.points.find((point) => point.id === firstTag).attemptCount, 1);
+  assert.equal(
+    afterFirst.points.find((point) => point.id === firstTag).status,
+    'INSUFFICIENT_EVIDENCE',
+  );
+  assert.equal(afterFirst.points.find((point) => point.id === 'E3').accuracy, null);
+
+  const repeat = () => createPractice(student, { mode: 'EXPLICIT', questionIds: ['Q01'] });
+  const second = await repeat();
+  const wrong = payload(second);
+  wrong.answers[0].answer.selectedOptionId = 'A';
+  await submitPractice(student, second.id, wrong);
+  const third = await repeat();
+  const latest = await submitPractice(student, third.id, payload(third));
+  await db.query("UPDATE submission SET submitted_at = now() + interval '1 second' WHERE id = $1", [
+    latest.data.submissionId,
+  ]);
+
+  record.question.version = 3;
+  record.question.knowledgeIds = [pointIds[2]];
+  await insertVersion(record, true);
+  const profile = await getStudentProgress(student);
+  assert.equal(profile.submissionCount, 3);
+  assert.equal(profile.minimumGradedCount, 3);
+  assert.equal(profile.overall.attemptCount, 4);
+  assert.equal(profile.overall.accuracy, 2 / 3);
+  for (const id of pointIds.slice(0, 2)) {
+    const point = profile.points.find((entry) => entry.id === id);
+    assert.equal(point.attemptCount, 3);
+    assert.equal(point.gradedCount, 3);
+    assert.equal(point.accuracy, 2 / 3);
+    assert.equal(point.status, 'ENOUGH_EVIDENCE');
+    assert.equal(point.latestSubmissionId, latest.data.submissionId);
+  }
+  assert.equal(profile.points.find((point) => point.id === pointIds[2]).status, 'NO_ATTEMPTS');
+  assert.deepEqual(await getStudentProgress(other), empty);
 });
 
 test('正式服务：发布边界、24题保存、权限、幂等、分页、版本与重练', async (t) => {

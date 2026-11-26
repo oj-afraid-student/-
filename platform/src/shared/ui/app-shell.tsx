@@ -12,6 +12,7 @@ const navigation = [
   { href: '/learn', text: '知识学习', icon: 'book', hint: '概念 · 条件 · 例题' },
   { href: '/practice/new', text: '自主练习', icon: 'pen', hint: '选择题组，逐步推理' },
   { href: '/history', text: '练习记录', icon: 'history', hint: '回顾每一次思考' },
+  { href: '/progress', text: '学习画像', icon: 'chart', hint: '作答与知识点统计' },
   { href: '/knowledge-map', text: '知识图谱', icon: 'diamond', hint: '探索知识的上下层关系' },
   { href: '/geometry', text: '几何实验室', icon: 'diamond', hint: '折叠 · 构造 · 动态量测' },
 ];

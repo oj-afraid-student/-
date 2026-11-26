@@ -72,9 +72,14 @@ function ResultContent({ result }: { result: SubmissionDetail }) {
         title="让每一步思考，都有回响"
         description={`提交于 ${new Date(result.submittedAt).toLocaleString('zh-CN', { hour12: false })} · 本次 ${result.totalCount} 题`}
         actions={
-          <Link className="btn" href="/history">
-            返回练习记录
-          </Link>
+          <>
+            <Link className="btn" href="/history">
+              返回练习记录
+            </Link>
+            <Link className="btn" href="/progress">
+              查看学习画像
+            </Link>
+          </>
         }
       />
       <section className="result-hero">

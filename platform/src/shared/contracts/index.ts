@@ -1,5 +1,6 @@
 // 维护人：王宁岳。业务契约 v2，覆盖文档 Q01—Q24。
 export * from './learning';
+export * from './progress';
 export type ApiErrorCode =
   | 'VALIDATION_ERROR'
   | 'UNAUTHENTICATED'

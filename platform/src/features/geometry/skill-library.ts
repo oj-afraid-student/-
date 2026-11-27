@@ -15,7 +15,30 @@ const scalar = z.union([
 ]);
 const label = z.string().min(1).max(20),
   length = z.number().finite().min(0.001).max(10000);
+const origin = z.tuple([z.number().finite(), z.number().finite(), z.number().finite()]).optional();
+const roundFields = {
+  id,
+  points: z.tuple([id, id, id]),
+  radius: length,
+  origin,
+  color: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/)
+    .optional(),
+};
 export const skillSchema = z.discriminatedUnion('skill', [
+  z.object({ skill: z.enum(['sphere', 'hemisphere']), ...roundFields }).strict(),
+  z.object({ skill: z.enum(['cone', 'cylinder']), ...roundFields, height: length }).strict(),
+  z
+    .object({
+      skill: z.literal('right_rhombic_prism'),
+      id,
+      points: z.tuple([id, id, id, id, id, id, id, id]),
+      side: length,
+      angleDegrees: z.number().gt(0).lt(180),
+      height: length,
+    })
+    .strict(),
   z
     .object({
       skill: z.literal('ratio_point'),
@@ -105,6 +128,27 @@ export const skillSchema = z.discriminatedUnion('skill', [
 ]);
 export type GeometrySkill = z.infer<typeof skillSchema>;
 export const GEOMETRY_SKILLS = [
+  ...(['cylinder', 'cone', 'sphere', 'hemisphere'] as const).map((name) => ({
+    name,
+    purpose:
+      { cylinder: '直圆柱', cone: '直圆锥', sphere: '球', hemisphere: '朝上的半球' }[name] +
+      '，创建曲面、半径及轴向参考点',
+    input:
+      '{skill:"' +
+      name +
+      '",id,points:[O,R,T],radius' +
+      (['cone', 'cylinder'].includes(name) ? ',height' : '') +
+      ',origin?:[x,y,z],color?}',
+    output:
+      '新建O为底面中心或球心，R为沿+x的圆周点，T为顶面中心、锥顶或球的北极。轴为+Z；origin默认原点。不要重复定义这三个点。',
+  })),
+  {
+    name: 'right_rhombic_prism',
+    purpose: '以菱形为底的直四棱柱',
+    input: '{skill:"right_rhombic_prism",id,points:[A,B,C,D,A1,B1,C1,D1],side,angleDegrees,height}',
+    output:
+      '八个新点、十二条边、六个面，angleDegrees 是底角 DAB 的度数。BC1 上的动点再调用 edge_point。',
+  },
   {
     name: 'ratio_point',
     purpose: '按参考线段长度的倍数构造边上点，比例由引擎精确维持',
@@ -187,6 +231,7 @@ export function expandSkills(plan: UniversalPlan) {
     segments: UniversalPlan['segments'] = [...plan.segments],
     faces: UniversalPlan['faces'] = [...plan.faces],
     checks: UniversalPlan['checks'] = [...plan.checks];
+  const solids = [...(plan.solids ?? [])];
   const known = new Set(nodes.map((n) => n.id));
   if (known.size !== nodes.length) throw new Error('场景对象标识重复');
   const skillIds = new Set<string>();
@@ -202,19 +247,38 @@ export function expandSkills(plan: UniversalPlan) {
   for (const s of plan.skills ?? []) {
     if (skillIds.has(s.id)) throw new Error('skill步骤ID重复');
     skillIds.add(s.id);
-    if (s.skill === 'rectangle' || s.skill === 'box') {
-      const width = s.width,
-        depth = s.skill === 'rectangle' ? s.height : s.depth,
-        h = s.skill === 'box' ? s.height : 0;
+    if ('radius' in s) {
+      const [o, r, t] = s.points;
+      const height = 'height' in s ? s.height : s.radius;
+      addPoint({ id: o, label: o, type: 'fixed', position: s.origin ?? [0, 0, 0] });
+      addPoint({ id: r, label: r, type: 'translate', source: o, vector: [s.radius, 0, 0] });
+      addPoint({ id: t, label: t, type: 'translate', source: o, vector: [0, 0, height] });
+      const attr = { id: s.id, radius: s.radius, color: s.color ?? '#87bed9' };
+      solids.push(
+        'height' in s
+          ? { ...attr, type: s.skill, ends: [o, t] }
+          : { ...attr, type: s.skill, center: o },
+      );
+      checks.push(
+        { type: 'distance', points: [o, r], value: s.radius },
+        { type: 'distance', points: [o, t], value: height },
+      );
+    } else if (s.skill === 'rectangle' || s.skill === 'box' || s.skill === 'right_rhombic_prism') {
+      const rhombic = s.skill === 'right_rhombic_prism';
+      const width = rhombic ? s.side : s.width,
+        depth = rhombic ? s.side : s.skill === 'rectangle' ? s.height : s.depth,
+        h = s.skill === 'rectangle' ? 0 : s.height;
+      const dx = rhombic ? depth * Math.cos((s.angleDegrees * Math.PI) / 180) : 0;
+      const dy = rhombic ? depth * Math.sin((s.angleDegrees * Math.PI) / 180) : depth;
       const positions: Vec3[] = [
         [0, 0, 0],
         [width, 0, 0],
-        [width, depth, 0],
-        [0, depth, 0],
+        [width + dx, dy, 0],
+        [dx, dy, 0],
         [0, 0, h],
         [width, 0, h],
-        [width, depth, h],
-        [0, depth, h],
+        [width + dx, dy, h],
+        [dx, dy, h],
       ];
       s.points.forEach((id, i) =>
         addPoint({ id, label: id, type: 'fixed', position: positions[i] }),
@@ -268,13 +332,19 @@ export function expandSkills(plan: UniversalPlan) {
       checks.push(
         { type: 'distance', points: [s.points[0], s.points[1]], value: width },
         { type: 'distance', points: [s.points[0], s.points[3]], value: depth },
-        {
-          type: 'perpendicular',
-          first: [s.points[0], s.points[1]],
-          second: [s.points[0], s.points[3]],
-        },
+        rhombic
+          ? {
+              type: 'angle',
+              points: [s.points[3], s.points[0], s.points[1]],
+              degrees: s.angleDegrees,
+            }
+          : {
+              type: 'perpendicular',
+              first: [s.points[0], s.points[1]],
+              second: [s.points[0], s.points[3]],
+            },
       );
-      if (s.skill === 'box')
+      if (s.skill !== 'rectangle')
         checks.push({ type: 'distance', points: [s.points[0], s.points[4]], value: h });
     } else if (s.skill === 'pyramid' || s.skill === 'prism') {
       requirePoints(s.base);
@@ -347,7 +417,13 @@ export function expandSkills(plan: UniversalPlan) {
       faces.push({ id: s.id, vertices: s.points, color: '#d99b4e' });
     }
   }
-  if (nodes.length > 32 || segments.length > 64 || faces.length > 16 || checks.length > 60)
+  if (
+    solids.length > 12 ||
+    nodes.length > 32 ||
+    segments.length > 64 ||
+    faces.length > 16 ||
+    checks.length > 60
+  )
     throw new Error('技能组合超过场景预算');
   const missing = references.filter((id) => !known.has(id));
   if (missing.length) throw new Error('skill引用不存在的点：' + [...new Set(missing)].join(','));
@@ -378,5 +454,5 @@ export function expandSkills(plan: UniversalPlan) {
     });
     pending = pending.filter((n) => !ready.has(n.id));
   }
-  return { ...plan, nodes: ordered, segments, faces, checks };
+  return { ...plan, nodes: ordered, segments, faces, checks, solids };
 }

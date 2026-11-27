@@ -13,6 +13,15 @@ export function extractRequiredChecks(problem: StudyProblem) {
     'g',
   );
   for (const condition of problem.conditions) {
+    const compact = condition.replace(/\s/g, '');
+    for (const m of compact.matchAll(
+      /(?:^|[，,；;。])∠([A-Z])([A-Z])([A-Z])(?:为|[=＝])(\d+(?:\.\d+)?)[°度](?=$|[，,；;。])/g,
+    ))
+      checks.push({ type: 'angle', points: [m[1], m[2], m[3]], degrees: Number(m[4]) });
+    for (const m of compact.matchAll(
+      /(?:^|[，,；;。])二面角([A-Z])[-－—]([A-Z])([A-Z])[-－—]([A-Z])(?:为|[=＝])(\d+(?:\.\d+)?)[°度](?=$|[，,；;。])/g,
+    ))
+      checks.push({ type: 'dihedral', points: [m[1], m[2], m[3], m[4]], degrees: Number(m[5]) });
     for (const m of condition.replace(/\s*([=＝])\s*/g, '$1').matchAll(pattern)) {
       const value = Number(m[3]);
       if (!(value > 0 && value <= 10000)) continue;
@@ -77,10 +86,77 @@ export function enforceRequiredChecks(
     return matches[0];
   };
   const pair = (p: [string, string]): [string, string] => [resolve(p[0]), resolve(p[1])];
+  // A perpendicularity requested at an unknown position is a measurement goal.
+  const mathText = (text: string) => text.replace(/[\s${}_]/g, '').replace(/\\perp/g, '⊥');
+  const goal =
+    problem &&
+    /使(?:得)?([A-Z])([A-Z])(?:⊥|垂直于)([A-Z])([A-Z])/.exec(
+      mathText([problem.text, ...problem.questions].join(' ')),
+    );
+  const lineKey = (lines: string[][]) =>
+    lines
+      .map((line) => [...line].sort().join(':'))
+      .sort()
+      .join('|');
+  if (
+    goal &&
+    plan.parameters.length &&
+    problem &&
+    !problem.conditions.some((c) => /⊥|垂直/.test(mathText(c)))
+  ) {
+    const ids = goal.slice(1).map((name) => labels.get(name));
+    if (ids.every((matches) => matches?.length === 1)) {
+      const [a, b, c, d] = ids.map((matches) => matches![0]);
+      const lines: [[string, string], [string, string]] = [
+        [a, b],
+        [c, d],
+      ];
+      const target = lineKey(lines);
+      plan.checks = plan.checks.filter(
+        (check) =>
+          check.type !== 'perpendicular' || lineKey([check.first, check.second]) !== target,
+      );
+      if (
+        !plan.metrics.some(
+          (metric) => metric.type === 'line_angle' && lineKey(metric.lines) === target,
+        )
+      ) {
+        let i = 1;
+        while (plan.metrics.some((m) => m.id === 'goalAngle' + i)) i++;
+        plan.metrics.push({
+          id: 'goalAngle' + i,
+          label: goal[1] + goal[2] + ' 与 ' + goal[3] + goal[4] + ' 的夹角（目标 90°）',
+          type: 'line_angle',
+          lines,
+        });
+      }
+    }
+  }
   const checks = required.map((c) =>
-    c.type === 'distance'
-      ? { ...c, points: pair(c.points) }
-      : { ...c, first: pair(c.first), second: pair(c.second) },
+    c.type === 'line_plane_parallel'
+      ? { ...c, line: pair(c.line), plane: c.plane.map(resolve) as [string, string, string] }
+      : c.type === 'angle'
+        ? {
+            ...c,
+            points: [resolve(c.points[0]), resolve(c.points[1]), resolve(c.points[2])] as [
+              string,
+              string,
+              string,
+            ],
+          }
+        : c.type === 'dihedral'
+          ? {
+              ...c,
+              points: [
+                resolve(c.points[0]),
+                resolve(c.points[1]),
+                resolve(c.points[2]),
+                resolve(c.points[3]),
+              ] as [string, string, string, string],
+            }
+          : c.type === 'distance'
+            ? { ...c, points: pair(c.points) }
+            : { ...c, first: pair(c.first), second: pair(c.second) },
   );
   return {
     ...plan,
@@ -91,6 +167,20 @@ export function enforceRequiredChecks(
 /** Verify explicit motion endpoints independently of the model's checks. */
 export function verifyMotionEndpoints(plan: UniversalPlan, problem: StudyProblem) {
   const expanded = expandSkills(plan);
+  const statement = [problem.text, ...problem.conditions].join(' ').replace(/\s/g, '');
+  for (const match of statement.matchAll(/沿(?:直线|线段)?([A-Z])([A-Z])(?:翻转|翻折|折叠)/g)) {
+    const axis = [match[1], match[2]];
+    const hasFold = expanded.nodes.some(
+      (n) =>
+        n.type === 'rotate' &&
+        typeof n.angle !== 'number' &&
+        n.angle.scale !== 0 &&
+        axis.every((label) =>
+          n.axis.some((id) => expanded.nodes.some((p) => p.id === id && p.label === label)),
+        ),
+    );
+    if (!hasFold) throw new Error('沿 ' + axis.join('') + ' 翻折需要绕该轴旋转的动点和可调角度');
+  }
   for (const condition of problem.conditions) {
     const m = condition.replace(/\s/g, '').match(/^([A-Z])从([A-Z])(?:运动|移动)?到([A-Z])$/);
     if (!m) continue;

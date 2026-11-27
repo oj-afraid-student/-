@@ -14,7 +14,7 @@ nodes按依赖顺序，类型：
 {id,label,type:"foot",source:点ID,plane:[三点ID]}，垂足。
 segments条目{id,points:[两点ID]}；faces条目{id,vertices:[按边界有序的3或4点],color:"#72a69a"}。不要给共线或折叠后不共面的点建立面。
 metrics类型 {id,label,type:"distance",points:[两点]} 或 {id,label,type:"height",point,plane:[三点]} 或 {id,label,type:"point_line",point,line:[两点]}（到无限直线距离，不是线段）或 {id,label,type:"line_angle",lines:[[两点],[两点]]}。
-checks独立声明需要核对的数学条件，必须覆盖尺寸、比例、平行垂直，类型 {type:"distance",points:[两点],value:数值}、{type:"ratio",first:[两点],second:[两点],value:数值}、{type:"perpendicular",first:[两点],second:[两点]}、{type:"parallel",first:[两点],second:[两点]}。不能省略可检验约束来规避校验。
+checks独立声明需要核对的数学条件，必须覆盖尺寸、比例、平行垂直，类型 {type:"distance",points:[两点],value:数值}、{type:"ratio",first:[两点],second:[两点],value:数值}、{type:"perpendicular",first:[两点],second:[两点]}、{type:"parallel",first:[两点],second:[两点]}。验证线面平行用 {type:"line_plane_parallel",line:[D,P],plane:[A,B1,D1]}，由法向量及非共面检查验证。不可把它替换为直线平行于平面中的某条边。平面角用 {type:"angle",points:[A,B,C],degrees:度数}（顶点B）。二面角 A-BD-P 用 {type:"dihedral",points:[A,B,D,P],degrees:度数}，表示垂直BD的截面内指向A与P的两射线的内角，范围0至180度。旋转操作的angle仍用弧度。不能省略可检验约束来规避校验。
 coverage每条输入conditions都对应一条 {index:从0开始,quote:逐字原文,status:"represented"|"unresolved",explanation:哪些构造或checks表达了它}。引用准确的原文。未支持的自由曲面、非线性关联、缺失条件等列入limitations和unresolved，不能伪装为已解决。不要把数值取样当作最大值证明。即使只能生成示意图，也明确哪些条件未覆盖。
 所有ID使用字母起头的ASCII标识符，所有对象ID避免重复。保留原题点名在label。若根本无法构造，不补写假模型：返回空nodes及说明原因。` +
   '\n优先使用以下高层skill库组织构造流程：' +
@@ -28,8 +28,9 @@ export const PLANNING_GUIDE = `
 比例动点流程：先推导自由参数范围，再用ratio_point依赖参考长度，检查末端不超出所在边。用length_multiple检查长度倍数，允许两段在合法端点同时为零，避免ratio除零。checks格式 {type:"length_multiple",first:[两点],second:[两点],value:正数}。
 边界流程：只有题设允许的端点重合时才用boundaryCollapse:true；引擎在参数边界移除退化面与零长线段，但不会放松数学约束。不要随意缩小滑杆范围掩盖失败。
 轨迹流程：动态点必须依赖运动参数；可输出trace:{point:点ID,parameter:参数ID}显示全区间轨迹；不把离散轨迹长度作为解析证明。
+待求条件：求动点位置使两线垂直时，用边上动点及可调比例参数，metrics.line_angle 实时显示夹角，不能把仅在解处成立的垂直写进全域 checks。菱形底面直四棱柱优先调用right_rhombic_prism，再用edge_point构造侧面对角线上的P；未给尺寸时说明采用代表值。直棱柱仅要求侧棱垂直底面，底面菱形不得用长方体替代。
 固定值检查流程：distance.value表示整个滑杆范围内恒定的长度；动点到端点的变化长度只放metrics，不能把初始位置长度写成distance约束。比例关系用length_multiple。不要编造题目没有要求的固定长度。
 点名流程：优先让点的id等于原题点名，撇号点用Ap等ASCII id并保留label为A′。连线、面、checks和metrics只能引用实际生成的点ID，不得只在文字里提到一个点却没有构造它。
 输出前检查：每个原题点名应有唯一label（保留撇号），输入的独立题设检查会由程序强制加入，删除checks不能跳过它们。曲面或无法表达的关系应明确列出，不能编造替代题。`;
 
-export const SOLID_GUIDE = `可选solids数组支持解析曲面，最多12个：{id,type:"sphere",center:点ID,radius:正数,color:"#87bed9"}，{id,type:"hemisphere",center:点ID,radius:正数,color:"#d9ceb0"}（半球朝全局+Z，底面在中心的z平面），{id,type:"cylinder",ends:[底圆中心ID,顶圆中心ID],radius:正数,color:"#87bed9"}。中心必须由nodes/skills真实创建。不能用sphere假装任意曲面。半径为固定数值。检查相切关系时声明球心距离为半径和，不能仅凭曲面重叠判定相切。`;
+export const SOLID_GUIDE = `优先调用同名 cylinder/cone/sphere/hemisphere skill 直接生成标准曲面及参考点，避免重复声明。倾斜轴或已有动点作为中心时可使用底层 solids，其中 cone 的 ends 顺序为底面中心、锥顶。可选solids数组支持解析曲面，最多12个：{id,type:"sphere",center:点ID,radius:正数,color:"#87bed9"}，{id,type:"hemisphere",center:点ID,radius:正数,color:"#d9ceb0"}（半球朝全局+Z，底面在中心的z平面），{id,type:"cylinder",ends:[底圆中心ID,顶圆中心ID],radius:正数,color:"#87bed9"}。中心必须由nodes/skills真实创建。不能用sphere假装任意曲面。半径为固定数值。检查相切关系时声明球心距离为半径和，不能仅凭曲面重叠判定相切。`;

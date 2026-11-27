@@ -66,7 +66,7 @@ export const sceneSchema = z
           z
             .object({
               id,
-              type: z.literal('cylinder'),
+              type: z.enum(['cylinder', 'cone']),
               ends: pair,
               radius: z.number().positive().max(10000),
               color: z.string().regex(/^#[0-9a-fA-F]{6}$/),

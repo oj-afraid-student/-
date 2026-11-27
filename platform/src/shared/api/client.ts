@@ -27,6 +27,7 @@ export async function request<T>(
     body?: unknown;
     signal?: AbortSignal;
     timeoutMs?: number;
+    generationId?: string;
   } = {},
 ): Promise<T> {
   let response: Response;
@@ -37,7 +38,10 @@ export async function request<T>(
       credentials: 'same-origin',
       cache: 'no-store',
       signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
-      headers: options.body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      headers: {
+        ...(options.body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        ...(options.generationId ? { 'x-generation-id': options.generationId } : {}),
+      },
       ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
     });
   } catch (error) {

@@ -60,11 +60,12 @@ export function planDisplayTransform(plan: UniversalPlan) {
       try {
         const evaluation = evaluateUniversal(plan, values);
         points.push(...Object.values(evaluation.positions));
-        for (const s of plan.solids ?? [])
-          for (const center of s.type === 'cylinder' ? s.ends : [s.center]) {
+        for (const s of evaluation.scene.solids ?? [])
+          for (const center of 'ends' in s ? s.ends : [s.center]) {
             const c = evaluation.positions[center];
+            if (s.type === 'cone' && center === s.ends[1]) continue; // apex already included
             const axis =
-              s.type === 'cylinder'
+              'ends' in s
                 ? unit(sub(evaluation.positions[s.ends[1]], evaluation.positions[s.ends[0]]))
                 : null;
             const extent = [0, 1, 2].map(

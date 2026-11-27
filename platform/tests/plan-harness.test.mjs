@@ -99,3 +99,45 @@ test('presentation defaults and exact quote indices are repaired without changin
   assert.deepEqual(corrected.nodes, p.nodes);
   assert.doesNotThrow(() => validateUniversal(corrected, problem));
 });
+
+test('moving P on BC1: perpendicularity sought in question is a measurement, not an invariant', () => {
+  const task = {
+    ...problem,
+    conditions: ['底面是菱形'],
+    text: String.raw`试确定点 $P$ 的位置，使得 $BC\perp DP$。`,
+    questions: [],
+  };
+  const fixed = (id, position) => ({ type: 'fixed', id, label: id, position });
+  const prism = {
+    ...plan,
+    coverage: [],
+    parameters: [{ id: 't', label: 'P 的位置', min: 0, max: 1, initial: 0.5, unit: 'ratio' }],
+    nodes: [
+      fixed('B', [1, 0, 0]),
+      fixed('D', [0.5, Math.sqrt(3) / 2, 0]),
+      fixed('C', [1.5, Math.sqrt(3) / 2, 0]),
+      fixed('C1', [1.5, Math.sqrt(3) / 2, 1]),
+      {
+        type: 'lerp',
+        id: 'P',
+        label: 'P',
+        ends: ['B', 'C1'],
+        t: { parameter: 't', scale: 1, offset: 0 },
+      },
+    ],
+    segments: [],
+    faces: [],
+    metrics: [],
+    checks: [{ type: 'perpendicular', first: ['P', 'D'], second: ['C', 'B'] }],
+  };
+  const corrected = enforceRequiredChecks(prism, [], task);
+  assert.equal(corrected.checks.length, 0);
+  for (const t of [0, 1 / 3, 0.5, 1]) {
+    const angle = evaluateUniversal(corrected, { t }).metrics.goalAngle1.value;
+    assert.equal(Math.abs(angle - 90) < 1e-8, t === 0.5);
+  }
+  assert.equal(
+    enforceRequiredChecks(prism, [], { ...task, conditions: ['已知 BC⊥DP'] }).checks.length,
+    1,
+  );
+});

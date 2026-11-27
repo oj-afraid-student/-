@@ -59,3 +59,26 @@ test('explicit wrong diagram incidence cannot match verified rectangle recipe', 
   };
   assert.equal(matchVerifiedFold(bad), null);
 });
+
+test('ADM rotates around DM to N and the midpoint traces the required semicircle', () => {
+  const problem = foldProblems.adm;
+  assert.equal(matchVerifiedFold(problem), 'adm');
+  const plan = verifiedFold('adm', problem);
+  validateUniversal(plan, problem);
+  let previous,
+    length = 0;
+  for (let i = 0; i <= 360; i++) {
+    const p = evaluateUniversal(plan, { theta: (i * Math.PI) / 360 }).positions;
+    if (i === 0) assert.ok(distance(p.A, p.Ap) < 1e-9);
+    if (i === 360) assert.ok(distance(p.N, p.Ap) < 1e-9);
+    assert.ok(
+      distance(
+        p.E,
+        p.C.map((v, j) => (v + p.Ap[j]) / 2),
+      ) < 1e-9,
+    );
+    if (previous) length += distance(previous, p.E);
+    previous = p.E;
+  }
+  assert.ok(Math.abs(length - (3 * Math.SQRT2 * Math.PI) / 4) < 0.00002);
+});

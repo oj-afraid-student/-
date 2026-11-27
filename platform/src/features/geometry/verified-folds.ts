@@ -1,6 +1,13 @@
 import type { StudyProblem } from '@/shared/study-contract';
 import type { UniversalPlan } from './universal';
 export const foldProblems: Record<string, StudyProblem> = {
+  adm: {
+    title: 'ADM 绕 DM 翻转',
+    text: '矩形 ABCD 中，AB=2BC=6，M、N 分别为线段 AB、CD 的中点，将 △ADM 沿 DM 翻转，直到与 △NDM 首次重合，求线段 AC 的中点的运动轨迹长度。',
+    conditions: ['AB=6，BC=3', 'M、N 分别为 AB、CD 的中点', 'ADM 沿 DM 翻转，与 NDM 首次重合'],
+    questions: ['求 AC 的中点的运动轨迹长度'],
+    uncertainties: [],
+  },
   trajectory: {
     title: '矩形翻折与中点轨迹',
     text: '矩形ABCD，AB=4，BC=2，E、F分别是AB、CD的中点。沿DE把三角形ADE翻折为PDE，P从A运动到F，G为CP中点，求G的轨迹长度。',
@@ -31,7 +38,7 @@ export const foldProblems: Record<string, StudyProblem> = {
 const edges = (pairs: string[][]) =>
   pairs.map((points, i) => ({ id: 'e' + i, points: points as [string, string] }));
 export function verifiedFold(
-  kind: 'trajectory' | 'ratio',
+  kind: 'trajectory' | 'ratio' | 'adm',
   problem: StudyProblem = foldProblems[kind],
 ): UniversalPlan {
   const common = {
@@ -47,17 +54,23 @@ export function verifiedFold(
       explanation: '与本题已核对的矩形、动点和刚体翻折构造对应',
     })),
   };
-  if (kind === 'trajectory')
+  if (kind !== 'ratio') {
+    const adm = kind === 'adm';
+    const hinge = adm ? 'M' : 'E';
+    const end = adm ? 'N' : 'F';
+    const moving = adm ? 'Ap' : 'P';
+    const center = adm ? 'E' : 'G';
+    const side = adm ? 3 : 2;
     return {
       ...common,
-      trace: { point: 'G', parameter: 'theta' },
+      trace: { point: center, parameter: 'theta' },
       parameters: [
         {
           id: 'theta',
-          label: 'P 从 A 到 F 的翻折角',
+          label: adm ? 'ADM 绕 DM 的翻折角' : 'P 从 A 到 F 的翻折角',
           min: 0,
           max: Math.PI,
-          initial: Math.PI / 3,
+          initial: adm ? 0 : Math.PI / 3,
           unit: 'rad',
         },
       ],
@@ -66,41 +79,52 @@ export function verifiedFold(
           skill: 'rectangle',
           id: 'rect',
           points: ['A', 'B', 'C', 'D'],
-          width: 4,
-          height: 2,
+          width: 2 * side,
+          height: side,
           wireframe: true,
         },
-        { skill: 'midpoint', id: 'E', label: 'E', ends: ['A', 'B'] },
-        { skill: 'midpoint', id: 'F', label: 'F', ends: ['D', 'C'] },
+        { skill: 'midpoint', id: hinge, label: hinge, ends: ['A', 'B'] },
+        { skill: 'midpoint', id: end, label: end, ends: ['D', 'C'] },
         {
           skill: 'rotate_group',
           id: 'fold',
-          axis: ['D', 'E'],
+          axis: ['D', hinge],
           angle: { parameter: 'theta', scale: -1, offset: 0 },
-          outputs: [{ source: 'A', id: 'P', label: 'P' }],
+          outputs: [{ source: 'A', id: moving, label: adm ? 'A′' : moving }],
         },
-        { skill: 'midpoint', id: 'G', label: 'G', ends: ['C', 'P'] },
+        { skill: 'midpoint', id: center, label: center, ends: ['C', moving] },
       ],
       segments: edges([
-        ['D', 'E'],
-        ['P', 'D'],
-        ['P', 'E'],
-        ['C', 'P'],
+        ['D', hinge],
+        [moving, 'D'],
+        [moving, hinge],
+        ['C', moving],
       ]),
       faces: [
-        { id: 'base', vertices: ['E', 'B', 'C', 'D'], color: '#72a69a' },
-        { id: 'panel', vertices: ['P', 'E', 'D'], color: '#d99b4e' },
+        { id: 'base', vertices: [hinge, 'B', 'C', 'D'], color: '#72a69a' },
+        { id: 'panel', vertices: [moving, hinge, 'D'], color: '#d99b4e' },
       ],
       metrics: [
-        { id: 'pd', label: 'PD（保持不变）', type: 'distance', points: ['P', 'D'] },
-        { id: 'pe', label: 'PE（保持不变）', type: 'distance', points: ['P', 'E'] },
+        {
+          id: 'pd',
+          label: adm ? 'A′D' : 'PD（保持不变）',
+          type: 'distance',
+          points: [moving, 'D'],
+        },
+        {
+          id: 'pe',
+          label: adm ? 'A′M' : 'PE（保持不变）',
+          type: 'distance',
+          points: [moving, hinge],
+        },
       ],
       checks: [
-        { type: 'distance', points: ['P', 'D'], value: 2 },
-        { type: 'distance', points: ['P', 'E'], value: 2 },
-        { type: 'length_multiple', first: ['C', 'G'], second: ['G', 'P'], value: 1 },
+        { type: 'distance', points: [moving, 'D'], value: side },
+        { type: 'distance', points: [moving, hinge], value: side },
+        { type: 'length_multiple', first: ['C', center], second: [center, moving], value: 1 },
       ],
     };
+  }
   return {
     ...common,
     boundaryCollapse: true,
@@ -180,11 +204,20 @@ export function verifiedFold(
   };
 }
 /** Only exact, fully specified benchmark problems use these verified recipes. */
-export function matchVerifiedFold(problem: StudyProblem): 'trajectory' | 'ratio' | null {
+export function matchVerifiedFold(problem: StudyProblem): 'trajectory' | 'ratio' | 'adm' | null {
   const s = (problem.text + ' ' + problem.conditions.join(' ') + ' ' + problem.questions.join(' '))
     .replace(/\s/g, '')
     .replace(/[′’]/g, "'");
   if (!s.includes('矩形')) return null;
+  if (
+    (/AB[=＝]2BC[=＝]6(?![\d.])/.test(s) ||
+      (/AB[=＝]6(?![\d.])/.test(s) && /BC[=＝]3(?![\d.])/.test(s))) &&
+    /M[、,，和与]?N分别[为是](?:线段|边)?AB[、,，和与](?:线段|边)?CD的?中点/.test(s) &&
+    /ADM沿(?:直线|线段)?DM翻[折转]/.test(s) &&
+    /NDM首次重合/.test(s) &&
+    /AC的?中点/.test(s)
+  )
+    return 'adm';
   // Explicit contradictory incidences must never enter a pre-verified recipe.
   const sides = (point: string) =>
     [

@@ -30,7 +30,9 @@ class CanvasBoundary extends Component<{ children: ReactNode }, { failed: boolea
     );
   }
 }
-type Result = ReturnType<typeof validateUniversal>;
+type Result = ReturnType<typeof validateUniversal> & {
+  foldDecision?: { required: boolean; reason: string };
+};
 type Entry = { problem: StudyProblem; photo?: string; result: Result };
 const empty: StudyProblem = {
   title: '我的几何题',
@@ -243,6 +245,16 @@ export function LabStudio({
   async function generate() {
     if (busy || photoBusy) return;
     const c = new AbortController();
+    const id = crypto.randomUUID();
+    let stage = 'input';
+    const report = (event: string) => {
+      void request('/api/v1', '/ai/geometry-event', {
+        method: 'POST',
+        generationId: id,
+        body: { event, stage },
+      }).catch(() => {});
+    };
+    report('started');
     controller.current = c;
     setBusy(true);
     setError('');
@@ -250,28 +262,35 @@ export function LabStudio({
     try {
       let p = problem;
       if (needsRecognition) {
+        stage = 'recognition';
         setStatus('正在识别题干并复核示意图…');
         p = await request<StudyProblem>('/api/v1', '/ai/study', {
           method: 'POST',
           body: { action: 'recognize', text: problem.text, photo },
           signal: c.signal,
+          generationId: id,
           timeoutMs: 110000,
         });
         setProblem(p);
         setNeedsRecognition(false);
       }
+      stage = 'input';
       if (!p.text.trim()) throw new Error('请先输入题目或选择图片');
+      stage = 'review';
       if (p.uncertainties.length)
         throw new Error(
           '识别结果有待核对项。请在左侧对照原图修正条件，点击“已核对并补充条件”后再生成。',
         );
+      stage = 'generation';
       setStatus('正在规划模型并检查几何约束…');
       const next = await request<Result>('/api/v1', '/ai/geometry-scene', {
         method: 'POST',
         body: { problem: p, ...(photo ? { photo } : {}) },
         signal: c.signal,
+        generationId: id,
         timeoutMs: 105000,
       });
+      stage = 'coverage';
       if (
         strictCoverage &&
         (p.uncertainties.length ||
@@ -281,10 +300,15 @@ export function LabStudio({
         throw new Error(
           '严格模式：仍有未确认或未覆盖的条件，请补充条件后重试，或在模型设置切换到探索模式。',
         );
-      if (!c.signal.aborted) install({ problem: p, photo, result: next });
-    } catch (e) {
       if (!c.signal.aborted) {
-        setError(errorMessage(e));
+        stage = 'display';
+        install({ problem: p, photo, result: next });
+        report('displayed');
+      } else report('cancelled');
+    } catch (e) {
+      report(c.signal.aborted ? 'cancelled' : 'failed');
+      if (!c.signal.aborted) {
+        setError(errorMessage(e) + '（追踪编号 ' + id + '）');
         setStatus('生成未完成，已保留题目供修改重试');
       }
     } finally {
@@ -313,6 +337,7 @@ export function LabStudio({
   const bindings = useMemo(() => (result ? pointDragBindings(result.plan) : {}), [result]);
   const parameters = result?.plan.parameters ?? [];
   const angleParams = parameters.filter((p) => p.unit === 'rad');
+  const allowFold = result?.foldDecision?.required ?? angleParams.length > 0;
   const fold = angleParams.find((p) => p.id === foldParameter) ?? angleParams[0];
   function change(parameter: string, value: number) {
     if (!result) return;
@@ -368,7 +393,7 @@ export function LabStudio({
   function applyPlan(plan: UniversalPlan) {
     try {
       const next = validateUniversal(plan, problem);
-      setResult(next);
+      setResult({ ...next, foldDecision: result?.foldDecision });
       setError('');
       setStatus('辅助构造已添加');
     } catch (e) {
@@ -584,7 +609,9 @@ export function LabStudio({
           onChange={(e) => setExampleKind(e.target.value)}
         >
           <option value="cylinder">圆柱容器与两个球</option>
+          <option value="cone">圆锥的高与母线</option>
           <option value="hemisphere">四个相切球与半球</option>
+          <option value="adm">ADM 绕 DM 翻转</option>
           <option value="trajectory">矩形翻折与中点轨迹</option>
           <option value="ratio">动点折叠与距离</option>
         </select>
@@ -737,7 +764,9 @@ export function LabStudio({
                   busy
                     ? []
                     : Object.keys(bindings).filter(
-                        (id) => foldEnabled || !angleParams.some((p) => p.id === bindings[id]),
+                        (id) =>
+                          (allowFold && foldEnabled) ||
+                          !angleParams.some((p) => p.id === bindings[id]),
                       )
                 }
                 getDragPath={(id) => {
@@ -834,155 +863,164 @@ export function LabStudio({
         </section>
         <section>
           <h2>折叠演示</h2>
-          <div className="studio-row">
-            <button aria-pressed={locked} onClick={() => setLocked((v) => !v)}>
-              锁定视角
-            </button>
-            <button
-              aria-pressed={choosingFace}
-              disabled={!scene?.faces.length}
-              onClick={() => {
-                setChoosingFace((v) => !v);
-                setStatus('点击画布上的一个面进行选择');
-              }}
-            >
-              选折叠面
-            </button>
-            <button
-              aria-pressed={traceEnabled}
-              disabled={!Object.keys(bindings).length}
-              onClick={() => setTraceEnabled((v) => !v)}
-            >
-              选轨迹点
-            </button>
-          </div>
-          {choosingFace && (
-            <select
-              aria-label="选择折叠面"
-              value={selectedFace}
-              onChange={(e) => currentFace(e.target.value)}
-            >
-              <option value="">点击画布或选择一个面</option>
-              {scene?.faces.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.vertices
-                    .map((id) => pointOptions.find((p) => p.id === id)?.label ?? id)
-                    .join('–')}
-                </option>
-              ))}
-            </select>
+          {!allowFold && result && (
+            <small>{result.foldDecision?.reason ?? '本题展示固定构型。'}</small>
           )}
-          {traceEnabled && (
-            <select
-              aria-label="轨迹点"
-              value={tracePoint || result?.plan.trace?.point || Object.keys(bindings)[0]}
-              onChange={(e) => setTracePoint(e.target.value)}
-            >
-              {pointOptions
-                .filter((p) => bindings[p.id])
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label} 的轨迹
-                  </option>
-                ))}
-            </select>
-          )}
-          {angleParams.length > 1 && (
-            <select
-              aria-label="折叠参数"
-              value={fold?.id}
-              onChange={(e) => {
-                setPlaying(false);
-                setFoldParameter(e.target.value);
-              }}
-            >
-              {angleParams.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
-          )}
-          <div className="studio-angle">
-            <span>折叠角度</span>
-            <output>
-              {fold ? (((values[fold.id] ?? fold.initial) * 180) / Math.PI).toFixed(1) : '0.0'}°
-            </output>
-          </div>
-          <input
-            aria-label="折叠角度"
-            type="range"
-            min={0}
-            max={200}
-            step={1}
-            disabled={!fold || !foldEnabled || busy}
-            value={
-              fold
-                ? Math.round(
-                    (((values[fold.id] ?? fold.initial) - fold.min) / (fold.max - fold.min)) * 200,
-                  )
-                : 0
-            }
-            onChange={(e) => {
-              if (fold) {
-                setPlaying(false);
-                change(fold.id, fold.min + ((fold.max - fold.min) * Number(e.target.value)) / 200);
-              }
-            }}
-          />
-          {!fold && <small>当前为固定构型。选面及两个顶点后可建立折痕。</small>}
-          {selectedFace && (
-            <>
-              <small>选中面：{selectedFace}</small>
+          <fieldset className="studio-fold-controls" disabled={!allowFold || busy}>
+            <div className="studio-row">
+              <button aria-pressed={locked} onClick={() => setLocked((v) => !v)}>
+                锁定视角
+              </button>
               <button
-                disabled={selected.length !== 2}
+                aria-pressed={choosingFace}
+                disabled={!scene?.faces.length}
                 onClick={() => {
-                  if (result)
-                    try {
-                      const p = addFaceFold(
-                        result.plan,
-                        selectedFace,
-                        selected as [string, string],
-                      );
-                      applyPlan(p);
-                      setFoldParameter(p.parameters.at(-1)!.id);
-                      setFoldEnabled(true);
-                    } catch (e) {
-                      setError(errorMessage(e));
-                    }
+                  setChoosingFace((v) => !v);
+                  setStatus('点击画布上的一个面进行选择');
                 }}
               >
-                用选中两点建立折痕
+                选折叠面
               </button>
-            </>
-          )}
-          <div className="studio-row">
-            <button disabled={!fold || !foldEnabled} onClick={() => setPlaying((p) => !p)}>
-              {playing ? '暂停演示' : '播放演示'}
-            </button>
-            <button
-              disabled={!fold}
-              onClick={() => {
-                setPlaying(false);
-                setFoldEnabled(true);
-                if (fold) change(fold.id, fold.min);
+              <button
+                aria-pressed={traceEnabled}
+                disabled={!Object.keys(bindings).length}
+                onClick={() => setTraceEnabled((v) => !v)}
+              >
+                选轨迹点
+              </button>
+            </div>
+            {choosingFace && (
+              <select
+                aria-label="选择折叠面"
+                value={selectedFace}
+                onChange={(e) => currentFace(e.target.value)}
+              >
+                <option value="">点击画布或选择一个面</option>
+                {scene?.faces.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.vertices
+                      .map((id) => pointOptions.find((p) => p.id === id)?.label ?? id)
+                      .join('–')}
+                  </option>
+                ))}
+              </select>
+            )}
+            {traceEnabled && (
+              <select
+                aria-label="轨迹点"
+                value={tracePoint || result?.plan.trace?.point || Object.keys(bindings)[0]}
+                onChange={(e) => setTracePoint(e.target.value)}
+              >
+                {pointOptions
+                  .filter((p) => bindings[p.id])
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label} 的轨迹
+                    </option>
+                  ))}
+              </select>
+            )}
+            {angleParams.length > 1 && (
+              <select
+                aria-label="折叠参数"
+                value={fold?.id}
+                onChange={(e) => {
+                  setPlaying(false);
+                  setFoldParameter(e.target.value);
+                }}
+              >
+                {angleParams.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            )}
+            <div className="studio-angle">
+              <span>折叠角度</span>
+              <output>
+                {fold ? (((values[fold.id] ?? fold.initial) * 180) / Math.PI).toFixed(1) : '0.0'}°
+              </output>
+            </div>
+            <input
+              aria-label="折叠角度"
+              type="range"
+              min={0}
+              max={200}
+              step={1}
+              disabled={!fold || !foldEnabled || busy}
+              value={
+                fold
+                  ? Math.round(
+                      (((values[fold.id] ?? fold.initial) - fold.min) / (fold.max - fold.min)) *
+                        200,
+                    )
+                  : 0
+              }
+              onChange={(e) => {
+                if (fold) {
+                  setPlaying(false);
+                  change(
+                    fold.id,
+                    fold.min + ((fold.max - fold.min) * Number(e.target.value)) / 200,
+                  );
+                }
               }}
-            >
-              展开复位
-            </button>
-            <button
-              disabled={!fold}
-              onClick={() => {
-                setPlaying(false);
-                if (fold) change(fold.id, fold.min);
-                setFoldEnabled(false);
-                setTraceEnabled(false);
-              }}
-            >
-              清除折叠
-            </button>
-          </div>
-          {!foldEnabled && fold && <button onClick={() => setFoldEnabled(true)}>启用折叠</button>}
+            />
+            {allowFold && !fold && <small>当前为固定构型。选面及两个顶点后可建立折痕。</small>}
+            {selectedFace && (
+              <>
+                <small>选中面：{selectedFace}</small>
+                <button
+                  disabled={selected.length !== 2}
+                  onClick={() => {
+                    if (result)
+                      try {
+                        const p = addFaceFold(
+                          result.plan,
+                          selectedFace,
+                          selected as [string, string],
+                        );
+                        applyPlan(p);
+                        setFoldParameter(p.parameters.at(-1)!.id);
+                        setFoldEnabled(true);
+                      } catch (e) {
+                        setError(errorMessage(e));
+                      }
+                  }}
+                >
+                  用选中两点建立折痕
+                </button>
+              </>
+            )}
+            <div className="studio-row">
+              <button disabled={!fold || !foldEnabled} onClick={() => setPlaying((p) => !p)}>
+                {playing ? '暂停演示' : '播放演示'}
+              </button>
+              <button
+                disabled={!fold}
+                onClick={() => {
+                  setPlaying(false);
+                  setFoldEnabled(true);
+                  if (fold) change(fold.id, fold.min);
+                }}
+              >
+                展开复位
+              </button>
+              <button
+                disabled={!fold}
+                onClick={() => {
+                  setPlaying(false);
+                  if (fold) change(fold.id, fold.min);
+                  setFoldEnabled(false);
+                  setTraceEnabled(false);
+                }}
+              >
+                清除折叠
+              </button>
+            </div>
+            {!foldEnabled && fold && <button onClick={() => setFoldEnabled(true)}>启用折叠</button>}
+          </fieldset>
           {parameters
             .filter((p) => p.unit !== 'rad')
             .map((p) => (
@@ -1146,7 +1184,9 @@ export function LabStudio({
               默认示例
               <select value={exampleKind} onChange={(e) => setExampleKind(e.target.value)}>
                 <option value="cylinder">圆柱与球</option>
+                <option value="cone">圆锥的高与母线</option>
                 <option value="hemisphere">半球与四球</option>
+                <option value="adm">ADM 绕 DM 翻转</option>
                 <option value="trajectory">折叠轨迹</option>
                 <option value="ratio">动点折叠</option>
               </select>

@@ -8,8 +8,42 @@ const fixed = (id: string, position: [number, number, number]) => ({
   position,
 });
 export function studioExample(kind: string): { problem: StudyProblem; plan: UniversalPlan } {
-  if (kind === 'trajectory' || kind === 'ratio')
+  if (kind === 'adm' || kind === 'trajectory' || kind === 'ratio')
     return { problem: foldProblems[kind], plan: verifiedFold(kind) };
+  if (kind === 'cone') {
+    const problem: StudyProblem = {
+      title: '圆锥的高与母线',
+      text: '直圆锥底面半径为 3，高为 4。求母线长。',
+      conditions: ['底面半径为 3', '高为 4'],
+      questions: ['求母线长'],
+      uncertainties: [],
+    };
+    return {
+      problem,
+      plan: {
+        title: problem.title,
+        reason: '直圆锥的高、底面半径与母线组成直角三角形。',
+        limitations: [],
+        parameters: [],
+        nodes: [],
+        skills: [{ skill: 'cone', id: 'cone', points: ['O', 'R', 'T'], radius: 3, height: 4 }],
+        segments: [
+          { id: 'radius', points: ['O', 'R'] },
+          { id: 'height', points: ['O', 'T'] },
+          { id: 'slant', points: ['R', 'T'] },
+        ],
+        faces: [],
+        checks: [{ type: 'distance', points: ['R', 'T'], value: 5 }],
+        metrics: [{ id: 'slantLength', label: '母线长', type: 'distance', points: ['R', 'T'] }],
+        coverage: problem.conditions.map((quote, index) => ({
+          index,
+          quote,
+          status: 'represented',
+          explanation: index ? 'OT 为高' : 'OR 为底面半径',
+        })),
+      },
+    };
+  }
   const cylinder = kind !== 'hemisphere';
   const title = cylinder ? '圆柱容器中的两个等径球' : '四个相切球与外罩半球';
   const conditions = cylinder

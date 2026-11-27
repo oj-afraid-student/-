@@ -1,6 +1,13 @@
 // 维护人：王宁岳。业务契约 v2，覆盖文档 Q01—Q24。
 export * from './learning';
 export type ApiErrorCode =
+  | 'MODEL_CONFIG'
+  | 'MODEL_TIMEOUT'
+  | 'MODEL_UPSTREAM'
+  | 'MODEL_RATE_LIMIT'
+  | 'MODEL_OUTPUT'
+  | 'SCENE_SCHEMA'
+  | 'SCENE_CONSTRAINT'
   | 'VALIDATION_ERROR'
   | 'UNAUTHENTICATED'
   | 'NOT_FOUND'

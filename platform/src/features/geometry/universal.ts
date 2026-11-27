@@ -2,7 +2,17 @@ import { z } from 'zod';
 import { skillSchema, expandSkills } from './skill-library';
 import { sceneSchema, metricSchema, type GeometryScene, type Positions } from './scene';
 import { parseScene } from './constraints';
-import { add, scale, sub, foldRigidPanel, projectToPlane, distance, dot, unit } from './geometry';
+import {
+  add,
+  scale,
+  sub,
+  planeNormal,
+  foldRigidPanel,
+  projectToPlane,
+  distance,
+  dot,
+  unit,
+} from './geometry';
 import { evaluateMetrics } from './metrics';
 import type { StudyProblem } from '@/shared/study-contract';
 const id = z.string().regex(/^[A-Za-z][A-Za-z0-9_]{0,24}$/),
@@ -68,7 +78,13 @@ const node = z.discriminatedUnion('type', [
     })
     .strict(),
 ]);
+const degrees = z.number().finite().min(0).max(180);
 const check = z.discriminatedUnion('type', [
+  z
+    .object({ type: z.literal('line_plane_parallel'), line: pair, plane: z.tuple([id, id, id]) })
+    .strict(),
+  z.object({ type: z.literal('angle'), points: z.tuple([id, id, id]), degrees }).strict(),
+  z.object({ type: z.literal('dihedral'), points: z.tuple([id, id, id, id]), degrees }).strict(),
   z
     .object({
       type: z.literal('length_multiple'),
@@ -230,7 +246,24 @@ export function evaluateUniversal(input: UniversalPlan, values: Record<string, n
   for (const c of plan.checks) {
     let r = 0;
     if (c.type === 'distance') r = Math.abs(length(c.points) - c.value) / Math.max(1, c.value);
-    else if (c.type === 'length_multiple')
+    else if (c.type === 'line_plane_parallel') {
+      const [a, b, d] = c.plane.map(get);
+      const normal = planeNormal(a, b, d);
+      if (Math.abs(dot(sub(get(c.line[0]), a), normal)) < 1e-9)
+        throw new Error('线面平行要求直线与平面无公共点');
+      r = Math.abs(dot(direction(c.line), normal));
+    } else if (c.type === 'angle' || c.type === 'dihedral') {
+      const [a, b, cPoint] = c.points.map(get);
+      const u = sub(a, b);
+      let cosine;
+      if (c.type === 'angle') cosine = dot(unit(u), unit(sub(cPoint, b)));
+      else {
+        const axis = unit(sub(cPoint, b));
+        const radial = (point: typeof a) => unit(sub(point, scale(axis, dot(point, axis))));
+        cosine = dot(radial(u), radial(sub(get(c.points[3]), b)));
+      }
+      r = Math.abs(cosine - Math.cos((c.degrees * Math.PI) / 180));
+    } else if (c.type === 'length_multiple')
       r =
         Math.abs(length(c.first) - c.value * length(c.second)) /
         Math.max(1, length(c.first), c.value * length(c.second));
@@ -244,7 +277,13 @@ export function evaluateUniversal(input: UniversalPlan, values: Record<string, n
     }
     if (r > 1e-7)
       throw new Error(
-        '约束不满足：' + JSON.stringify(c) + '；参数=' + JSON.stringify(params) + '；残差=' + r,
+        '约束不满足：' +
+          JSON.stringify(c) +
+          (c.type === 'distance' ? '；坐标算得距离=' + length(c.points) : '') +
+          '；参数=' +
+          JSON.stringify(params) +
+          '；残差=' +
+          r,
       );
     residual = Math.max(residual, r);
   }

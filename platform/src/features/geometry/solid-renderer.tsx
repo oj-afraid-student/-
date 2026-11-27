@@ -51,7 +51,8 @@ export function SolidRenderer({
       depthWrite={false}
     />
   );
-  if (solid.type === 'cylinder') {
+  if ('ends' in solid) {
+    const topRadius = solid.type === 'cone' ? 0 : solid.radius;
     const a = new Vector3(...positions[solid.ends[0]]),
       b = new Vector3(...positions[solid.ends[1]]),
       axis = b.clone().sub(a);
@@ -61,11 +62,11 @@ export function SolidRenderer({
       <group position={center} quaternion={q}>
         {showFaces && (
           <mesh>
-            <cylinderGeometry args={[solid.radius, solid.radius, axis.length(), 64, 1, false]} />
+            <cylinderGeometry args={[topRadius, solid.radius, axis.length(), 64, 1, false]} />
             {material}
           </mesh>
         )}
-        {[-0.5, 0.5].map((t) => (
+        {(topRadius ? [-0.5, 0.5] : [-0.5]).map((t) => (
           <group key={t} position={[0, axis.length() * t, 0]} rotation={[Math.PI / 2, 0, 0]}>
             <Ring radius={solid.radius} color="#4a626c" width={lineWidth} />
           </group>
@@ -75,7 +76,7 @@ export function SolidRenderer({
             key={t}
             points={[
               [solid.radius * Math.cos(t), -axis.length() / 2, solid.radius * Math.sin(t)],
-              [solid.radius * Math.cos(t), axis.length() / 2, solid.radius * Math.sin(t)],
+              [topRadius * Math.cos(t), axis.length() / 2, topRadius * Math.sin(t)],
             ]}
             color="#4a626c"
             lineWidth={lineWidth}

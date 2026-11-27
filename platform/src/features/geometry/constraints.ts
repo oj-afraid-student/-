@@ -32,7 +32,7 @@ export function parseScene(input: unknown): GeometryScene {
     if (new Set(ids).size !== ids.length) throw new Error('几何对象含重复点。');
   };
   for (const s of scene.solids ?? []) {
-    if (s.type === 'cylinder') refs(s.ends);
+    if ('ends' in s) refs(s.ends);
     else refs([s.center]);
   }
   for (const s of scene.segments) refs(s.points);
@@ -61,8 +61,8 @@ export function parseScene(input: unknown): GeometryScene {
   for (const s of scene.segments)
     if (distance(p[s.points[0]], p[s.points[1]]) < EPS) throw new Error('退化线段。');
   for (const s of scene.solids ?? [])
-    if (s.type === 'cylinder' && distance(p[s.ends[0]], p[s.ends[1]]) < EPS)
-      throw new Error('圆柱轴退化');
+    if ('ends' in s && distance(p[s.ends[0]], p[s.ends[1]]) < EPS)
+      throw new Error('旋转体轴线退化');
   validateConstraints(scene, p);
   return scene;
 }
